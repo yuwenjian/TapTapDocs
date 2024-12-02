@@ -28,14 +28,22 @@ import CodeBlock from '@theme/CodeBlock';
  {`dependencies {
     ...
     // TapTapIAP dependency
-    implementation 'com.taptap.android.payment:iap:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.android.payment:base:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.android.payment:wechat:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.android.payment:alipaycn:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.android.payment:iap:${v4SDKVersions.tapIAP.android}'
+    implementation 'com.taptap.android.payment:base:${v4SDKVersions.tapIAP.android}'
+    implementation 'com.taptap.android.payment:wechat:${v4SDKVersions.tapIAP.android}'
+    implementation 'com.taptap.android.payment:alipaycn:${v4SDKVersions.tapIAP.android}'
 }
 `}
 </CodeBlock>
 
+打开项目的 `AndroidManifest.xml` 文件，添加如下配置：
+(${applicationId} 为您的应用包名)
+```
+ <activity-alias
+            android:name="${applicationId}.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:targetActivity="com.taptap.payment.wechat.WechatPayActivity" />
+```
 
 
 

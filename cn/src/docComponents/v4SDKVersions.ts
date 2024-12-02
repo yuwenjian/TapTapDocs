@@ -33,6 +33,10 @@ const v4SDKVersions = {
     tapGlobalPayments: {
         unity: "4.0.14",
         android: "4.2.5",
+    },
+    tapIAP: {
+        unity: "4.5.1-beta.2",
+        android: "4.5.1-beta.1"
     }
 };
 
