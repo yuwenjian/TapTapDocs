@@ -25,15 +25,25 @@ import CodeBlock from '@theme/CodeBlock';
 Unity 2020.3.15 之前的版本为了避免后面构建报错建议升级 Gradle 版本，可参考该 [Gradle 升级步骤文档](/sdk/tap-iap/faq/#1unity-2020315-之前的版本升级-gradle-版本的操作步骤)。
 :::
 
+
+### Manifest 配置
+打开项目的 `AndroidManifest.xml` 文件，添加如下配置：
+(${applicationId} 为您的应用包名)
+```
+ <activity-alias
+            android:name="${applicationId}.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:targetActivity="com.taptap.payment.wechat.WechatPayActivity" />
+```
+
+
 <UnitySDKInstallation
-systemNpmDeps={"\"com\.unity\.purchasing\":\"3\.1\.0\", //TapTap IAP 所须依赖"}
+systemNpmDeps={"\"com\.unity\.purchasing\":\"3\.1\.0\", //TapTap IAP 所须依赖\n\"com\.taptap\.sdk\.core\":\"4\.5\.1-beta\.2\",\n\"com\.taptap\.sdk\.iap\":\"4\.5\.1-beta\.2\""}
 npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.iap",
 ]}
 githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.iap", url: `https://github.com/taptap/TapSDKLIAP-Unity.git#${v4SDKVersions.taptap.unity}`}
+{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.tapIAP.unity}`},
+{package: "com.taptap.sdk.iap", url: `https://github.com/taptap/TapSDKLIAP-Unity.git#${v4SDKVersions.tapIAP.unity}`}
 ]}
 unitypackageModules={[
 {name: "TapTapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
@@ -48,6 +58,7 @@ unitypackageModules={[
 
 EDM4U 会自动监控 TapTap IAP 引入的 Android 依赖，但是在某些特殊情况下自动依赖解析可能失败，开发者可以通过 **Assets > External Dependency Manager > Android Resolver > Force Resolve** 来强制依赖解析。在测试之前请确认对于 `com.taptap.android.payment:unity` 的依赖被加到了 mainTemplate.gradle 文件中，如果 EDM4U 没有自动添加这个依赖，开发者也可以通过手动添加的方式处理依赖。
 :::
+
 
 ## SDK 指南
 
