@@ -409,7 +409,7 @@ try
     };
     // 发起 Tap 登录
     var userInfo = await TapTapLogin.Instance.LoginWithScopes(scopes.ToArray());
-    Debug.Log($"登录成功，当前用户 ID：{userInfo.uniontId}");
+    Debug.Log($"登录成功，当前用户 ID：{userInfo.unionId}");
 }
 catch (TaskCanceledException)
 {
