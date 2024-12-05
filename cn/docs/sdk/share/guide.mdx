@@ -227,7 +227,7 @@ TapTapSDK.initWith(options)
 
 ```java
 import com.taptap.sdk.share.TapTapShareBuilder;
-import com.taptap.sdk.share.TapTapShareCode;
+import com.taptap.sdk.share.TapTapShareResult;
 
 int resultCode = new TapTapShareBuilder()
     .addTitle("title") // 分享标题
@@ -239,8 +239,8 @@ int resultCode = new TapTapShareBuilder()
     .share(activity);
 
 switch (resultCode){
-    case TapTapShareCode.Success_Code: // 分享成功
-    case TapTapShareCode.Error_NotInstall: // 分享失败：未安装 TapTap 应用
+    case TapTapShareResult.SUCCESS: // 分享成功
+    case TapTapShareResult.ERROR_NOT_INSTALL: // 分享失败：未安装 TapTap 应用
     default: // 分享失败：TapTap 应用不支持
 }
 
@@ -251,7 +251,7 @@ switch (resultCode){
 
 ```kotlin
 import com.taptap.sdk.share.TapTapShareBuilder
-import com.taptap.sdk.share.TapTapShareCode
+import com.taptap.sdk.share.TapTapShareResult
 
 val resultCode: Int = TapTapShareBuilder()
     .addTitle(title) // 分享标题
@@ -264,8 +264,8 @@ val resultCode: Int = TapTapShareBuilder()
     .share(this)
 
 when (resultCode) {
-    TapTapShareCode.Success_Code -> // 分享成功
-    TapTapShareCode.Error_NotInstall -> // 分享失败: 未安装 TapTap 应用
+    TapTapShareResult.SUCCESS -> // 分享成功
+    TapTapShareResult.ERROR_NOT_INSTALL -> // 分享失败: 未安装 TapTap 应用
     else -> // 分享失败: TapTap 应用不支持
 }
 ```
