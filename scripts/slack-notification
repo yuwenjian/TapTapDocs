@@ -76,7 +76,7 @@ const getTargetSlackInfo = async () => {
      ? `# 最新 海外 url : [点击这里](${targetUrlIntl})`
      : ""
  }
-+ mr 标题: [${mergeRequestTitle}](https://git.gametaptap.com/web-frontend/tapsdk-doc/-/merge_requests/${mergeRequestIId})
++ mr 标题: [${mergeRequestTitle}](https://git.gametaptap.com/tapsdk/tapsdk-doc/-/merge_requests/${mergeRequestIId})
 + 启动时间戳: ${process.env.CI_PIPELINE_CREATED_AT}
 + 唯一标识: ${process.env.DIST_HASH}
 `;
