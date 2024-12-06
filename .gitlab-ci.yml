@@ -56,6 +56,14 @@ stages:
     - source ./scripts/slack-definition.sh
     - chmod -R 777 ./scripts && ./scripts/slack-notification
 
+.changes:
+  cn:
+    - cn/**/*
+    - package.json
+    - .gitlab-ci.yml
+    - .ci/**/*
+    - dockerfiles/**/*
+
 .cn_master_rules:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
@@ -103,12 +111,7 @@ build_cn:
     - .mixin_build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes:
-        - cn/**/*
-        - package.json
-        - .gitlab-ci.yml
-        - .ci/**/*
-        - dockerfiles/**/*
+      changes: !reference [.changes, cn]
       variables:
         APP_PUBLIC_PATH: https://tds-preview.xdrnd.cn
         APP_ROUTER_BASE_URL: /tapsdk-doc-cn-$CI_MERGE_REQUEST_ID/
