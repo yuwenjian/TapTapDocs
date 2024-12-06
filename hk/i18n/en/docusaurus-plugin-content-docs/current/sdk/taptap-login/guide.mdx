@@ -396,28 +396,26 @@ When the user starts the game, you can first check the [user's login status](#ch
 using TapSDK.Login;
 using System.Threading.Tasks;
 
-// Define authorization scopes
-List<string> scopes = new List<string>();
-scopes.Add(TapTapLogin.TAP_LOGIN_SCOPE_PUBLIC_PROFILE);
-
-// Initialize login request Task
-Task<TapTapAccount> task = TapTapLogin.Instance.LoginWithScopes(scopes.ToArray());
-var result = await task;
-
-// Check login result
-if (task.IsCompleted)
+try
 {
-	// Login successful
-} 
-else if (task.IsCanceled)
-{
- 	// Login canceled
+    // Define authorization scopes
+    List<string> scopes = new List<string>
+    {
+        TapTapLogin.TAP_LOGIN_SCOPE_PUBLIC_PROFILE
+    };
+    // Start Login & Get UserInfo
+    var userInfo = await TapTapLogin.Instance.LoginWithScopes(scopes.ToArray());
+    Debug.Log($"Login successful，current userID：{userInfo.unionId}");
 }
-else
+catch (TaskCanceledException)
 {
-	// Login failed
-	Debug.Log($"Login failed: {task.Exception.Message}");
+    Debug.Log("User canceled login");
 }
+catch (Exception exception)
+{
+    Debug.Log($"Login failed：{exception}");
+}
+
 ```
 
 </>
