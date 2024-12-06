@@ -5,12 +5,97 @@ include:
       - /shared/build-and-push-image.yml
       - /shared/deploy-kubefiles.yml
       - /shared/upload-to-aliyun-oss.yml
-  - .gitlab/.gitlab-ci.mixin.yml
 stages:
   - build
   - upload
   - deploy
   - notification
+
+.mix_install_deps:
+  interruptible: true
+  image: registry.tapsvc.com/public/node18-buster:pnpm7.27.0-1.0.0
+  tags:
+    - node
+  before_script:
+    - npm config set registry https://nexus.tapsvc.com/repository/npm-taptap
+    - export NODE_OPTIONS=--max_old_space_size=4096
+    - yarn install --cache-folder .yarn-cache
+  cache:
+    - key:
+        files:
+          - yarn.lock
+          - .npmrc
+      paths:
+        - .yarn-cache
+
+.mixin_build:
+  stage: build
+  interruptible: true
+  environment:
+    name: independent
+  extends:
+    - .mix_install_deps
+  artifacts:
+    expire_in: 1 week
+
+.mixin_upload:
+  stage: image-assets
+  environment:
+    name: independent
+  variables:
+    GIT_STRATEGY: none
+  extends:
+    - .upload-to-aliyun-oss
+
+.mixin_slack:
+  extends:
+    - .mix_install_deps
+  script:
+    - git --version
+    - npm i -g zx
+    - source ./scripts/slack-definition.sh
+    - chmod -R 777 ./scripts && ./scripts/slack-notification
+
+.cn_master_rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - cn/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
+
+.cn_mr_rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - cn/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
+
+.hk_master_rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - hk/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
+
+.hk_mr_rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - hk/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
+
 # 国内 构建
 build_cn:
   stage: build
@@ -18,10 +103,22 @@ build_cn:
     - .mixin_build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - cn/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
       variables:
         APP_PUBLIC_PATH: https://tds-preview.xdrnd.cn
         APP_ROUTER_BASE_URL: /tapsdk-doc-cn-$CI_MERGE_REQUEST_ID/
     - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - cn/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
       variables:
         APP_PUBLIC_PATH: https://developer.taptap.cn
         APP_ROUTER_BASE_URL: /docs/
@@ -34,8 +131,7 @@ upload_mr_assets_cn:
   stage: upload
   extends:
     - .mixin_upload
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - .cn_mr_rules
   variables:
     ALIYUN_OSS_BUCKET: tds-abd-sh
     ALIYUN_OSS_ENDPOINT: oss-cn-shanghai-internal.aliyuncs.com
@@ -45,15 +141,16 @@ upload_mr_assets_cn:
     - build_cn
 mr_slack_cn:
   stage: notification
-  extends: .mixin_slack
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  extends:
+    - .mixin_slack
+    - .cn_mr_rules
   variables:
     BUILD_LOCATION: cn
     APP_PUBLIC_PATH: https://tds-preview.xdrnd.cn
     APP_ROUTER_BASE_URL: /tapsdk-doc-cn-$CI_MERGE_REQUEST_ID/
   needs:
     - upload_mr_assets_cn
+  allow_failure: true
 # hk 构建
 build_hk:
   stage: build
@@ -61,10 +158,22 @@ build_hk:
     - .mixin_build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - hk/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
       variables:
         APP_PUBLIC_PATH: https://tds-preview.xdrnd.cn
         APP_ROUTER_BASE_URL: /tapsdk-doc-intl-$CI_MERGE_REQUEST_ID/
     - if: $CI_COMMIT_BRANCH == "master"
+      changes:
+        - hk/**/*
+        - package.json
+        - .gitlab-ci.yml
+        - .ci/**/*
+        - dockerfiles/**/*
       variables:
         APP_PUBLIC_PATH: https://developer.taptap.cn
         APP_ROUTER_BASE_URL: /docs/
@@ -77,8 +186,7 @@ upload_mr_assets_hk:
   stage: upload
   extends:
     - .mixin_upload
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - .hk_mr_rules
   variables:
     GIT_STRATEGY: none
     ALIYUN_OSS_BUCKET: tds-abd-sh
@@ -89,26 +197,26 @@ upload_mr_assets_hk:
     - build_hk
 mr_slack_hk:
   stage: notification
-  extends: .mixin_slack
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  extends:
+    - .mixin_slack
+    - .hk_mr_rules
   variables:
     BUILD_LOCATION: hk
     APP_PUBLIC_PATH: https://tds-preview.xdrnd.cn
     APP_ROUTER_BASE_URL: /tapsdk-doc-intl-$CI_MERGE_REQUEST_ID/
   needs:
     - upload_mr_assets_hk
+  allow_failure: true
 # docker build cn
 docker_upload_cn:
   stage: upload
   extends:
     - .build-and-push-image
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .cn_master_rules
   variables:
     DOCKER_REGISTRY_NAMESPACE: web-frontend
     DOCKER_REGISTRY_REPO: tapsdk-doc-cn
-    DOCKERFILE: cn.Dockerfile
+    DOCKERFILE: dockerfiles/cn.Dockerfile
     DOCKER_BUILD_PATH: .
   needs:
     - build_cn
@@ -116,10 +224,9 @@ docker_upload_cn:
     - build_cn
 deploy_cn:
   stage: deploy
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
   extends:
     - .deploy-kubefiles-production
+    - .cn_master_rules
   environment:
     name: cn/production
   variables:
@@ -131,13 +238,12 @@ deploy_cn:
 docker_upload_hk:
   stage: upload
   extends:
+    - .hk_master_rules
     - .build-and-push-image
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
   variables:
     DOCKER_REGISTRY_NAMESPACE: web-frontend
     DOCKER_REGISTRY_REPO: tapsdk-doc-intl
-    DOCKERFILE: hk.Dockerfile
+    DOCKERFILE: dockerfiles/hk.Dockerfile
     DOCKER_BUILD_PATH: .
   needs:
     - build_hk
@@ -147,8 +253,7 @@ deploy_hk:
   stage: deploy
   extends:
     - .deploy-kubefiles-production
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .hk_master_rules
   environment:
     name: hk/production
   variables:
@@ -161,8 +266,7 @@ build_rnd_cn:
   stage: build
   extends:
     - .mixin_build
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .cn_master_rules
   variables:
     APP_PUBLIC_PATH: https://developer.xdrnd.cn
     APP_ROUTER_BASE_URL: /docs/
@@ -175,12 +279,11 @@ docker_upload_rnd_cn:
   stage: upload
   extends:
     - .build-and-push-image
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .cn_master_rules
   variables:
     DOCKER_REGISTRY_NAMESPACE: web-frontend
     DOCKER_REGISTRY_REPO: tapsdk-doc-cn-rnd
-    DOCKERFILE: cn.Dockerfile
+    DOCKERFILE: dockerfiles/cn.Dockerfile
     DOCKER_BUILD_PATH: .
   needs:
     - build_rnd_cn
@@ -190,8 +293,7 @@ deploy_rnd_cn:
   stage: deploy
   extends:
     - .deploy-kubefiles-staging
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .cn_master_rules
   environment:
     name: cn/staging
   variables:
@@ -199,13 +301,12 @@ deploy_rnd_cn:
     VALUES_FILENAME: rnd_values.yaml
   needs:
     - docker_upload_rnd_cn
-  # docker build hk rnd
+# docker build hk rnd
 build_rnd_hk:
   stage: build
   extends:
     - .mixin_build
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .hk_master_rules
   variables:
     APP_PUBLIC_PATH: https://developer-intl.xdrnd.com
     APP_ROUTER_BASE_URL: /docs/
@@ -217,13 +318,12 @@ build_rnd_hk:
 docker_upload_rnd_hk:
   stage: upload
   extends:
+    - .hk_master_rules
     - .build-and-push-image
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
   variables:
     DOCKER_REGISTRY_NAMESPACE: web-frontend
     DOCKER_REGISTRY_REPO: tapsdk-doc-intl-rnd
-    DOCKERFILE: hk.Dockerfile
+    DOCKERFILE: dockerfiles/hk.Dockerfile
     DOCKER_BUILD_PATH: .
   needs:
     - build_rnd_hk
@@ -233,8 +333,7 @@ deploy_rnd_hk:
   stage: deploy
   extends:
     - .deploy-kubefiles-staging
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - .hk_master_rules
   environment:
     name: hk/staging
   variables:
