@@ -30,30 +30,6 @@ The SDK internally uses some third-party libraries. Developers need to ensure th
 }
 ```
 
-:::tip
-
-If you need to integrate TapSDK for the Unity PC platform, you need to use the NuGet integration tool to integrate the `K4os.Compression.LZ4` and `protobuf-net` libraries. The specific settings are as follows:
-
-- Add the following dependency in `Packages/manifest.json`:
-```json
-"com.github-glitchenzo.nugetforunity": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity"
-```
-- After adding, if the **NuGet** option does not appear in the top menu of Unity, restart the Unity editor, including the Unity Hub client.
-- In the top menu of Unity, select **NuGet > Manage NuGet Packages**, search for `K4os.Compression.LZ4` and `protobuf-net` in the pop-up window, and install them.
-
-  The final `packages.config` file in the Assets folder will automatically generate the following dependencies:
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<packages>
-  <package id="K4os.Compression.LZ4" version="1.3.8" manuallyInstalled="true" />
-  <package id="System.Collections.Immutable" version="7.0.0" />
-  <package id="System.Runtime.CompilerServices.Unsafe" version="6.0.0" />
-  <package id="protobuf-net" version="3.2.30" manuallyInstalled="true" />
-  <package id="protobuf-net.Core" version="3.2.30" />
-</packages>
-```
-:::
-
 ### Adding SDK Dependencies
 
 The SDK supports integration through **Unity Package Manager** and local file imports. Developers can choose one of these methods based on their needs, with remote dependencies being recommended.
