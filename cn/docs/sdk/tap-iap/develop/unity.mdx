@@ -38,12 +38,14 @@ Unity 2020.3.15 之前的版本为了避免后面构建报错建议升级 Gradle
 
 
 <UnitySDKInstallation
-systemNpmDeps={"\"com\.unity\.purchasing\":\"3\.1\.0\", //TapTap IAP 所须依赖\n\"com\.taptap\.sdk\.core\":\"4\.5\.1-beta\.2\",\n\"com\.taptap\.sdk\.iap\":\"4\.5\.1-beta\.2\""}
+systemNpmDeps={"\"com\.unity\.purchasing\":\"3\.1\.0\", //TapTap IAP 所须依赖"}
 npmDeps={[
+"com.taptap.sdk.core",
+"com.taptap.sdk.iap",
 ]}
 githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.tapIAP.unity}`},
-{package: "com.taptap.sdk.iap", url: `https://github.com/taptap/TapSDKLIAP-Unity.git#${v4SDKVersions.tapIAP.unity}`}
+{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.sdk.iap", url: `https://github.com/taptap/TapSDKLIAP-Unity.git#${v4SDKVersions.taptap.unity}`}
 ]}
 unitypackageModules={[
 {name: "TapTapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
