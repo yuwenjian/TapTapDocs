@@ -46,6 +46,12 @@ iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
 
 </>
 
+<>
+
+iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
+
+</>
+
 </MultiLang>
 
 ## 权限说明
@@ -174,6 +180,43 @@ allprojects {
     implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
 }`
 }</CodeBlock>
+
+</>
+
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+##### 远程依赖
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapCoreSDK', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+
+##### 本地文件依赖
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `tapsdkcorecpp.xcframework` 基础库
+- `TapTapBasicToolsSDK.xcframework` 基础库
+- `TapTapCoreSDK.xcframework` 核心库
+- `TapTapGidSDK.xcframework` 基础库
+- `TapTapNetworkSDK.xcframework` 基础库
+- `THEMISLite.xcframework` 基础库
+
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
+3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+#### 配置编译选项
+
+- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 和 `-Wl -ld_classic`。
+
+- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
+
+- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
 
 </>
 
@@ -380,6 +423,30 @@ TapTapSDK.initWith(options)
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapSDK.h"
+
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+// TODO: 应用信息配置
+
+// 数据分析相关属性配置
+options.channel = @"channel name"; // 分包渠道名称
+options.gameVersion = @"gameVersion"; // 游戏版本（默认会读取主包 info.plist 中的版本号）
+options.caid = @"caid"; // 国内 iOS CAID
+options.overrideBuiltInParameters = YES; //  自定义字段是否能覆盖内置字段,默认 false
+options.enableAdvertiserIDCollection = NO; // 是否可以获取 IDFA，默认值为 false
+options.enableAutoIAPEvent = NO; // 是否自动上报苹果内购支付成功事件
+// 自定义属性配置
+NSDictionary  *properties = @{@"custom_key": @"value"};
+options.properties = properties; // 自定义属性，启动首个预置事件（device_login）会携带该属性
+
+// 初始化 SDK
+[TapTapSDK initWithOptions:options];
+```
+</>
+
 </MultiLang>
 
 ## 设置账号
@@ -460,6 +527,21 @@ TapTapEvent.setUserID(userId, properties: properties)
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 设置用户 ID
+[TapTapEvent setUserID:@"userId"];
+
+// 设置用户 ID 及账号登录事件属性
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @(10) forKey:@"currentPoints"];
+[TapTapEvent setUserID:@"userId" properties:properties];
+```
+</>
+
 </MultiLang>
 
 ### 清除账号 ID
@@ -506,6 +588,15 @@ import TapTapCoreSDK
 TapTapEvent.clearUser()
 ```
 
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+[TapTapEvent clearUser];
+```
 </>
 
 </MultiLang>
@@ -616,6 +707,30 @@ TapTapEvent.logPurchasedEvent(orderId, productName:"商品名", amount: 100, cur
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 定义充值事件属性
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @(1) forKey:@"on_sell"];
+
+// 上报充值事件
+[TapTapEvent logPurchasedEvent:@"orderId" productName:@"product" amount:100 currencyType:@"CNY" paymentMethod:@"支付宝" properties:properties];
+```
+
+ 参数           | 可为空 | 说明                                           
+--------------|-----|----------------------------------------------
+ orderId      | 否   | 订单 ID                                        
+ product      | 是   | 产品名称                                         
+ amount       | 否   | 充值金额（单位分，即无论什么币种，都需要乘以 100）                  
+ currencyType | 是   | 货币类型，遵循 ISO 4217 标准。参考：人民币 CNY，美元 USD；欧元 EUR 
+ payment      | 是   | 支付方式，如：支付宝                                   
+ properties   | 是   | 充值（ `charge` ）的事件属性                          
+
+</>
+
 </MultiLang>
 
 
@@ -691,6 +806,26 @@ properties["#weapon"] = "axe"
 properties["#level"] = 10
 // 发送自定义事件
 TapTapEvent.logEvent(eventName, properties: properties)
+```
+
+ 参数         | 可为空 | 说明    
+------------|-----|-------
+ eventName  | 否   | 事件的名称 
+ properties | 是   | 事件的属性 
+
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 定义事件属性
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @"axe" forKey:@"#weapon"];
+[properties setObject:@(10) forKey:@"#level"];
+// 发送自定义事件
+[TapTapEvent logEvent:@"event_name" properties:properties];
 ```
 
  参数         | 可为空 | 说明    
@@ -795,14 +930,16 @@ TapTapEvent.addCommon(staticProperties)
 
 <>
 
-```cpp
-TapUEDB::RegisterStaticProperties(Properties);
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 定义通用事件属性
+NSMutableDictionary *staticProperties = [[NSMutableDictionary alloc] init];
+// 当设置属性 "#current_channel" 为 "TapDB" 时, 后续事件上报都会在事件属性中添加了 "#current_channel"字段
+[staticProperties setObject: @"TapDB" forKey:@"#current_channel"];
+// 设置通用事件属性
+[TapTapEvent addCommon:staticProperties];
 ```
-
- 字段               | 可为空 | 说明         
-------------------|-----|------------
- staticProperties | 否   | 静态通用事件属性字典 
-
 </>
 
 </MultiLang>
@@ -872,6 +1009,23 @@ TapTapEvent.clearCommonProperties(propertyNames)
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 定义需要删除的通用事件属性名称
+NSArray *propertyNames = @[@"propertyName1", @"propertyName2"];
+// 从通用事件属性中移除
+[TapTapEvent clearCommonProperties:propertyNames];
+```
+
+ 参数            | 可为空 | 说明         
+---------------|-----|------------
+ propertyNames | 否   | 静态通用属性名称数组 
+
+</>
+
 </MultiLang>
 
 #### 清空全部静态通用属性
@@ -918,6 +1072,16 @@ TapTapEvent.clearAllCommonProperties()
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+[TapTapEvent clearAllCommonProperties];
+
+```
+
+</>
 
 </MultiLang>
 
@@ -999,13 +1163,17 @@ TapTapEvent.registerDynamicProperties {
 
 </>
 
-```cpp
-TapUEDB::RegisterDynamicProperties(PropertiesBlock);
-```
+<>
 
- 参数                | 可为空 | 说明           
--------------------|-----|--------------
- dynamicProperties | 否   | 动态通用事件属性计算回调 
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 后续上报的事件都将携带 #currentLevel 属性，值为变量 level 在事件上报时刻的值
+[TapTapEvent registerDynamicProperties:^NSDictionary * _Nonnull{
+    return @{@"currentLevel": level};
+}];
+```
+</>
 
 </MultiLang>
 
@@ -1092,6 +1260,25 @@ TapTapEvent.deviceInitialize(properties)
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @"server1" forKey:@"firstActiveServer"];
+// 该方法执行后设备表的 "#firstActiveServer" 字段值为 "server1"
+[TapTapEvent deviceInitialize:properties];
+// 多次设置同一属性时，后续执行不会生效，例如如下调用不会更新 "firstActiveServer" 的值
+//[TapTapEvent deviceInitialize:@{@"firstActiveServer":@"server2"}];
+```
+
+ 参数         | 可为空 | 说明   
+------------|-----|------
+ properties | 否   | 属性字典 
+
+</>
+
 </MultiLang>
 
 #### 设备属性更新
@@ -1159,6 +1346,26 @@ TapTapEvent.deviceUpdate(properties)
 // 多次执行时会更新属性，例如执行以下方法时，此时设备表的 "currentPoints" 字段值为 42
 // TapTapEvent.deviceUpdate(["currentPoints":42])
 
+```
+
+ 参数         | 可为空 | 说明   
+------------|-----|------
+ properties | 否   | 属性字典 
+
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 定义要更新的属性
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @(10) forKey:@"currentPoints"];
+// 该方法执行后，此时设备表的 "currentPoints" 字段值为 10
+[TapTapEvent deviceUpdate:properties];
+// 多次执行时会更新属性，例如执行以下方法时，此时设备表的 "currentPoints" 字段值为 42
+[TapTapEvent deviceUpdate:@{@"currentPoints":@(42)}];
 ```
 
  参数         | 可为空 | 说明   
@@ -1242,6 +1449,26 @@ TapTapEvent.deviceAdd(["totalPoints":-2])
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// 定义要累加的属性
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @(10) forKey:@"totalPoints"];
+// 执行该方法后，此时设备表的 "totalPoints" 字段值为 10
+[TapTapEvent deviceAdd:properties];
+// 执行该方法后，此时设备表的 "totalPoints" 字段值为 8
+[TapTapEvent deviceAdd:@{@"currentPoints":@(-2)}];
+```
+
+ 参数         | 可为空 | 说明                 
+------------|-----|--------------------
+ properties | 否   | 属性字典，value 仅支持数字类型 
+
+</>
+
 </MultiLang>
 
 上述代码示例中，属性值为整数。
@@ -1307,6 +1534,17 @@ TapTapEvent.userInitialize(properties)
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
+[properties setObject: @"server1" forKey:@"firstActiveServer"];
+[TapTapEvent userInitialize:properties];
+```
+</>
+
 </MultiLang>
 
 #### 账号属性更新
@@ -1365,6 +1603,16 @@ TapTapEvent.userUpdate(["firstActiveServer":"server2"])
 
 </>
 
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+[TapTapEvent userUpdate:@{@"firstActiveServer":@"server2"}];
+
+```
+</>
+
 </MultiLang>
 
 #### 账号属性累加
@@ -1420,6 +1668,16 @@ import TapTapCoreSDK
 TapTapEvent.userAdd(["totalPoints": 10])
 ```
 
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+[TapTapEvent userAdd:@{@"totalPoints":@(10)}];
+
+```
 </>
 
 </MultiLang>
@@ -1524,6 +1782,14 @@ iOS 平台不适用
 
 </>
 
+<>
+
+```xml
+iOS 平台不适用
+```
+
+</>
+
 </MultiLang>
 
 ### IDFA（iOS）
@@ -1576,11 +1842,14 @@ iOS 平台不适用
 
 <>
 
-iOS 独占方法
+请确保 `info.plist` 中添加了权限请求描述文字，SDK 在初始化时将自动弹出权限请求窗口。
 
-```cpp
-TapUEDB::AdvertiserIDCollectionEnabled(true);
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>此标识符将用于向您推荐个性化广告（或其他描述）</string>
 ```
+
+在初始化时设置 `TapTapSdkOptions` 中的 `enableAdvertiserIDCollection` 为 `YES` 开启 IDFA 采集开关。
 
 </>
 

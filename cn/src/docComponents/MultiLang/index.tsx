@@ -140,7 +140,8 @@ const CONFIGS: {
       { label: "Unity", value: "unity" },
       { label: "Android Java", value: "android_java" },
       { label: "Android Kotlin", value: "android_kotlin" },
-      { label: "iOS", value: "ios" },
+      { label: "iOS Swift", value: "ios_swift" },
+      { label: "iOS Objc", value: "ios_objc" },
       ]
   },
 
@@ -148,7 +149,8 @@ const CONFIGS: {
     tds: [
       { label: "Android Java", value: "android_java" },
       { label: "Android Kotlin", value: "android_kotlin" },
-      { label: "iOS", value: "ios" },
+      { label: "iOS Swift", value: "ios_swift" },
+      { label: "iOS Objc", value: "ios_objc" },
     ]
   },
 

@@ -276,6 +276,109 @@ func application(_ application: UIApplication, didDiscardSceneSessions sceneSess
 
 </>
 
+<>
+
+### 添加依赖
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+#### 远程依赖
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapLoginSDK', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `pod install` 下载对应依赖文件
+
+3. 将工程 Pods 目录下 `TapTapLoginSDK/Frameworks/TapTapLoginResource.bundle`
+   等资源文件导入工程中
+
+#### 本地文件依赖
+
+TapTap 登录依赖于初始化模块，使用本地文件方式添加依赖时，需先参考 [TapSDK 集成](/sdk/access/quickstart/#本地文件依赖) 添加对应本地文件依赖项。
+
+1. 在 [下载页](/tap-download) 下载如下文件：
+
+- `TapTapLoginSDK.xcframework` 登录依赖库
+- `TapTapLoginResource.bundle` 登录资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+3. SDK 内部使用了 [`Kingfisher` 依赖库](https://cocoapods.org/pods/Kingfisher)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+### 工程配置
+
+TapTap 客户端应用跳转配置
+
+1. 打开 `info.plist`，添加如下配置（请替换 `clientID` 为你在控制台获取的 Client ID）：
+
+   ![](https://capacity-files.lcfile.com/xLmohBqQCMvHMpvxps7pReT9kI8CjSGj/tap_ios_info.png)
+
+   ```xml
+   <key>CFBundleURLTypes</key>
+   <array>
+       <dict>
+           <key>CFBundleTypeRole</key>
+           <string>Editor</string>
+           <key>CFBundleURLName</key>
+           <string>taptap</string>
+           <key>CFBundleURLSchemes</key>
+           <array>
+               <!-- 这里注意下，中括号需要去掉，最终是 Client ID 前拼接上 `tt` 的形式，例如：ttFwFdCxxxxxxxQDQwQN -->
+               <string>tt[clientID]</string>
+           </array>
+       </dict>
+   </array>
+
+   <key>LSApplicationQueriesSchemes</key>
+   <array>
+     <string>tapiosdk</string>
+     <string>tapsdk</string>
+     <string>taptap</string>
+   </array>
+   ```
+
+2. 配置 openUrl
+
+   a) 如果项目中有 `SceneDelegate.m`，请先删除，然后请添加如下代码到 `AppDelegate.m` 文件：
+
+    ```objc
+    #import "TapTapLoginSDK/TapTapLoginSDK-Swift.h"
+
+    - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+        return [TapTapLogin openWithUrl:url];
+    }
+
+    - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+        return [TapTapLogin openWithUrl:url];
+    }
+    ```
+
+   b) 删除 `info.plist` 里面的 Application Scene Manifest
+
+   ![](/img/tap_ios_appmanifest.png)
+
+   c) 删除 `AppDelegate.m` 文件中的两个管理 `Scenedelegate` 生命周期代理方法
+
+   ```objectivec
+   #pragma mark - UISceneSession lifecycle
+   - (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+
+   return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+   }
+
+   - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+   }
+   ```
+
+   d) 在 `AppDelegate.h` 中添加 `UIWindow`
+
+   ```objc
+   @property (strong, nonatomic) UIWindow *window;
+   ```
+
+</>
+
+
 </MultiLang>
 
 ## SDK 初始化
@@ -382,6 +485,24 @@ TapTapSDK.initWith(options)
 
 ```
 
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapSDK.h"
+
+// 核心配置项
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
+options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
+options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
+options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapLanguageType_Auto; // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
+
+// 初始化 SDK
+[TapTapSDK initWithOptions:options];
+```
 </>
 
 </MultiLang>
@@ -515,6 +636,33 @@ TapTapLogin.loginWithScopes(with: scopes) {[weak self] account, error, isCancel 
 }
 ```
 
+</>
+
+<>
+
+```objc
+#import "TapTapLoginSDK/TapTapLoginSDK-Swift.h"
+
+// 定义授权范围
+NSArray *scopes = @[@"public_profile"];
+
+// 发起 Tap 登录
+[TapTapLogin LoginWithScopes:scopes handler:^(BOOL isCancel, NSError * _Nullable error, TapTapAccount * _Nullable account) {
+    if (isCancel) {
+        // 登录取消
+    } else if (error != nil) {
+        NSLog(@"Tap 登录失败 ");
+    } else {
+        // 登录成功
+
+        // 登录 token
+        AccessToken *token = account.accessToken;
+
+        // 用户信息，包括 openid、unionid、用户昵称、用户头像
+        UserInfo *userInfo = account.userInfo;
+    }
+}];
+```
 </>
 
 </MultiLang>
@@ -669,6 +817,26 @@ if let account = TapTapLogin.getCurrentTapAccount() {
 ```
 </>
 
+<>
+
+```objc
+#import "TapTapLoginSDK/TapTapLoginSDK-Swift.h"
+
+TapTapAccount *account = [TapTapLogin getCurrentTapAccount];
+if (account != nil ){
+    AccessToken *token = account.accessToken;
+    UserInfo *userInfo = account.userInfo;
+    if (token != nil && userInfo != nil) {
+        // 用户已登录
+    } else {
+        // 用户未登录
+    }
+} else {
+    // 用户未登录
+}
+```
+</>
+
 </MultiLang>
 
 ## 登出
@@ -710,6 +878,15 @@ TapTapLogin.logout()
 import TapTapLoginSDK
 
 TapTapLogin.logout()
+```
+</>
+
+<>
+
+```objc
+#import "TapTapLoginSDK/TapTapLoginSDK-Swift.h"
+
+[TapTapLogin logout];
 ```
 </>
 
