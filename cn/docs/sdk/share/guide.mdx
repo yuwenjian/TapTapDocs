@@ -279,7 +279,7 @@ import com.taptap.sdk.share.TapTapShareResult;
 int resultCode = new TapTapShareBuilder()
     .addTitle("title") // 分享标题
     .addContents("content") // 分享内容
-    .addHashtagIds("hashtag ids") // HashTag 和活动 Id
+    .addHashtagIds("hashtag ids") // 话题 Id
     .addGroupLabelId("group ids") // 论坛标签 Id
     .addFooterImageUrls(new ArrayList<Uri>(uri1, uri2)) // 分享的图片
     .build()
@@ -303,7 +303,7 @@ import com.taptap.sdk.share.TapTapShareResult
 val resultCode: Int = TapTapShareBuilder()
     .addTitle(title) // 分享标题
     .addContents(content) // 分享内容
-    .addHashtagIds(hashtag) // HashTag 和活动 Id
+    .addHashtagIds(hashtag) // 话题 Id
     .addGroupLabelId(group) // 论坛标签 Id
     .addFailUrl("fail url") // 未安装 TapTap 应用时跳转链接
     .addFooterImageUrls(picList) // 分享的图片
@@ -333,8 +333,8 @@ let obj = TapTapShareObj(
     title: "title", // 分享标题
     contents: "content", // 分享内容
     groupLabelId: "groupid", // 论坛标签 ID
-    hashtagIds: "ids", // HashTag 和 活动ID
-    footerImages: images, // 可选，最多支持9个，总大小未见苹果说明限制，但应尽量保持小
+    hashtagIds: "ids", // 话题 ID
+    footerImages: images, // 可选，最多支持 9 个，总大小未见苹果说明限制，但应尽量保持小
     failUrl: "https://***", // 未安装 TapTap 应用时跳转链接
     backUrl: "gameUrl" // 返回游戏时的 URLScheme
 )
