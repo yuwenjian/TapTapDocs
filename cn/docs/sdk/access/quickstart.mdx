@@ -48,6 +48,15 @@ import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
 
 </MultiLang>
 
+### 编译工具链
+
+#### Unity&Android
+
+Unity&Android 一般通过 Gradle&AGP 进行构建，所以对于 Unity&Android 项目，需要确保 Gradle 和 AGP 的版本兼容，TapSDK 对 Gradle 和 AGP 的版本要求如下：
+
+最低版本要求：
+- GRADLE_VERSION: 6.1.1+
+- AGP_VERSION: 4.0.1+
 
 ## 项目配置
 
@@ -473,4 +482,15 @@ TapSDK 初始化框架的实现依赖了 [auto-service](https://github.com/googl
 正确的合并，如图：
 ![](/img/正确的合并.png)
 
+## 常见的编译报错
+
+### megeJavaResource task 错误
+
+如图：
+
+![](https://img.tapimg.com/market/images/e3e2f145c22488461e391b6ed397a546.jpg)
+
+这类编译错误通常是由于开发者使用的 AGP（com.android.tools.build:gradle:${agp_version}）版本过低，无法正确处理 Kotlin Multiplatform 构建生成的 AAR 中特有的文件。
+解决方案：
+将 Gradle 升级到 6.1.1 或更高版本，同时将 AGP 升级到 4.0.1 或更高版本。
 
