@@ -63,7 +63,7 @@ import MultiLang from '/src/docComponents/MultiLang';
 
 如果出现重复认证，可以按照以下思路排查：
 
-* 首先确认游戏使用的 [玩家唯一标识 userIdentifier](#玩家唯一标识-useridentifier-参数说明) 符合要求。如果同一个玩家用的 userIdentifier 会发生改变，在防沉迷服务中会被视为不同用户，导致重复认证。这个时候需要游戏传入合适的 userIdentifier，建议使用 [单纯 TapTap 用户认证](/sdk/taptap-login/guide/)，传入 `openid` 或 `unionid` 作为玩家唯一标识。
+* 首先确认游戏使用的 [玩家唯一标识 userIdentifier](#玩家唯一标识-useridentifier-参数说明) 符合要求。如果同一个玩家用的 userIdentifier 会发生改变，在防沉迷服务中会被视为不同用户，导致重复认证。这个时候需要游戏传入合适的 userIdentifier，建议使用 [单纯 TapTap 用户认证](/sdk/taptap-login/guide/)，传入 `openId` 或 `unionId` 作为玩家唯一标识。
 * 如果是**有版号游戏**，请确认在 开发者中心后台游戏服务 > 开发与构建 > 合规认证 处填写的参数无误。如果参数有问题，请求中宣部接口会失败，导致重复认证。除此之外，还需要确定应用在中宣部是否审核通过、接口测试是否完成。请按照如下步骤进行排查：
 	* **IP 白名单地址**全部填入中宣部系统后台。
 	* **游戏备案识别码、应用标识**和中宣部后台保持一致。
