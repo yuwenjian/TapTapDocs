@@ -136,7 +136,7 @@ dependencies {
 
 </MultiLang>
 
-### 权限申请
+### 权限申请 & 清单声明配置
 
 <MultiLang kind="adn">
 
@@ -182,6 +182,16 @@ dependencies {
     <!-- 允许应用请求安装软件包 -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <!-- TapAd 可选择权限-结束   -->
+
+    <provider
+        android:authorities="${applicationId}.com.tds.ad.fileprovider"
+        android:name="com.tapsdk.tapad.internal.TapADFileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/tapad_ad_file_path"/>
+    </provider>
     // highlight-end
     ...
 ```
@@ -209,6 +219,16 @@ dependencies {
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 <!-- 加上下列权限可以提高广告的转化率 -->
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+<provider
+    android:authorities="${applicationId}.com.tds.ad.fileprovider"
+    android:name="com.tapsdk.tapad.internal.TapADFileProvider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/tapad_ad_file_path"/>
+</provider>
 ```
 
 </>
