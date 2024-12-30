@@ -1,0 +1,377 @@
+---
+title: 接口公共说明
+sidebar_label: 接口公共说明
+sidebar_position: 3
+---
+
+
+## S2S 接口地址
+- TapTap -> 厂商，由厂商提供接口地址，由厂商提供接口地址，可前往 `开发者中心 > 你的游戏 > 游戏服务 > 应用配置 > 直达礼包 > 直达礼包发送的接口地址` 进行配置。
+- 厂商 -> TapTap，https://cloud.tapapis.cn
+
+## 公共参数
+HTTP Request Method
+- GET
+- POST
+
+HTTP Request Content-type
+- application/json
+
+HTTP Request Parameters
+<div style={{overflowX: "auto"}}>
+  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+    <thead>
+      <tr>
+        <th style={{width: "150px"}}>字段名</th>
+        <th style={{width: "150px"}}>描述</th>
+        <th style={{width: "150px"}}>类型</th>
+        <th style={{width: "150px"}}>示例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>client_id</td>
+        <td>TapTap 开放平台 ID</td>
+        <td>string</td>
+        <td>s7ui6smunrk7tmt4m6</td>
+      </tr>
+      <tr>
+        <td>app_id</td>
+        <td>app_id：游戏在 TapTap 商店的唯一身份标识。 例如：https://www.taptap.cn/app/187168，其中 187168 是 app_id。</td>
+        <td>uint64</td>
+        <td>58881</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+ 
+HTTP Headers
+
+<div style={{overflowX: "auto"}}>
+  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+    <thead>
+      <tr>
+        <th style={{width: "150px"}}>字段名</th>
+        <th style={{width: "150px"}}>描述</th>
+        <th style={{width: "150px"}}>类型</th>
+        <th style={{width: "150px"}}>示例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>x-tap-ts</td>
+        <td>请求时间，秒级时间戳</td>
+        <td>uint64</td>
+        <td>1692347090</td>
+      </tr>
+      <tr>
+        <td>x-tap-nonce</td>
+        <td>8 位随机字符串</td>
+        <td>string</td>
+        <td>q1w2e3r4</td>
+      </tr>
+      <tr>
+        <td>x-tap-sign</td>
+        <td>签算结果，不参与签算过程</td>
+        <td>string</td>
+        <td>TZ76PQthw6mjaEPMbdyFjHyXvH7yAr2+IahMgX9ue8M=</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## 签名方法
+### 构造待签名的请求内容 ` SignParts `
+```json
+{method}\n
+{url_path_and_query}\n
+{headers}\n
+{body}\n
+```
+参数说明如下
+<div style={{overflowX: "auto"}}>
+  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+    <thead>
+      <tr>
+        <th style={{width: "200px"}}>字段名</th>
+        <th style={{width: "200px"}}>描述</th>
+        <th style={{width: "200px"}}>示例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>method</td>
+        <td>HTTP 方法，如 <code>GET</code> /  <code>POST</code> (须为全部大写)</td>
+        <td><code>GET</code></td>
+      </tr>
+      <tr>
+        <td>url_path_and_query</td>
+        <td>完整请求路径及 QueryString</td>
+        <td>/apk/v1/upload-params?app_id=58881&file_name=xxx.apk&client_id=rfciqabirt4vqav7io
+        </td>
+      </tr>
+      <tr>
+        <td>headers</td>
+        <td>所有以 <code> x-tap-</code> 为前缀的请求头（<code>x-tap-sign</code> 除外），将其 header keys 转小写并按 ANSII 排序后，key 和 value 以 <code>:</code> 分隔，各个 header 以换行符 <code>\n</code> 分隔，拼接成字符串
+        </td>
+        <td>x-tap-nonce:q1w2e3r4\nx-tap-ts:1692347090
+        </td>
+      </tr>
+      <tr>
+        <td>body</td>
+        <td>完整请求体</td>
+        <td><code>{'{"key":"value"}'}</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### 计算签名
+
+```python
+Signature = Base64Encode(HMAC-SHA256(Server Secret, SignParts))
+```
+
+- ` HMAC-SHA256 ` 方法的第一个参数是 key，第二个参数是待签名字符串
+- ` Server Secret ` 为开放平台的服务端密钥，在 TapTap 开发者中心开通游戏服务后即可获取。
+- ` SignParts ` 为第一步计算所得字符串
+
+```go
+package tapsign
+
+import (
+  "crypto/hmac" 
+  "crypto/sha256" 
+  "encoding/base64" 
+  "errors" 
+  "fmt" 
+  "io" 
+  "net/http" 
+  "sort" 
+  "strings" 
+) 
+
+func Sign(req *http.Request, secret string) (string, error) { 
+  // 获取 request method 
+  methodPart := req.Method 
+
+  // 获取完整 request 
+  url + query urlPathAndQueryPart := req.URL.RequestURI() 
+
+  // 获取 request headers 
+  headersPart, err := getHeadersPart(req.Header)
+  if err != nil {
+    return "", err 
+  } 
+
+  // 获取 request body 
+  bodyPart, err := io.ReadAll(req.Body) 
+  if err != nil { 
+    return "", err 
+  } 
+
+  // 计算签名
+  signParts := methodPart + "\n" + urlPathAndQueryPart + "\n" + headersPart + "\n" + string(bodyPart) + "\n" 
+  fmt.Println(signParts) 
+  h := hmac.New(sha256.New, []byte(secret)) 
+  h.Write([]byte(signParts))
+  rawSign := h.Sum(nil) 
+
+  sign := base64.StdEncoding.EncodeToString(rawSign) 
+
+  return sign, nil 
+} 
+
+func getHeadersPart(header http.Header) (string, error) {
+  var headerKeys []string 
+
+  for k, v := range header { 
+    k = strings.ToLower(k)
+    if !strings.HasPrefix(k, "x-tap-") { 
+      continue 
+    }
+
+    if k == "x-tap-sign" { 
+      continue 
+    } 
+
+    if len(v) > 1 {
+      return "", errors.New(fmt.Sprintf("invalid header, %q has multiple values", k)) 
+    } 
+
+    headerKeys = append(headerKeys, k)
+  }
+  sort.Strings(headerKeys)
+  headers := make([]string, 0, len(headerKeys)) 
+  for _, k := range headerKeys {
+    headers = append(headers, fmt.Sprintf("%s:%s", k, header.Get(k))) 
+  } 
+
+  return strings.Join(headers, "\n"), nil 
+}
+```
+
+## 验签方法
+通过上述签算方法获取签名后和 Request header 中 `x-tap-sign` 对比，一致则验签通过。
+## Response 通用结构
+```json
+{ 
+  "code": 0, 
+  "msg": "OK", 
+  "data": { 
+    // response data 
+  } 
+}
+```
+<div style={{overflowX: "auto"}}>
+  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+    <thead>
+      <tr>
+        <th style={{width: "200px"}}>字段名</th>
+        <th style={{width: "200px"}}>类型</th>
+        <th style={{width: "200px"}}>描述</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>code</td>
+        <td>uint64</td>
+        <td>
+        <p>业务返回状态码</p>
+        <p>0 表示请求成功，非 0 表示请求异常，参见错误码表</p>
+        </td>
+      </tr>
+      <tr>
+        <td>msg</td>
+        <td>string</td>
+        <td>
+        <p>业务返回状态描述</p>
+        <p>"OK" 表示请求成功，其他表示请求异常，错误信息见字段内容</p>
+      </td>
+      </tr>
+      <tr>
+        <td>data</td>
+        <td>object</td>
+        <td>成功时返回业务数据，失败时不读取</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## 错误码表
+<div style={{overflowX: "auto"}}>
+  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+    <thead>
+      <tr>
+        <th style={{width: "200px"}}>自定义状态码</th>
+        <th style={{width: "200px"}}>含义</th>
+        <th style={{width: "200px"}}>复现场景</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>100001</td>
+        <td>输入有误</td>
+        <td>发起请求的参数错误或者缺失部分必要参数</td>
+      </tr>
+      <tr>
+        <td>100004</td>
+        <td>验证码输入错误，请重试</td>
+        <td>校验图形验证码错误</td>
+      </tr>
+      <tr>
+        <td>100005</td>
+        <td>参数错误</td>
+        <td>提交的 <code>ClientId</code> 或者 <code>app_id</code> 错误</td>
+      </tr>
+      <tr>
+        <td>100006</td>
+        <td>礼包码次数已达上限</td>
+        <td>通兑码可领取次数达到上限（正常情况）</td>
+      </tr>
+      <tr>
+        <td>100025</td>
+        <td>礼包码已经兑换过了</td>
+        <td>唯一码已经被兑换过了</td>
+      </tr>
+      <tr>
+        <td>100008</td>
+        <td>礼包码已经过期了</td>
+        <td>礼包活动已过期</td>
+      </tr>
+      <tr>
+        <td>100009</td>
+        <td>礼包活动暂未开放</td>
+        <td>礼包活动暂停兑换，还没到活动开始时间</td>
+      </tr>
+      <tr>
+        <td>100010</td>
+        <td>超出服务使用范围</td>
+        <td>提交的 <code>app_id</code> 错误，不在礼包设置的范围</td>
+      </tr>
+      <tr>
+        <td>100011</td>
+        <td>点击过快，请稍候再试</td>
+        <td>唯一码连续提交</td>
+      </tr>
+      <tr>
+        <td>100012</td>
+        <td>礼包码次数已达上限，请稍候再试</td>
+        <td>通兑码库存不足（并发兑换时可能触发）</td>
+      </tr>
+      <tr>
+        <td>100013</td>
+        <td>校验 cdkey 未通过</td>
+        <td>二次校验游戏方返回了不通过结果</td>
+      </tr>
+      <tr>
+        <td>100014</td>
+        <td>操作的人太多了，服务器正在拼命处理中</td>
+        <td>兑换系统已达流量极限</td></tr>
+      <tr>
+        <td>100015</td>
+        <td>发送道具失败</td><td>发送道具游戏方返回了失败结果</td>
+      </tr>
+      <tr>
+        <td>100016</td>
+        <td>该礼包码无效</td>
+        <td>异常兑换码的提交</td>
+      </tr>
+      <tr>
+        <td>100017</td>
+        <td>礼包码次数已达上限</td>
+        <td>相同用户使用礼包中超过礼包设置的兑换数量</td>
+      </tr>
+      <tr>
+        <td>100018</td>
+        <td>该活动无法使用此兑换接口</td>
+        <td>礼包无服务器设置错误</td>
+      </tr>
+      <tr>
+        <td>100022</td>
+        <td>该国家地区不支持此兑换码</td>
+        <td>非此 <code>ClientId</code> 的唯一兑换码</td>
+      </tr>
+      <tr>
+        <td>100023</td>
+        <td>找不到服务器列表</td>
+        <td>该用户在服务器下没有任何角色</td>
+      </tr>
+      <tr>
+        <td>100024</td>
+        <td>找不到角色列表</td>
+        <td>没有对应的角色</td>
+      </tr>
+      <tr>
+        <td>500001</td>
+        <td>服务器故障</td>
+        <td>礼包系统出现通用性错误</td>
+      </tr>
+      <tr>
+        <td>500002</td>
+        <td>外部接口校验错误</td>
+        <td>与游戏方接口通讯发生了异常</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
