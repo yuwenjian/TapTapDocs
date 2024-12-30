@@ -1,0 +1,246 @@
+---
+title: 直达礼包接口文档（厂商侧实现）
+sidebar_label: 直达礼包接口文档（厂商侧实现）
+sidebar_position: 2
+---
+
+import {Red, Blue, Black, Gray} from '/src/docComponents/doc';
+
+
+## 直发礼包获取游戏区服列表
+
+该接口用于获取指定区服（如果有区服概念）的游戏角色数据。如果游戏支持多个区服，则需要传入 ` server_id ` 来指定查询的区服；如果游戏没有区服概念，则无需传入 ` server_id ` 参数。
+
+:::info 注意
+- **URL**：` /direct-gift/v1/get-server-list `
+- **Method**：` GET `
+- **需要鉴权**：是
+
+:::
+
+
+### 请求参数
+
+:::info 注意
+公共参数见 [接口公共说明](/sdk/sendtogame-gift/port-guide/)  文档
+:::
+
+
+<div style={{overflowX: "auto"}}>
+   <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+      <thead>
+      <tr>
+         <th style={{width: "120px"}}>参数名</th>
+         <th style={{width: "120px"}}>类型</th>
+         <th style={{width: "120px"}}>必须</th>
+         <th style={{width: "240px"}}>描述</th>
+      </tr>
+      </thead>
+   <tbody>
+      <tr>
+         <td>from</td>
+         <td>int</td>
+         <td>是</td>
+         <td>用于指定查询开始的起点（即从第几条记录开始）。例如 <code>from=20</code> 表示跳过前 20 条记录，从第 21 条记录开始返回。</td>
+      </tr>
+      <tr>
+         <td>limit</td>
+         <td>int</td>
+         <td>是</td>
+         <td>翻页参数，每页的数量</td>
+      </tr>
+      <tr>
+         <td>open_id</td>
+         <td>string</td>
+         <td>否</td>
+         <td>TapTap OpenID</td>
+      </tr>
+      <tr>
+         <td>union_id</td>
+         <td>string</td>
+         <td>否</td>
+         <td>TapTap UnionID</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+### 成功响应
+
+:::info 注意
+**条件**：请求参数合法，并且验签通过。
+**状态码**：` 200 OK `
+**响应示例**：返回游戏列表信息
+:::
+
+```json
+{
+   "code": 0,
+   "msg": "OK",
+   "data" : {
+     "servers": [
+       {
+         "server_id": "string", // 游戏服 ID
+         "server_name": "string" // 游戏服名称 
+       } 
+       ], 
+   "total": 0 
+   } 
+}
+```
+
+### 错误响应
+
+```json
+{
+   "code": 50001, 
+   "msg": "some errors" 
+}
+```
+
+## 直发礼包获取游戏该区服下角色列表
+
+该接口用于获取指定区服（如果有区服概念）的游戏角色数据。如果游戏支持多个区服，则需要传入 ` server_id ` 来指定查询的区服；如果游戏没有区服概念，则无需传入 ` server_id ` 参数。
+
+:::info 注意
+- **URL**：` /direct-gift/v1/get-role-list `
+- **Method**：` GET `
+- **需要鉴权**：是
+:::
+
+
+### 请求参数
+:::info 注意
+公共参数见 [接口公共说明](/sdk/sendtogame-gift/port-guide/)  文档
+:::
+
+<div style={{overflowX: "auto"}}>
+   <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
+      <thead>
+         <tr>
+            <th style={{width: "120px"}}>参数名</th>
+            <th style={{width: "120px"}}>类型</th>
+            <th style={{width: "120px"}}>必须</th>
+            <th style={{width: "240px"}}>描述</th>
+         </tr>
+   </thead>
+   <tbody>
+      <tr>
+         <td>server_id</td>
+         <td>string</td>
+         <td>否</td>
+         <td>用户选择的区服 ID</td>
+      </tr>
+      <tr>
+         <td>open_id</td>
+         <td>string</td>
+         <td>是</td>
+         <td>TapTap OpenID</td>
+      </tr>
+      <tr>
+         <td>union_id</td>
+         <td>string</td>
+         <td>是</td>
+         <td>TapTap UnionId</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+### 请求示例
+```python
+/direct-gift/v1/get-role-list?server_id=1&open_id=aaaaaaaaa&union_id=aaaaaaaaaa
+```
+
+### 成功响应
+
+:::info 注意
+- **条件**：请求参数合法，并且验签通过。
+- **状态码**：` 200 OK `
+- **响应示例**：返回用户在该服务下的角色列表
+:::
+
+```json
+{ 
+   "code": 0, 
+   "msg": "OK", 
+   "data": { 
+      "roles": [ 
+         { 
+            "id": "string", // 角色 ID 
+            "name": "string", // 角色名称 
+         }
+      ]
+   } 
+}
+```
+
+### 错误响应
+
+```json
+{
+   "code": 50002, 
+   "msg": "some errors",
+}
+```
+
+## 直发礼包发送接口
+
+TapTap 侧已登录的用户通过此接口获得直发礼包。
+
+:::info 注意
+- **URL**：` /direct-gift/v1/send-gift-package `
+- **Method**：` POST `
+- **需要鉴权**：是
+:::
+
+
+### 请求参数
+:::info 注意
+无额外 query parameters，公共参数见[接口公共说明](/sdk/sendtogame-gift/port-guide/) 文档
+<Red>需要保证幂等 </Red>
+
+:::
+
+
+### 请求示例
+```json
+{ 
+   "open_id": "aaaaaaaaaaaaaaa", 
+   "union_id": "aaaaaaaaaaaaaaa", 
+   "server": "1", 
+   "role_id": "aaaaaaaaa", 
+   "gift_code": "123456" 
+}
+```
+
+
+### 成功响应
+:::info 注意
+- **条件**：请求参数合法，并且验签通过。
+- **状态码**：` 200 OK `
+- **响应示例**：发送直发礼包结果
+:::
+
+```json
+{
+   "code": 0, 
+   "msg": "OK",
+}
+```
+
+### 错误响应
+
+```json
+{
+   "code": 50003, 
+   "msg": "invalid gift_code",
+}
+```
+
+
+## 直发礼包错误码表
+详见 [接口公共说明 - 错误码表](/sdk/sendtogame-gift/port-guide/) 

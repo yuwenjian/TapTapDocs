@@ -1,0 +1,88 @@
+---
+title: 直达礼包服务功能介绍
+sidebar_label: 功能介绍
+sidebar_position: 1
+---
+
+
+## 功能说明
+直达礼包为用户提供方便快捷的礼包领取体验，降低厂商礼包被刷风险。
+
+## 直达礼包
+
+### 场景介绍
+
+用户在 TapTap 客户端（展示位置包括游戏详情页/签到页面/礼包专区等）完成领取动作后，游戏厂商在游戏内直接为该用户帐号的指定区服/角色发放礼包内容，不需要用户先领取礼包串码再复制使用。直达礼包应用场景如下图所示。
+
+<img src="https://img.tapimg.com/market/images/84830519f25280fe08d75bb181366699.png" alt="" />
+
+
+### 限制说明
+
+- 目前仅支持接入开启了 TapTap 开发者应用配置的联网游戏。[开发者中心配置](/sdk/access/get-ready/)
+- 目前仅支持接入 TapTap 登录的游戏应用
+- 在 TapTap 开发者中心配置的该功能服务地址需为备案过的域名且支持 HTTPS，当开发者的服务域名变更时，请务必提前自行变更。
+
+:::info 注意
+- 如果您的游戏正在进行站内活动，您将无法开启/关闭直达礼包的功能。站内活动包括论坛抽奖/签到/详情页礼包/H5抽奖等其他站内H5活动；
+- 直达礼包功能开启后，您可以随时在开发者服务后台修改直达礼包配置。通过后台的功能自测后，您更新的配置将发布上线。
+:::
+
+
+### 业务流程
+
+直达礼包流程如下图所示。
+
+<img src="https://img.tapimg.com/market/images/add4075eb6dd41e5f638a2a47131adbf.png" alt="" />
+
+
+## 业务步骤
+
+### 准备工作
+
+1.在接收请求前，需要先 [开启应用配置](/sdk/access/get-ready/) ，以获取到用于请求签算的 ` Client ID ` 和 ` Server Secret `
+
+2.需要在该业务配置后台中增加调用地址配置，包含
+- 礼包发送接口地址 **(必填)**
+- 区服列表获取接口 **(选填，多区服游戏根据需要配置)**
+- 角色获取接口 **(必填)**
+
+<img src="https://img.tapimg.com/market/images/da443f6279b7e7fda012dfb7f3bf8706.png" alt="" />
+
+### 厂商侧开发工作
+
+#### 查询游戏区服列表
+
+参考 [直发礼包接口文档](/sdk/sendtogame-gift/port-info/)  和 [接口公共说明](/sdk/sendtogame-gift/port-guide/) 
+
+#### 查询玩家区服角色
+
+参考 [直发礼包接口文档](/sdk/sendtogame-gift/port-info/)  和 [接口公共说明](/sdk/sendtogame-gift/port-guide/) 
+
+#### 发送直发礼包
+
+参考 [直发礼包接口文档](/sdk/sendtogame-gift/port-info/)  和 [接口公共说明](/sdk/sendtogame-gift/port-guide/) 
+
+### 测试联调
+
+1.开发者提供服务 url 地址(获取玩家区服角色信息和发放游戏内礼包)
+
+2.开发者提供测试礼包码
+
+3.开发者可以在 TapTap 开发者中心自助验证
+
+4.调试接口服务是否正常
+
+
+### FAQ
+
+#### 签名在游戏服务器侧验证不通过，如何处理？
+
+请对以下项目进行自检：
+
+1.确保 `x-tap-sign` 没有参与验签
+
+2.检查使用的 `Server Secret` 与 TapTap 开发者中心提供的是否一致
+
+3.确保生成的签名字符串 `x-tap-sign` 进行过 UrlEncode
+
