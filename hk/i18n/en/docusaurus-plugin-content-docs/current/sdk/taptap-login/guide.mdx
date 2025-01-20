@@ -170,11 +170,11 @@ If `targetSdkVersion < 29`, the following configuration is also needed:
 
 <>
 
-### Adding Dependencies
+**Adding Dependencies**
 
 iOS provides two integration methods: adding CocoaPods remote dependencies and using local file imports. It is recommended to use the remote dependency method.
 
-#### Remote Dependencies
+Remote Dependencies
 
 1. Add dependencies under the corresponding module in the project's Podfile file:
 
@@ -184,7 +184,7 @@ iOS provides two integration methods: adding CocoaPods remote dependencies and u
 
 3. Import resource files such as `TapTapLoginSDK/Frameworks/TapTapLoginResource.bundle` from the Pods directory of the project into the project
 
-#### Local File Dependencies
+Local File Dependencies
 
 TapTap login depends on the initialization module. When adding dependencies using local files, refer to [TapSDK Integration](/sdk/access/quickstart/#local-file-dependencies) to add the corresponding local file dependencies.
 
@@ -195,7 +195,7 @@ TapTap login depends on the initialization module. When adding dependencies usin
 
 2. Add the `framework` static library to the project, ensure the Embed method is set to **Do Not Embed** when adding, and import the `bundle` resource file
 
-### Project Configuration
+**Project Configuration**
 
 TapTap client application jump configuration
 

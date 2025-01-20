@@ -180,7 +180,7 @@ allprojects {
 
 iOS provides two integration methods through adding CocoaPods remote dependencies and using local file imports. Remote dependencies are recommended.
 
-##### Remote Dependency
+**Remote Dependency**
 
 1. Add the dependency under the corresponding module in the Podfile:
 
@@ -188,7 +188,7 @@ iOS provides two integration methods through adding CocoaPods remote dependencie
 
 2. Execute `Pod install` to download the corresponding dependency files
 
-##### Local File Dependency
+**Local File Dependency**
 
 1. Download the following files from the [download page](/tap-download):
 
@@ -202,7 +202,7 @@ iOS provides two integration methods through adding CocoaPods remote dependencie
 2. Add the `framework` static library in the project, and set the Embed option to **Do Not Embed**
 3. The SDK internally uses the [`Protobuf` dependency library](https://cocoapods.org/pods/Protobuf). Developers should add the corresponding dependency in advance through remote or file import methods.
 
-#### Configure Compilation Options
+**Configure Compilation Options**
 
 - Add `-ObjC` and `-Wl -ld_classic` in Other Link Flag in Build Setting.
 
