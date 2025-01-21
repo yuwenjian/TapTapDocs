@@ -5,7 +5,7 @@ const PREVIEW = process.env.PREVIEW ?? "false";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "TapTap Developer Documentation",
-  url: process.env.APP_PUBLIC_PATH || "https://developer.taptap.cn",
+  url: process.env.APP_PUBLIC_PATH || "https://developer.taptap.io",
   baseUrl:
     PREVIEW === "true" ? "/" : process.env.APP_ROUTER_BASE_URL || "/docs/",
   onBrokenLinks: "throw",
