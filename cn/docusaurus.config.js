@@ -8,7 +8,7 @@ const config = {
     title: "TapTap 开发者文档",
     url: process.env.APP_PUBLIC_PATH || "https://developer.taptap.cn",
     baseUrl:
-        PREVIEW === "true" ? "/" : process.env.APP_ROUTER_BASE_URL || "/docs/",
+        PREVIEW === "true" ? "/" : (process.env.APP_ROUTER_BASE_URL || "/docs/"),
     onBrokenLinks: "throw",
     onBrokenMarkdownLinks: "warn",
     favicon: "img/logoh.png",

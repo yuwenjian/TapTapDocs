@@ -7,7 +7,7 @@ const config = {
   title: "TapTap Developer Documentation",
   url: process.env.APP_PUBLIC_PATH || "https://developer.taptap.io",
   baseUrl:
-    PREVIEW === "true" ? "/" : process.env.APP_ROUTER_BASE_URL || "/docs/",
+    PREVIEW === "true" ? "/" : (process.env.APP_ROUTER_BASE_URL || "/docs/"),
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/logoh.png",
