@@ -733,7 +733,7 @@ AntiAddictionUE::OnCallBack.BindUObject(this, &UAntiAddictionWidget::OnCallBack)
 <>
 
 ```cs
-// 注意唯一标识参数值长度不能超过 64 字符
+// 玩家唯一标识 `userIdentifier` 作为账号的唯一字符串，字符串长度不大于 160，只能包含数字、大小写字母、下划线（_）、短横（-）、加号（+）、正斜线（/）、等号（=）、英文句号（.）、英文逗号（,）、英文冒号（:）。
 string userIdentifier = "玩家的唯一标识";
 AntiAddictionUIKit.StartupWithTapTap(userIdentifier);
 ```
@@ -741,7 +741,7 @@ AntiAddictionUIKit.StartupWithTapTap(userIdentifier);
 <>
 
 ```java
-// 注意唯一标识参数值长度不能超过 64 字符
+// 玩家唯一标识 `userIdentifier` 作为账号的唯一字符串，字符串长度不大于 160，只能包含数字、大小写字母、下划线（_）、短横（-）、加号（+）、正斜线（/）、等号（=）、英文句号（.）、英文逗号（,）、英文冒号（:）。
 String userIdentifier = "玩家的唯一标识";
 AntiAddictionUIKit.startupWithTapTap(activity, userIdentifier);
 ```
@@ -750,7 +750,7 @@ AntiAddictionUIKit.startupWithTapTap(activity, userIdentifier);
 <>
 
 ```objc
-// 注意唯一标识参数值长度不能超过 64 字符
+// 玩家唯一标识 `userIdentifier` 作为账号的唯一字符串，字符串长度不大于 160，只能包含数字、大小写字母、下划线（_）、短横（-）、加号（+）、正斜线（/）、等号（=）、英文句号（.）、英文逗号（,）、英文冒号（:）。
 NSString *userIdentifier = @"玩家的唯一标识";
 [AntiAddiction startupWithTapTap:userIdentifier];
 ```  
@@ -759,6 +759,7 @@ NSString *userIdentifier = @"玩家的唯一标识";
 <>
 
 ```cpp
+// 玩家唯一标识 `userIdentifier` 作为账号的唯一字符串，字符串长度不大于 160，只能包含数字、大小写字母、下划线（_）、短横（-）、加号（+）、正斜线（/）、等号（=）、英文句号（.）、英文逗号（,）、英文冒号（:）。
 AntiAddictionUE::StartupWithTapTap(TEXT("your_userIdentifier"), true);
 ```
 
