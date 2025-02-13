@@ -424,21 +424,22 @@ TapTapCompliance.registerComplianceCallback(new TapTapComplianceCallback() {
 ```kotlin
 import com.taptap.sdk.compliance.TapTapCompliance
 import com.taptap.sdk.compliance.TapTapComplianceCallback
+import com.taptap.sdk.compliance.constants.ComplianceMessage
 
 TapTapCompliance.registerComplianceCallback(
     callback = object : TapTapComplianceCallback {
 
         override fun onComplianceResult(code: Int, extra: Map<String, Any>?) {
             when (code) {
-                LOGIN_SUCCESS -> {
+                ComplianceMessage.LOGIN_SUCCESS -> {
                     // 登录成功
                 }
 
-                EXITED -> {
+                ComplianceMessage.EXITED -> {
                     // 退出登录
                 }
 
-                SWITCH_ACCOUNT -> {
+                ComplianceMessage.SWITCH_ACCOUNT -> {
                     // 切换账号
                 }
             }
