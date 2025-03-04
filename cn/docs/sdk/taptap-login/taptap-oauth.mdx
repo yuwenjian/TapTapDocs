@@ -10,7 +10,8 @@ import {Conditional} from '/src/docComponents/conditional';
 
 TapTap OpenAPI 采用统一的 Mac Token 头部签算来传递用户授权信息。
 
-开发者接入 SDK [登录模块](/sdk/taptap-login/guide)，在用户授权你的应用程序后，将会生成访问令牌（Access Token）。这个访问令牌在加密后会生成 Mac Token 字符串。Access Token 长期有效，只有在用户更新其账户安全信息或解除对当前应用的授权时才会失效。开发人员应妥善管理 Access Token 在其服务器上，用作与 TapTap 服务器进行后续通讯的标识。
+
+开发者接入  SDK [登录模块](/sdk/taptap-login/guide)，用户授权应用后，将会生成一个访问令牌（Access Token）。该令牌将用于做 Mac 签算，生成 Authorization 头，用于身份验证和安全通信。单个 Access Token 的最长有效期为 30 天。SDK 在每次应用启动时，会自动刷新 Access Token，确保用户会话的持续有效性。 游戏移动端可通过 `GetCurrentTapAccount` 方法获取当前有效的 Access Token，该方法始终返回最新且有效的令牌。移动端获取的 Access Token 需上传至游戏服务器，用作与 TapTap 服务器进行后续通讯的标识。
 
 Mac Token 生成算法见文档中的 [MAC Token 算法](#mac-token-算法) 部分。
 
@@ -1245,4 +1246,41 @@ curl -s -H"Authorization:${AUTHORIZATION}" "https://${REQUEST_HOST}${REQUEST_URI
 | not_found         | 请求失败，请求所希望得到的资源未被在服务器上发现。**在参数相同的情况下，不应该重复请求** |
 | server_error      | 服务器出现异常情况 **可稍等后重新尝试请求，但需有尝试上限，建议最多 3 次，如一直失败，则中断并告知用户** |
 | insufficient_scope      | 移动端进行 TapTap 授权使用的授权范围与服务端调用的 OAuth 接口不匹配导致，例如：移动端授权采用 basic_info 权限而服务端调用 `获取当前账户基础信息` API 时则会返回该异常 |
+
+
+## 常见问题
+
+### 调用 TapTap OAuth 接口返回 `access_denied` 错误码。
+
+1、 检查签算是否正确
+
+请使用 TapTap 官方文档提供的示例脚本，验证签名计算是否正确。如果签算不正确，可能导致认证失败。
+
+2、 Access Token 过期或无效
+
+每个 Access Token 最长有效期为 30 天。SDK 在每次启动时会自动刷新 Token，确保通过 `GetCurrentTapAccount` 获取的 Token 始终有效。若玩家 30 天内未登录或不活跃，本地可能无法获取新 Token，需要用户重新登录。
+
+3、 玩家主动注销或取消授权
+
+若玩家在 TapTap 客户端内注销账号，或在授权管理中解除授权，后续的请求将返回 `access_denied` 错误。服务器应在 Token 校验失败时合理处理 `access_denied`，并引导用户重新登录。
+
+4、 最佳实践：避免缓存 Token
+
+不要对 Access Token 进行本地缓存，因为 Token 可能会随时失效。每次需要使用时，通过 `GetCurrentTapAccount` 获取最新的有效 Token，避免用户不必要的频繁登录操作。
+
+
+### 调用 TapTap OAuth 接口返回 `insufficient_scope` 错误码。
+
+`insufficient_scope` 错误通常是由于 [移动端授权的权限范围](/sdk/taptap-login/guide/#不同的授权范围) 与 [服务端调用的 OAuth API](#api) 所需权限 `不匹配` 导致的。
+
+例如：移动端在进行 TapTap 授权登录时申请的是 `basic_info` 权限，但服务端调用 [获取当前账户详细信息](#获取当前账户详细信息)  API 需要更高级别的权限，由于权限不足导致服务器返回该错误码。
+
+权限匹配规则
+
+- 移动端授权时仅申请 `basic_info` 权限，则服务端仅可调用 [获取当前账户基础信息](#获取当前账户基础信息) API。
+- 移动端授权时申请 `public_profile` 权限，则服务端可调用 [获取当前账户基础信息](#获取当前账户基础信息) API 和 [获取当前账户详细信息](#获取当前账户详细信息) API。
+
+通过合理配置 OAuth 授权范围，可有效避免 `insufficient_scope` 错误，确保 API 调用的顺畅性。
+
+
 
