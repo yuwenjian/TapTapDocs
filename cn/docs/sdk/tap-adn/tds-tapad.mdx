@@ -667,6 +667,12 @@ public interface ISplashAdInteractionListener : ICommonInteractionListener
 
     // 点击广告回调 3.16.3.30 新增
     void OnAdClick();
+    
+    // 展示广告回调 3.16.3.41 新增
+    void OnAdShow(TapSplashAd ad);
+    
+    // 有效展示广告回调 3.16.3.45 新增
+    void OnAdValidShow(TapSplashAd ad)
 }
 // 通用播放回调接口说明
 public interface ICommonInteractionListener
@@ -700,6 +706,11 @@ splashAd.setSplashInteractionListener(new TapSplashAd.AdInteractionListener() {
     @Override 
     public void onAdShow() {
         // 开屏广告曝光回调接口，3.16.3.41 新增
+    }
+
+    @Override
+    public void onAdValidShow() {
+        // 开屏广告有效曝光回调接口, 3.16.3.45 新增
     }
 });
 // 展示开屏页
@@ -926,6 +937,9 @@ public interface IRewardVideoInteractionListener : ICommonInteractionListener
 
     // 点击事件
     void OnAdClick(TapRewardVideoAd ad);
+    
+    // 当广告有效出现 3.16.3.45 新增
+    void OnAdValidShow(TapRewardVideoAd ad);
 }
 // 通用广告播放回调接口说明
 public interface ICommonInteractionListener
@@ -974,6 +988,11 @@ rewardAd.setRewardAdInteractionListener(new TapRewardVideoAd.RewardAdInteraction
     @Override
     public void onAdClick() {
         // 激励广告点击事件
+    }
+
+    @Override
+    public void onAdValidShow() {
+        // 激励广告已有效显示 3.16.3.45 新增
     }
 });
 rewardAd.showRewardVideoAd(activity);
@@ -1104,6 +1123,9 @@ public interface IBannerAdInteractionListener : ICommonInteractionListener
 
     // 当点击下载
     void OnDownloadClick(TapBannerAd ad);
+    
+    // 当广告有效曝光
+    void OnAdValidShow(TapBannerAd ad);
 }
 // 通用广告播放回调接口说明
 public interface ICommonInteractionListener
@@ -1137,6 +1159,11 @@ bannerAd.setBannerInteractionListener(new TapBannerAd.BannerInteractionListener(
     @Override
     public void onDownloadClick() {
         // 玩家点击了下载按钮
+    }
+
+    @Override
+    public void onAdValidShow() {
+        // 广告已有效曝光 3.16.3.45 新增
     }
 });
 
@@ -1396,6 +1423,9 @@ public interface AdInteractionListener {
 
     // 广告卡片单次（第一次）曝光
     void onDistinctAdShow(TapFeedAd ad);
+    
+    // 广告卡片有效曝光
+    void onAdValidShow(TapFeedAd ad);
 }
 
 // 自渲染信息流广告视频回调接口 3.16.3.28 版本开始
@@ -1495,6 +1525,12 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 // 广告曝光展示的回调
                 @Override
                 public void onAdShow(TapFeedAd ad) {
+                
+                }
+            
+                // 广告有效曝光回调
+                @Override
+                public void onAdValidShow(TapFeedAd ad) {
                 
                 }
             });
@@ -1697,6 +1733,8 @@ interface ExpressRenderListener {
     void onAdShow(TapFeedAdView adView);
     void onAdClicked(TapFeedAdView view);
     void onAdClosed(TapFeedAdView view);
+    // 3.16.3.45 新增
+    void onAdValidShow(TapFeedAdView adView);
 }
 ```
 
@@ -1754,6 +1792,11 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     @Override
                     public void onAdClosed(TapFeedAdView view) {
 
+                    }
+                    
+                    @Override
+                    public void onAdValidShow(TapFeedAdView adView) {
+                    
                     }
                 });
             
@@ -1878,6 +1921,11 @@ interstitialAd.setInteractionListener(new TapInterstitialAd.InterstitialAdIntera
     @Override
     public void onAdError() {
         Log.d(TAG,"onAdError");
+    }
+    
+    @Override
+    public void onAdValidShow() {
+        Log.d(TAG,"onAdValidShow");
     }
 });
 interstitialAd.show(activity);
