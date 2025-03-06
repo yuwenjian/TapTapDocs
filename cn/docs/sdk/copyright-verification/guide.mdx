@@ -570,6 +570,18 @@ TapTapLicense.queryDLC(activity: Activity, skuIds: List<String>)
 
 </MultiLang>
 
+#### 参数说明
+
+##### TapLicenseQueryCode
+
+| 回调                            | 回调值 | 说明                           |
+| ------------------------------- | ------ | ------------------------------ |
+| QUERY_RESULT_OK                 | 0      | 查询成功                       |
+| QUERY_RESULT_NOT_INSTALL_TAPTAP | 1      | 检查测试机未安装 TapTap 客户端 |
+| QUERY_RESULT_ERR                | 2      | 查询失败                       |
+| ERROR_CODE_UNDEFINED            | 80000  | 未知错误                       |
+
+
 #### DLC 购买
 
 <MultiLang kind="unity_android_v4">
@@ -594,14 +606,13 @@ TapTapLicense.purchaseDLC(activity: Activity, skuId: String)
 
 #### 参数说明
 
-##### TapLicenseQueryCode
+##### TapLicensePurchaseCode
 
 | 回调                            | 回调值 | 说明                           |
 | ------------------------------- | ------ | ------------------------------ |
-| QUERY_RESULT_OK                 | 0      | 查询成功                       |
-| QUERY_RESULT_NOT_INSTALL_TAPTAP | 1      | 检查测试机未安装 TapTap 客户端 |
-| QUERY_RESULT_ERR                | 2      | 查询失败                       |
-| ERROR_CODE_UNDEFINED            | 80000  | 未知错误                       |
+| DLC_NOT_PURCHASED                 | 0      | 未完成支付                       |
+| DLC_PURCHASED               | 1      | 支付成功 |
+| DLC_RETURN_ERROR                | -1      | 支付异常                     |
 
 ##### skuId
 
