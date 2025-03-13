@@ -1,0 +1,433 @@
+---
+title: TapTap好友开发指南
+sidebar_label: 开发指南
+sidebar_position: 3
+---
+
+import MultiLang from '/src/docComponents/MultiLang';
+import CodeBlock from '@theme/CodeBlock';
+
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+
+本文介绍如何在游戏中加入好友&聊天系统。
+
+## 权限说明
+
+<MultiLang kind="android_v4">
+
+<>
+
+</>
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
+| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
+| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
+| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
+| 录音权限 | 用于录制语音消息和语音通话 | 用户首次使用语音功能时会申请权限 |
+| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
+| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.VIBRATE" />
+```
+
+</>
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
+| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
+| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
+| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
+| 录音权限 | 用于录制语音消息和语音通话 | 用户首次使用语音功能时会申请权限 |
+| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
+| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.VIBRATE" />
+```
+
+</>
+
+<>
+
+</>
+
+</MultiLang>
+
+## 集成前准备
+
+参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启好友服务。
+
+## SDK 获取
+
+由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapRelation` 、 `TapTapLogin` 模块：
+
+<MultiLang kind="android_v4">
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects { 
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:4.6.0-beta.1'
+    implementation 'com.taptap.sdk:tap-achievement:4.6.0-beta.1'
+    implementation 'com.taptap.sdk:tap-login:4.6.0-beta.1'
+}`
+}</CodeBlock>
+
+</>
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects { 
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:4.6.0-beta.1'
+    implementation 'com.taptap.sdk:tap-login:4.6.0-beta.1'
+    implementation 'com.taptap.sdk:tap-relation:4.6.0-beta.1'
+}`
+}</CodeBlock>
+
+</>
+
+</MultiLang>
+
+## SDK 初始化
+
+详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
+
+<MultiLang kind="android_v4">
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```java
+import com.taptap.sdk.core.TapTapRegion;
+import com.taptap.sdk.core.TapTapSdk;
+import com.taptap.sdk.core.TapTapSdkOptions;
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+String clientId = "";
+// 开发者中心对应 Client Token
+String clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+boolean enableLog = BuildConfig.DEBUG;
+// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
+int screenOrientation = ScreenOrientation.PORTRAIT
+
+TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+        clientId, // 游戏 Client ID
+        clientToken, // 游戏 Client Token
+        screenOrientation, // 屏幕方向
+        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+);
+tapSdkOptions.setEnableLog(enableLog);
+// 初始化 TapSDK
+TapTapSdk.init(context, tapSdkOptions);
+
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapSdk
+import com.taptap.sdk.core.TapTapSdkOptions
+import com.taptap.sdk.core.TapTapLanguage
+import com.taptap.sdk.core.TapTapRegion
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+val clientId = "";
+// 开发者中心对应 Client Token
+val clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+val enableLog = BuildConfig.DEBUG;
+// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
+val screenOrientation = ScreenOrientation.PORTRAIT
+
+TapTapSdk.init(
+    context = context,
+    sdkOptions = TapTapSdkOptions(
+        clientId = clientId,
+        clientToken = clientToken,
+        region = TapTapRegion.CN,
+        screenOrientation = screenOrientation,
+        preferredLanguage = TapTapLanguage.ZH_HANS,
+        enableLog = false
+    )
+)
+```
+</>
+
+</MultiLang>
+
+## 注册监听回调
+
+好友 SDK 中包含多个监听回调，分别会在未登录/有新增粉丝/有新增消息时被调用。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.relation.TapTapRelationCallback;
+import com.taptap.sdk.relation.TapTapRelation;
+import com.taptap.sdk.relation.TapTapRelationMessengerCode;
+
+TapTapRelationCallback callback = new TapTapRelationCallback(){
+
+    @Override
+    public void onMessengerCodeResult(int code) {
+        // 处理好友聊天的状态码
+        // 未登录回返回 TapTapRelationMessengerCode.NEED_LOGIN
+    }
+    
+    @Override
+    public void onNewFansCountChanged(int code, int fansCount) {
+        // 新增粉丝数量变动
+    }
+
+@Override
+    public void onUnreadMessageCountChanged(int code, int unreadMsgCount) {
+        // 新增消息数量变动
+    }
+};
+TapTapRelation.registerRelationCallback(callback);
+TapTapRelation.unregisterRelationCallback(callback);
+
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelationCallback
+import com.taptap.sdk.relation.TapTapRelation
+import com.taptap.sdk.relation.TapTapRelationMessengerCode
+
+private val callback = object : TapTapRelationCallback {
+        override fun onMessengerCodeResult(code: Int) {
+            when (code) {
+                // 未登录
+                NEED_LOGIN -> {
+                }
+            }
+        }
+
+        override fun onNewFansCountChanged(code: Int, fansCount: Int) {
+        }
+
+        override fun onUnreadMessageCountChanged(code: Int, unreadMsgCount: Int) {
+        }
+    }
+
+TapTapRelation.registerRelationCallback(callback = callback)
+TapTapRelation.unregisterRelationCallback(callback = callback)
+```
+
+</>
+
+</MultiLang>
+
+
+## 准备阶段
+
+进入聊天之前的一些准备工作。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+TapTapRelation.prepare();
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+TapTapRelation.prepare()
+```
+
+</MultiLang>
+
+## 开始聊天
+
+打开聊天页面，根据初始化参数 screenOrientation 会有不同的动画表现。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+TapTapRelation.startMessenger();
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+TapTapRelation.startMessenger()
+```
+
+</MultiLang>
+
+## 邀请好友上线
+
+打开邀请好友页面，向选中好友发送邀请上线消息。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+TapTapRelation.inviteGame();
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+TapTapRelation.inviteGame()
+```
+
+</MultiLang>
+
+## 邀请好友组队
+
+打开邀请好友页面，向选中好友发送邀请组队消息，需要传组队相关参数teamId。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+String teamId = "";
+TapTapRelation.inviteTeam(teamId);
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+val teamId = ""
+TapTapRelation.inviteTeam(teamId = teamId)
+```
+
+</MultiLang>
+
+## 获取新增粉丝数
+
+获取当前用户新增粉丝的数量，也可在callback中处理。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+int fansCount = TapTapRelation.getNewFansCount();
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+val fansCount = TapTapRelation.getNewFansCount()
+```
+
+</MultiLang>
+
+## 获取新增消息数
+
+获取当前用户新增消息的数量，也可在callback中处理。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+int unreadMessageCount = TapTapRelation.getUnreadMessageCount();
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+val unreadMessageCount = TapTapRelation.getUnreadMessageCount()
+```
+
+</MultiLang>
+
+## 展示 TapTap 用户名片
+
+展示指定用户的名片弹窗，可用于关注/取关用户。
+
+<MultiLang kind="android_v4">
+
+```java
+import com.taptap.sdk.relation.TapTapRelation;
+// openId unionId二选一即可
+String openId = "";
+String unionId = "";
+TapTapRelation.showTapUserProfile(openId, unionId);
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelation
+// openId unionId二选一即可
+val openId = "";
+val unionId = "";
+TapTapRelation.showTapUserProfile(openId = openId, unionId = unionId)
+```
+
+</MultiLang>
+
+## 国际化
+
+TapTapRelation 支持设置语言：目前只支持简体中文
+
+[//]: # (<Languages/>)
+
+
