@@ -11,7 +11,9 @@ import {Conditional} from '/src/docComponents/conditional';
 
 TapTap OpenAPI uses a unified Mac Token header signature to transmit user authorization information.
 
-When developers integrate the SDK [login module](/sdk/taptap-login/guide), an access token (Access Token) is generated after the user authorizes your application. This access token is encrypted to generate a Mac Token string. The Access Token is valid for a long time and only becomes invalid when the user updates their account security information or revokes authorization for the current application. Developers should properly manage the Access Token on their server to serve as an identifier for subsequent communications with the TapTap server.
+When developers integrate the SDK [login module](/sdk/taptap-login/guide), an access token (Access Token) is generated after the user authorizes your application. In the event of developers integrating the SDK login module, an access token is generated subsequent to user authorisation of the application. This token is then employed for Mac Signing computations to generate the Authorisation header for authentication and secure communication. The maximum validity of a single Access Token is 30 days. The SDK automatically refreshes the Access Token each time the application is launched to ensure the continued validity of the user session.
+
+The mobile client of the game can obtain the currently valid Access Token through the GetCurrentTapAccount method, which always returns the most recent and valid token. The Access Token obtained by the mobile client must then be uploaded to the game server as an identifier for subsequent communication with the TapTap server.
 
 The Mac Token generation algorithm can be found in the [MAC Token Algorithm](#mac-token-算法) section of the document.
 
