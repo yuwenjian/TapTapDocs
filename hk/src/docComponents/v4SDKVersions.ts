@@ -31,8 +31,8 @@ const v4SDKVersions = {
         android: "3.16.3.45",
     },
     tapGlobalPayments: {
-        unity: "4.5.1",
-        android: "4.5.1",
+        unity: "4.5.4",
+        android: "4.5.4",
     }
 };
 
