@@ -1,9 +1,9 @@
 # https://git.gametaptap.com/help/user/project/codeowners/index.md
 
-* @huangshuzhi @panyang
+* @panyang @huangshuzhi
 
 # CN
-/cn/ @panyang @zhaoyang1 @chenke @lichao @zhouxianli @wanghao @yuwenjian @suixiaoxu
+/cn/ @panyang @huangshuzhi @zhaoyang1 @chenke @lichao @zhouxianli @wanghao @yuwenjian @suixiaoxu
 
 # HK
-/hk/ @panyang @zhaoyang1 @chenke @lichao @zhouxianli @wanghao @yuwenjian @suixiaoxu
+/hk/ @panyang @huangshuzhi @zhaoyang1 @chenke @lichao @zhouxianli @wanghao @yuwenjian @suixiaoxu
