@@ -383,8 +383,8 @@ client.on(Event.PLAYER_ROOM_LEFT, ({ leftPlayer }) => {
 
 | 事件               | 参数           | 描述           |
 | ------------------ | -------------- | -------------- |
-| PLAYER_ROOM_JOINED | { newPlayer }  | 新玩家加入房间 |
-| PLAYER_ROOM_LEFT   | { leftPlayer } | 玩家离开房间   |
+| PLAYER_ROOM_JOINED | `{ newPlayer }`  | 新玩家加入房间 |
+| PLAYER_ROOM_LEFT   | `{ leftPlayer }` | 玩家离开房间   |
 
 ## MasterClient
 
@@ -418,7 +418,7 @@ client.on(Event.MASTER_SWITCHED, ({ newMaster }) => {
 
 | 事件            | 参数          | 描述        |
 | --------------- | ------------- | ----------- |
-| MASTER_SWITCHED | { newMaster } | Master 更换 |
+| MASTER_SWITCHED | `{ newMaster }` | Master 更换 |
 
 #### 指定其他成员为 MasterClient
 
@@ -653,8 +653,8 @@ client.room
 
 | 事件                             | 参数                     | 描述               |
 | -------------------------------- | ------------------------ | ------------------ |
-| ROOM_CUSTOM_PROPERTIES_CHANGED   | { changedProps }         | 房间自定义属性变化 |
-| PLAYER_CUSTOM_PROPERTIES_CHANGED | { player, changedProps } | 玩家自定义属性变化 |
+| ROOM_CUSTOM_PROPERTIES_CHANGED   | `{ changedProps }`         | 房间自定义属性变化 |
+| PLAYER_CUSTOM_PROPERTIES_CHANGED | `{ player, changedProps }` | 玩家自定义属性变化 |
 
 ## 自定义事件
 

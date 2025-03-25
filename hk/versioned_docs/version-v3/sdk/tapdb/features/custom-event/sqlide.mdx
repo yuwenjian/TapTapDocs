@@ -27,17 +27,17 @@ sidebar_position: 14
 
 |   表   |     库名    |            表名           |
 | :---: | :-------: | :---------------------: |
-|  事件表  |   tapdb   |  view_{{项目 ID}}_events  |
-|  设备表  |   tapdb   |  view_{{项目 ID}}_devices |
-|  用户表  |   tapdb   |   view_{{项目 ID}}_users  |
-| 用户分群表 |   tapdb   |  view_{{项目 ID}}_cluster |
-| 维度属性表 | tapdb_dim | view_{{项目 ID}}_{{维度表名}} |
+|  事件表  |   tapdb   |  `view_{{项目 ID}}_events`  |
+|  设备表  |   tapdb   |  `view_{{项目 ID}}_devices` |
+|  用户表  |   tapdb   |   `view_{{项目 ID}}_users`  |
+| 用户分群表 |   tapdb   |  `view_{{项目 ID}}_cluster` |
+| 维度属性表 | tapdb_dim | `view_{{项目 ID}}_{{维度表名}}` |
 
 建议通过「数据表列表」中的「复制表名」功能，将复制该表的表名至剪切板后粘贴至语句编写框，详见本文 5.1.2 部分。
 
 ### 3.2 使用用户分群表的注意事项
 
-所有用户分群数据均存储在同一张表 view_{{项目 ID}}_cluster 中。
+所有用户分群数据均存储在同一张表 `view_{{项目 ID}}_cluster` 中。
 
 ![](/img/customEvent/sql/sql_2.png)
 

@@ -18,67 +18,19 @@ HTTP Request Content-type
 - application/json
 
 HTTP Request Parameters
-<div style={{overflowX: "auto"}}>
-  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-    <thead>
-      <tr>
-        <th style={{width: "150px"}}>字段名</th>
-        <th style={{width: "150px"}}>描述</th>
-        <th style={{width: "150px"}}>类型</th>
-        <th style={{width: "150px"}}>示例</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>client_id</td>
-        <td>TapTap 开放平台 ID</td>
-        <td>string</td>
-        <td>s7ui6smunrk7tmt4m6</td>
-      </tr>
-      <tr>
-        <td>app_id</td>
-        <td>app_id：游戏在 TapTap 商店的唯一身份标识。 例如：https://www.taptap.cn/app/187168，其中 187168 是 app_id。</td>
-        <td>uint64</td>
-        <td>58881</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
- 
+
+| 字段名 | 描述 | 类型 | 示例 |
+| ------ | ---- | ---- | ---- |
+| client_id | TapTap 开放平台 ID | string | s7ui6smunrk7tmt4m6 |
+| app_id | app_id：游戏在 TapTap 商店的唯一身份标识。 例如：https://www.taptap.cn/app/187168 其中 187168 是 app_id。 | uint64 | 58881 |
+
 HTTP Headers
 
-<div style={{overflowX: "auto"}}>
-  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-    <thead>
-      <tr>
-        <th style={{width: "150px"}}>字段名</th>
-        <th style={{width: "150px"}}>描述</th>
-        <th style={{width: "150px"}}>类型</th>
-        <th style={{width: "150px"}}>示例</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>x-tap-ts</td>
-        <td>请求时间，秒级时间戳</td>
-        <td>uint64</td>
-        <td>1692347090</td>
-      </tr>
-      <tr>
-        <td>x-tap-nonce</td>
-        <td>8 位随机字符串</td>
-        <td>string</td>
-        <td>q1w2e3r4</td>
-      </tr>
-      <tr>
-        <td>x-tap-sign</td>
-        <td>签算结果，不参与签算过程</td>
-        <td>string</td>
-        <td>TZ76PQthw6mjaEPMbdyFjHyXvH7yAr2+IahMgX9ue8M=</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+| 字段名 | 描述 | 类型 | 示例 |
+| ------ | ---- | ---- | ---- |
+| x-tap-ts | 请求时间，秒级时间戳 | uint64 | 1692347090 |
+| x-tap-nonce | 8 位随机字符串 | string | q1w2e3r4 |
+| x-tap-sign | 签算结果，不参与签算过程 | string | TZ76PQthw6mjaEPMbdyFjHyXvH7yAr2+IahMgX9ue8M= |
 
 ## 签名方法
 ### 构造待签名的请求内容 ` SignParts `
@@ -89,42 +41,13 @@ HTTP Headers
 {body}\n
 ```
 参数说明如下
-<div style={{overflowX: "auto"}}>
-  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-    <thead>
-      <tr>
-        <th style={{width: "200px"}}>字段名</th>
-        <th style={{width: "200px"}}>描述</th>
-        <th style={{width: "200px"}}>示例</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>method</td>
-        <td>HTTP 方法，如 <code>GET</code> /  <code>POST</code> (须为全部大写)</td>
-        <td><code>GET</code></td>
-      </tr>
-      <tr>
-        <td>url_path_and_query</td>
-        <td>完整请求路径及 QueryString</td>
-        <td>/apk/v1/upload-params?app_id=58881&file_name=xxx.apk&client_id=rfciqabirt4vqav7io
-        </td>
-      </tr>
-      <tr>
-        <td>headers</td>
-        <td>所有以 <code> x-tap-</code> 为前缀的请求头（<code>x-tap-sign</code> 除外），将其 header keys 转小写并按 ANSII 排序后，key 和 value 以 <code>:</code> 分隔，各个 header 以换行符 <code>\n</code> 分隔，拼接成字符串
-        </td>
-        <td>x-tap-nonce:q1w2e3r4\nx-tap-ts:1692347090
-        </td>
-      </tr>
-      <tr>
-        <td>body</td>
-        <td>完整请求体</td>
-        <td><code>{'{"key":"value"}'}</code></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
+| 字段名 | 描述 | 示例 |
+| ------ | ---- | ---- |
+| method | HTTP 方法，如 `GET` /  `POST` (须为全部大写) | `GET` |
+| url_path_and_query | 完整请求路径及 QueryString | /apk/v1/upload-params?app_id=58881&file_name=xxx.apk&client_id=rfciqabirt4vqav7io |
+| headers | 所有以 `x-tap-` 为前缀的请求头（`x-tap-sign` 除外），将其 header keys 转小写并按 ANSII 排序后，key 和 value 以 `:` 分隔，各个 header 以换行符 `\n` 分隔，拼接成字符串 | x-tap-nonce:q1w2e3r4\nx-tap-ts:1692347090 |
+| body | 完整请求体 | `{"key":"value"}` |
 
 ### 计算签名
 
@@ -223,92 +146,22 @@ func getHeadersPart(header http.Header) (string, error) {
   } 
 }
 ```
-<div style={{overflowX: "auto"}}>
-  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-    <thead>
-      <tr>
-        <th style={{width: "200px"}}>字段名</th>
-        <th style={{width: "200px"}}>类型</th>
-        <th style={{width: "200px"}}>描述</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>code</td>
-        <td>uint64</td>
-        <td>
-        <p>业务返回状态码</p>
-        <p>0 表示请求成功，非 0 表示请求异常，参见错误码表</p>
-        </td>
-      </tr>
-      <tr>
-        <td>msg</td>
-        <td>string</td>
-        <td>
-        <p>业务返回状态描述</p>
-        <p>"OK" 表示请求成功，其他表示请求异常，错误信息见字段内容</p>
-      </td>
-      </tr>
-      <tr>
-        <td>data</td>
-        <td>object</td>
-        <td>成功时返回业务数据，失败时不读取</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
+| 字段名 | 类型 | 描述 |
+| ------ | ---- | ---- |
+| code | uint64 | 业务返回状态码<br />0 表示请求成功，非 0 表示请求异常，参见错误码表 |
+| msg | string | 业务返回状态描述<br />"OK" 表示请求成功，其他表示请求异常，错误信息见字段内容 |
+| data | object | 成功时返回业务数据，失败时不读取 |
 
 ## 错误码表
-<div style={{overflowX: "auto"}}>
-  <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-    <thead>
-      <tr>
-        <th style={{width: "200px"}}>自定义状态码</th>
-        <th style={{width: "200px"}}>含义</th>
-        <th style={{width: "200px"}}>复现场景</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>510001</td>
-        <td>参数错误</td>
-        <td>发起请求的参数错误或者缺失部分必要参数</td>
-      </tr>
-      <tr>
-        <td>510002</td>
-        <td>发送道具失败</td>
-        <td>发送道具游戏方返回了失败结果</td>
-      </tr>
-      <tr>
-        <td>510003</td>
-        <td>该礼包码无效</td>
-        <td>异常兑换码的提交</td>
-      </tr>
-      <tr>
-        <td>510004</td>
-        <td>礼包码次数已达上限</td>
-        <td>通相同用户使用礼包中超过礼包设置的兑换数量</td>
-      </tr>
-      <tr>
-        <td>510005</td>
-        <td>找不到服务器列表</td>
-        <td>该用户在服务器下没有任何角色</td>
-      </tr>
-      <tr>
-        <td>510006</td>
-        <td>找不到角色列表</td>
-        <td>没有对应的角色</td>
-      </tr>
-      <tr>
-        <td>510007</td>
-        <td>点击过快，请稍候再试</td>
-        <td>用户连续点击获取角色或兑换礼包</td>
-      </tr>
-      <tr>
-        <td>510008</td>
-        <td>服务器故障</td>
-        <td>礼包系统出现通用性错误</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
+| 自定义状态码 | 含义 | 复现场景 |
+| ------------ | ---- | -------- |
+| 510001 | 参数错误 | 发起请求的参数错误或者缺失部分必要参数 |
+| 510002 | 发送道具失败 | 发送道具游戏方返回了失败结果 |
+| 510003 | 该礼包码无效 | 异常兑换码的提交 |
+| 510004 | 礼包码次数已达上限 | 通相同用户使用礼包中超过礼包设置的兑换数量 |
+| 510005 | 找不到服务器列表 | 该用户在服务器下没有任何角色 |
+| 510006 | 找不到角色列表 | 没有对应的角色 |
+| 510007 | 点击过快，请稍候再试 | 用户连续点击获取角色或兑换礼包 |
+| 510008 | 服务器故障 | 礼包系统出现通用性错误 |

@@ -26,7 +26,7 @@ import MultiLang from "/src/docComponents/MultiLang";
 ### 查询订单信息
 
 #### 服务 URL
-- https://{{domain}}/order/v1/info?client_id={{client_id}}&order_id={{order_id}}
+- `https://{{domain}}/order/v1/info?client_id={{client_id}}&order_id={{order_id}}`
 
 #### 请求方式
 - GET
@@ -58,7 +58,7 @@ curl -X GET \
 ### 查询未核销的订单列表
 
 #### 服务 URL
-- https://{{domain}}/order/v1/unconfirmed?client_id={{client_id}}
+- `https://{{domain}}/order/v1/unconfirmed?client_id={{client_id}}`
 
 #### 请求方式
 - GET
@@ -92,7 +92,7 @@ curl -X GET \
 ### 核销订单
 
 #### 服务 URL
-- https://{{domain}}/order/v1/verify?client_id={{client_id}}
+- `https://{{domain}}/order/v1/verify?client_id={{client_id}}`
 
 #### 请求方式
 - POST[application/json; charset=utf-8]
@@ -282,7 +282,7 @@ curl -X POST \
 
 #### 签算说明
 
-sign = HMAC.New(Sha256, "{{Server Secret}}").Hash(message)
+sign = HMAC.New(Sha256, "`{{Server Secret}}`").Hash(message)
 
 以下为 `message` 组成
 
@@ -295,9 +295,9 @@ sign = HMAC.New(Sha256, "{{Server Secret}}").Hash(message)
 
 **method:** 请求 HTTP 方法，如 GET、POST。
 
-**url_path_and_query:** 完整请求路径及参数，如 /service/v1/method?client_id={{client_id}}&foo={{foo}}&bar={{bar}}&foo_bar={{foo_bar}}
+**url_path_and_query:** 完整请求路径及参数，如 `/service/v1/method?client_id={{client_id}}&foo={{foo}}&bar={{bar}}&foo_bar={{foo_bar}}`
 
-**headers:** 所有 `X-Tap-` 前缀的 headers 组合，将 keys 按 ASCII-code order 排序后以换行符 \n 为分隔符拼接。如 {key1}:{value1}\n{key2}:{value2}\n{key3}:{value3}。**为避免不同网络框架导致 keys 的排序结果不一致，签算时需要执行 key 转小写操作 key = tolower(key)**
+**headers:** 所有 `X-Tap-` 前缀的 headers 组合，将 keys 按 ASCII-code order 排序后以换行符 `\n` 为分隔符拼接。如 `{key1}:{value1}\n{key2}:{value2}\n{key3}:{value3}`。**为避免不同网络框架导致 keys 的排序结果不一致，签算时需要执行 key 转小写操作 key = tolower(key)**
 
 **body:** 请求体，如果请求体为空，则最后一行仅为一个 \n
 

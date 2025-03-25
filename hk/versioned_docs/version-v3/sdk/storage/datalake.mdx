@@ -4,8 +4,6 @@ sidebar_label: 数据仓库
 sidebar_position: 14
 ---
 
-import { Conditional } from "/src/docComponents/conditional";
-
 基于现代的数据库 ClickHouse ，我们构建了新一代的数据仓库。与云服务紧密集成，支持将存储数据，日志表数据自动入库，从而为业务运营的统计分析提供强大的数据支持。
 
 新的数据仓库将提供以下独特的功能：
@@ -97,8 +95,9 @@ event.saveInBackground();
     <tr>
       <td>File</td>
       <td>
-            <code>*.className String</code><br/>
-            <code>*.objectId  String</code>
+        <code>*.className String</code>
+        <br/>
+        <code>*.objectId  String</code>
       </td>
       <td>会被展开为 className 和 objectId 两个字段</td>
       <td></td>
@@ -124,8 +123,9 @@ event.saveInBackground();
     <tr>
       <td>Pointer</td>
       <td>
-            <code>*.className String</code> <br/>
-            <code>*.objectId  String</code>
+        <code>*.className String</code>
+        <br/>
+        <code>*.objectId  String</code>
       </td>
       <td>会被展开为 className 和 objectId 两个字段</td>
       <td></td>

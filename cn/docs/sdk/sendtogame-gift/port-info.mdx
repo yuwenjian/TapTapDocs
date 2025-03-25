@@ -22,49 +22,16 @@ import {Red, Blue, Black, Gray} from '/src/docComponents/doc';
 ### 请求参数
 
 :::info 注意
-公共参数见 [接口公共说明](/sdk/sendtogame-gift/port-guide/)  文档
+公共参数见 [接口公共说明](/sdk/sendtogame-gift/port-guide/)  文档
 :::
 
 
-<div style={{overflowX: "auto"}}>
-   <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-      <thead>
-      <tr>
-         <th style={{width: "120px"}}>参数名</th>
-         <th style={{width: "120px"}}>类型</th>
-         <th style={{width: "120px"}}>必须</th>
-         <th style={{width: "240px"}}>描述</th>
-      </tr>
-      </thead>
-   <tbody>
-      <tr>
-         <td>from</td>
-         <td>int</td>
-         <td>是</td>
-         <td>用于指定查询开始的起点。例如 <code>from=0</code> 表示从第 1 条记录开始返回。</td>
-      </tr>
-      <tr>
-         <td>limit</td>
-         <td>int</td>
-         <td>是</td>
-         <td>翻页参数，每页的数量</td>
-      </tr>
-      <tr>
-         <td>openid</td>
-         <td>string</td>
-         <td>是</td>
-         <td>TapTap OpenID</td>
-      </tr>
-      <tr>
-         <td>unionid</td>
-         <td>string</td>
-         <td>是</td>
-         <td>TapTap UnionID</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
+| 参数名 | 类型 | 必须 | 描述 |
+| ------ | ---- | ---- | ---- |
+| from | int | 是 | 用于指定查询开始的起点。例如 `from=0` 表示从第 1 条记录开始返回。 |
+| limit | int | 是 | 翻页参数，每页的数量 |
+| openid | string | 是 | TapTap OpenID |
+| unionid | string | 是 | TapTap UnionID |
 
 
 ### 成功响应
@@ -113,41 +80,14 @@ import {Red, Blue, Black, Gray} from '/src/docComponents/doc';
 
 ### 请求参数
 :::info 注意
-公共参数见 [接口公共说明](/sdk/sendtogame-gift/port-guide/)  文档
+公共参数见 [接口公共说明](/sdk/sendtogame-gift/port-guide/)  文档
 :::
 
-<div style={{overflowX: "auto"}}>
-   <table style={{display: "table", tableLayout: "fixed", width: "100%"}}>
-      <thead>
-         <tr>
-            <th style={{width: "120px"}}>参数名</th>
-            <th style={{width: "120px"}}>类型</th>
-            <th style={{width: "120px"}}>必须</th>
-            <th style={{width: "240px"}}>描述</th>
-         </tr>
-   </thead>
-   <tbody>
-      <tr>
-         <td>server_id</td>
-         <td>string</td>
-         <td>否</td>
-         <td>用户选择的区服 ID</td>
-      </tr>
-      <tr>
-         <td>openid</td>
-         <td>string</td>
-         <td>是</td>
-         <td>TapTap OpenID</td>
-      </tr>
-      <tr>
-         <td>unionid</td>
-         <td>string</td>
-         <td>是</td>
-         <td>TapTap UnionId</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+| 参数名 | 类型 | 必须 | 描述 |
+| ------ | ---- | ---- | ---- |
+| server_id | string | 否 | 用户选择的区服 ID |
+| openid | string | 是 | TapTap OpenID |
+| unionid | string | 是 | TapTap UnionId |
 
 
 ### 请求示例
@@ -243,4 +183,4 @@ TapTap 侧已登录的用户通过此接口获得直发礼包。
 
 
 ## 直发礼包错误码表
-详见 [接口公共说明 - 错误码表](/sdk/sendtogame-gift/port-guide/) 
+详见 [接口公共说明 - 错误码表](/sdk/sendtogame-gift/port-guide/) 

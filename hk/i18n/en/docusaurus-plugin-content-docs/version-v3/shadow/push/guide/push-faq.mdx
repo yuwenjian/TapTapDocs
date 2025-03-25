@@ -75,11 +75,11 @@ It is recommended to check if the push uses the custom Receiver (whether there i
 
 ### Workaround for older versions of the Objective-C SDK not receiving pushes in the iOS 13 environment.
 
-In iOS 13, older versions of the Objc SDK (<= 11.6.6) are unable to upload a valid device token due to Apple's change in the API of the underlying framework.
+In iOS 13, older versions of the Objc SDK (`<= 11.6.6`) are unable to upload a valid device token due to Apple's change in the API of the underlying framework.
 
 The workaround is to upgrade the SDK to v11.6.7 and above and save the device token as described in [Save the Token](/v3/sdk/push/guide/ios/#save-the-token).
 
-The workaround for older versions of the Objective-C SDK (<= 11.6.6) is to upload the device token as follows:
+The workaround for older versions of the Objective-C SDK (`<= 11.6.6`) is to upload the device token as follows:
 
 ```
 NSUInteger dataLength = deviceToken.length;

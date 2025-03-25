@@ -25,7 +25,7 @@ For general service rules, please refer to [Request Rules and Signature Calculat
 ### Query Order Information
 
 #### Service URL
-- https://{{domain}}/order/v1/info?client_id={{client_id}}&order_id={{order_id}}
+- `https://{{domain}}/order/v1/info?client_id={{client_id}}&order_id={{order_id}}`
 
 #### Request Method
 - GET
@@ -57,7 +57,7 @@ The `data.order` object structure can be found in [Order Information](/sdk/TapPa
 ### Query Unconfirmed Orders List
 
 #### Service URL
-- https://{{domain}}/order/v1/unconfirmed?client_id={{client_id}}
+- `https://{{domain}}/order/v1/unconfirmed?client_id={{client_id}}`
 
 #### Request Method
 - GET
@@ -91,7 +91,7 @@ The `data.list` array object structure can be found in [Order Information](/sdk/
 ### Verify Order
 
 #### Service URL
-- https://{{domain}}/order/v1/verify?client_id={{client_id}}
+- `https://{{domain}}/order/v1/verify?client_id={{client_id}}`
 
 #### Request Method
 - POST[application/json; charset=utf-8]
@@ -279,7 +279,7 @@ The signature calculation uses the HMAC-SHA256 algorithm.
 
 #### Signature Calculation Explanation
 
-sign = HMAC.New(Sha256, "{{Server Secret}}").Hash(message)
+sign = HMAC.New(Sha256, "`{{Server Secret}}`").Hash(message)
 
 Below is the composition of the `message`:
 
@@ -292,9 +292,9 @@ Below is the composition of the `message`:
 
 **method:** HTTP request method, such as GET, POST.
 
-**url_path_and_query:** Full request path and parameters, such as /service/v1/method?client_id={{client_id}}&foo={{foo}}&bar={{bar}}&foo_bar={{foo_bar}}
+**url_path_and_query:** Full request path and parameters, such as `/service/v1/method?client_id={{client_id}}&foo={{foo}}&bar={{bar}}&foo_bar={{foo_bar}}`
 
-**headers:** Combination of all headers prefixed with `X-Tap-`, sorted by ASCII code order, and joined with a newline \n as a separator. For example, {key1}:{value1}\n{key2}:{value2}\n{key3}:{value3}. **To avoid inconsistent sorting results across different network frameworks, convert keys to lowercase during signature calculation: key = tolower(key)**
+**headers:** Combination of all headers prefixed with `X-Tap-`, sorted by ASCII code order, and joined with a newline `\n` as a separator. For example, `{key1}:{value1}\n{key2}:{value2}\n{key3}:{value3}`. **To avoid inconsistent sorting results across different network frameworks, convert keys to lowercase during signature calculation: key = tolower(key)**
 
 **body:** Request body. If the request body is empty, the last line is just a \n.
 

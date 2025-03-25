@@ -454,7 +454,7 @@ tools:remove="android:requestLegacyExternalStorage"
 
 ![](https://img.tapimg.com/market/images/e3e2f145c22488461e391b6ed397a546.jpg)
 
-这类编译错误通常是由于开发者使用的 AGP（com.android.tools.build:gradle:${agp_version}）版本过低，无法正确处理 Kotlin Multiplatform 构建生成的 AAR 中特有的文件。
+这类编译错误通常是由于开发者使用的 AGP（`com.android.tools.build:gradle:${agp_version}`）版本过低，无法正确处理 Kotlin Multiplatform 构建生成的 AAR 中特有的文件。
 解决方案：
 将 Gradle 升级到 6.1.1 或更高版本，同时将 AGP 升级到 4.0.1 或更高版本。
 

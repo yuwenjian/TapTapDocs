@@ -27,17 +27,17 @@ In the TapDB SQL query function, the range of library tables can be queried as f
 
 | Table Type | Library Name | Table Name |
 | :---: | :-------: | :---------------------: |
-| Events table | tapdb | view_{{Project ID}}_events |
-| devices table | tapdb | view_{{Project ID}}_devices |
-| user table | tapdb | view_{{project ID}}_users |
-| user_cluster | tapdb | view_{{item_id}}_cluster |
-| dimension properties table | tapdb_dim | view_{{item ID}}_{{dimension table name}} |
+| Events table | tapdb | `view_{{Project ID}}_events` |
+| Devices table | tapdb | `view_{{Project ID}}_devices` |
+| Users table | tapdb | `view_{{Project ID}}_users` |
+| User clusters table | tapdb | `view_{{Project ID}}_cluster` |
+| Dimension attributes table | tapdb_dim | `view_{{Project ID}}_{{Dimension table name}}` |
 
 It is recommended to paste the table name into the compose box by using the "Copy Table Name" function in the "Data Table List", as described in section 5.1.2 of this document.
 
 ### 3.2 Notes on using user cluster tables
 
-All user cluster data is stored in the same table "view_{{project ID}}_cluster".
+All user cluster data is stored in the same table `view_{{Project ID}}_cluster`.
 
 ![](/img/customEvent/sql/sql_2.png)
 
