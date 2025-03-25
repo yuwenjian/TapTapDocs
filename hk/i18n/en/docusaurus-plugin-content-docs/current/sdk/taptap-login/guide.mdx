@@ -430,7 +430,7 @@ import com.taptap.sdk.login.TapTapLogin;
 import androidx.annotation.NonNull;
 
 // Define authorization scopes
-String[] scopes = new String[]{Scopes.SCOPE_PROFILE, Scopes.SCOPE_BASIC_INFO};
+String[] scopes = new String[]{Scopes.SCOPE_PUBLIC_PROFILE, Scopes.SCOPE_BASIC_INFO};
 
 TapTapLogin.loginWithScopes(activity, scopes, new TapTapCallback<TapTapAccount>() {
     @Override
@@ -461,7 +461,7 @@ import com.taptap.sdk.login.TapTapAccount
 import com.taptap.sdk.login.Scopes
 
 val scopes = mutableSetOf<String>()
-scopes.add(Scopes.SCOPE_PROFILE)
+scopes.add(Scopes.SCOPE_PUBLIC_PROFILE)
 
 TapTapLogin.loginWithScopes(
     activity,
