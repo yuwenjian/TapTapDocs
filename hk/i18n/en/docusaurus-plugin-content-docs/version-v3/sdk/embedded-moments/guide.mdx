@@ -243,11 +243,11 @@ mConfig.orientation = TapMomentOrientationDefault;
 
 | eventType | eventPayload (unserialized) | Description                                       |
 | --------- | --------------------------- | ------------------------------------------------- |
-| READY     | {}                          | The DOM has been mounted and the data is pending. |
-| REPOST    | {}                          | The user reposts a post.                          |
-| VOTE      | { isCancel: boolean }       | The user likes (or removes their like on) a post. |
-| FOLLOW    | { isCancel: boolean }       | The user follows (or unfollows) a post.           |
-| COMMENT   | {}                          | The user comments on a post.                      |
+| READY     | `{}`                          | The DOM has been mounted and the data is pending. |
+| REPOST    | `{}`                          | The user reposts a post.                          |
+| VOTE      | `{ isCancel: boolean }`       | The user likes (or removes their like on) a post. |
+| FOLLOW    | `{ isCancel: boolean }`       | The user follows (or unfollows) a post.           |
+| COMMENT   | `{}`                          | The user comments on a post.                      |
 
 ## Closing Embedded Moments
 

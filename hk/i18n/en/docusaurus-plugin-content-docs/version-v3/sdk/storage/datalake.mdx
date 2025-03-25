@@ -4,8 +4,6 @@ sidebar_label: Data Lake
 sidebar_position: 14
 ---
 
-import { Conditional } from "/src/docComponents/conditional";
-
 Based on ClickHouse, a modern database, we have built a new generation of data lake. Tightly integrated with cloud services, it supports automatic entry of stored data and log table data, providing powerful data support for statistical analysis of business operations.
 
 The new data lake offers the following unique features:
@@ -97,8 +95,9 @@ See the following table for specific type conversion behavior:
     <tr>
       <td>File</td>
       <td>
-            <code>*.className String</code><br/>
-            <code>*.objectId  String</code>
+        <code>*.className String</code>
+        <br/>
+        <code>*.objectId  String</code>
       </td>
       <td>Is expanded to two fields: className and objectId</td>
       <td></td>
@@ -124,8 +123,9 @@ See the following table for specific type conversion behavior:
     <tr>
       <td>Pointer</td>
       <td>
-            <code>*.className String</code> <br/>
-            <code>*.objectId  String</code>
+        <code>*.className String</code>
+        <br/>
+        <code>*.objectId  String</code>
       </td>
       <td>Is expanded to two fields: className and objectId</td>
       <td></td>

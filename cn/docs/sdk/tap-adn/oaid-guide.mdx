@@ -39,7 +39,7 @@ dependencies {
 }
 ```
 ##### 3、Assets 配置
-在应用「App主模块」的 src/main/assets 下放入 supplierconfig.json 文件，并且把申请到的证书文件命名为 **${应用包名}.cert.pem** 也一起放入目录下。
+在应用「App主模块」的 src/main/assets 下放入 supplierconfig.json 文件，并且把申请到的证书文件命名为 **`${应用包名}.cert.pem`** 也一起放入目录下。
 ```
 // supplierconfig.json
 {
@@ -240,7 +240,7 @@ The OAID configuration of media is complete:22b72984-d109-435e-8305-a31090a6ecb5
 - 构建并导出 Android 项目
     - 在 Unity 中，打开你的项目，确保平台切换为 Android (File > Build Settings > 选择 Android 并点击 Switch Platform)，然后点击 Build 或 Build And Run，生成一个 Android Studio 项目。
     - 选择一个文件夹路径来保存 Android 项目（例如：MyAndroidProject）。
-- 将准备好的 supplierconfig.json  和命名为 **${应用包名}.cert.pem** 的证书文件拷贝到 Android 工程的 ${App 模块}/src/main/assets 目录下。
+- 将准备好的 supplierconfig.json  和命名为 **`${应用包名}.cert.pem`** 的证书文件拷贝到 Android 工程的 `${App 模块}/src/main/assets` 目录下。
 
 ##### 4、载入 OAID SDK 安全库
 - 构建并导出 Android 项目

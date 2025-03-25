@@ -383,8 +383,8 @@ client.on(Event.PLAYER_ROOM_LEFT, ({ leftPlayer }) => {
 
 | Event | Parameter | Description |
 | ------------------ | -------------- | -------------- |
-| PLAYER_ROOM_JOINED | { newPlayer } | A new player joined the room |
-| PLAYER_ROOM_LEFT | { leftPlayer } | A player left the room |
+| PLAYER_ROOM_JOINED | `{ newPlayer }` | A new player joined the room |
+| PLAYER_ROOM_LEFT | `{ leftPlayer }` | A player left the room |
 
 ## MasterClient
 
@@ -418,7 +418,7 @@ client.on(Event.MASTER_SWITCHED, ({ newMaster }) => {
 
 | Event | Parameter | Description |
 | --------------- | ------------- | ----------- |
-| MASTER_SWITCHED | { newMaster } | Master changed |
+| MASTER_SWITCHED | `{ newMaster }` | Master changed |
 
 #### Specify other members as MasterClient
 
@@ -653,8 +653,8 @@ This way, after the first player gets the Tulong Knife, `tulong` corresponds to 
 
 | Events | Parameters | Description |
 | -------------------------------- | ------------------------ | ------------------ |
-| ROOM_CUSTOM_PROPERTIES_CHANGED | { changedProps } | Room custom property is changed |
-| PLAYER_CUSTOM_PROPERTIES_CHANGED | { player, changedProps } | Player custom property is changed  |
+| ROOM_CUSTOM_PROPERTIES_CHANGED | `{ changedProps }` | Room custom property is changed |
+| PLAYER_CUSTOM_PROPERTIES_CHANGED | `{ player, changedProps }` | Player custom property is changed  |
 
 ## Custom events
 
