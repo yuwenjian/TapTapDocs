@@ -1777,7 +1777,7 @@ const gt = (n) => new st(n).i18n, at = {
 var U = /* @__PURE__ */ ((n) => (n.zh_CN = "zh-Hans-CN", n.en = "en", n))(U || {});
 z.init({
   lng: "zh-Hans-CN",
-  debug: !0,
+  debug: !1,
   resources: {
     en: lt,
     "zh-Hans-CN": ut
@@ -1840,7 +1840,7 @@ const Dt = {
   
  
   M = oe(ie, (I) => s = I);
-  console.log(s.t("language").toString()=="zh")
+  s && s.logger && s.logger.log("language check", s.t("language").toString()=="zh")
   if (s.t("language").toString()=="zh"){
      }
 
