@@ -10,9 +10,13 @@ const config = {
     baseUrl:
         PREVIEW === "true" ? "/" : (process.env.APP_ROUTER_BASE_URL || "/docs/"),
     onBrokenLinks: "throw",
-    onBrokenMarkdownLinks: "warn",
+    onBrokenMarkdownLinks: "throw",
+    onBrokenAnchors: "ignore",
     favicon: "img/logoh.png",
     trailingSlash: true,
+    markdown: {
+        format: 'mdx'
+    },
     customFields: {
         searchUrl: "https://tds-doc-search-api.leanapp.cn/search",
         upItemListIndexUrl: "https://tds-doc-search-check-log.leanapp.cn/api/check-log-up",
