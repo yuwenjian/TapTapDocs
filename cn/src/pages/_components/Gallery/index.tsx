@@ -100,7 +100,7 @@ const Gallery = ({ brand, entries, title, cardSize = 'narrow', showFilter = fals
                       className={styles.entryAction}
                       href={link.href}
                       rel="nofollow noopener"
-                      target="_blank"
+                      target={link.noblank ? '' :'_blank'}
                       key={link.label}
                     >
                       <Translate
