@@ -59,7 +59,7 @@ stages:
     paths:
       - $PROJECT/build
 
-# 发送 slack 通知
+# 发送 MR & slack 通知
 .default_notification:
   stage: notification
   extends:
@@ -68,8 +68,10 @@ stages:
   script:
     - git --version
     - npm i -g zx
-    - source ./scripts/slack-definition.sh
-    - chmod -R 777 ./scripts && ./scripts/slack-notification
+    - chmod -R 777 ./scripts
+    - ./scripts/mr-notification &
+    - ./scripts/slack-notification &
+    - wait
 
 #  ==== 国内 ====
 # mr 

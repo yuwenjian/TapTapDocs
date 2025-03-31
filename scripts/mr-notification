@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+const axios = require("axios");
+const mergeRequestIId = process.env.CI_MERGE_REQUEST_IID;
+const projectId = process.env.CI_MERGE_REQUEST_PROJECT_ID;
+const targetUrl = process.env.APP_PUBLIC_PATH + process.env.APP_ROUTER_BASE_URL;
+const gitlabToken = process.env.ZBOT_ACCESS_TOKEN; // 复用现有token
+
+const config = {
+  headers: {
+    "PRIVATE-TOKEN": gitlabToken,
+  },
+};
+
+(async () => {
+  if (!mergeRequestIId) {
+    // 没有 request id 的直接退出即可
+    process.exit(0);
+  }
+
+  const targetUrlIntl = targetUrl.replace("tapsdk-doc-cn", "tapsdk-doc-intl");
+  let body = `
+${
+  process.env.BUILD_LOCATION === "cn"
+  ? `## 国内预览 url : [点击这里](${targetUrl})`
+  : ""
+}
+${
+  process.env.BUILD_LOCATION === "hk"
+  ? `## 海外预览 url : [点击这里](${targetUrlIntl})`
+  : ""
+}`;
+
+  console.log("生成的MR评论内容：", body);
+  
+  // 使用GitLab API创建MR评论
+  const url = `https://git.gametaptap.com/api/v4/projects/${projectId}/merge_requests/${mergeRequestIId}/notes`;
+  console.log("发送评论到：", url);
+  
+  try {
+    const result = await axios.post(url, { body }, config);
+    console.log("评论创建成功，ID:", result.data.id);
+  } catch (error) {
+    console.error("创建MR评论失败:", error.response ? error.response.data : error.message);
+    process.exit(2);
+  }
+})().catch((e) => {
+  console.error(e);
+  process.exit(2);
+});
