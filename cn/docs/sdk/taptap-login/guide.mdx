@@ -632,6 +632,25 @@ TapTapLogin.loginWithScopes(with: scopes) {[weak self] account, error, isCancel 
     	 let userInfo = account.userInfo
     }
 }
+
+// SDK 默认会使用应用当前最上层的页面作为 SDK 登录弹窗的容器，如果应用需要指定，可参考下方示例
+TapTapLogin.login(with:getAuthScopes(), viewController: self) { [weak self] account, error, isCancel in
+    guard let self else { return }
+    if isCancel {
+        // 登录取消
+    } else if let error = error {
+         // 登录失败
+        NSLog("Tap登录失败：\(error.localizedDescription)")
+    } else if let account = account {
+         // 登录成功
+
+         // 登录 token
+         let token = account.accessToken
+         // 用户信息
+         let userInfo = account.userInfo
+    }
+
+}
 ```
 
 </>
@@ -659,6 +678,23 @@ NSArray *scopes = @[@"public_profile"];
         // 用户信息，包括 openid、unionid、用户昵称、用户头像
         UserInfo *userInfo = account.userInfo;
     }
+}];
+
+// SDK 默认会使用应用当前最上层的页面作为 SDK 登录弹窗的容器，如果应用需要指定，可参考下方示例
+[TapTapLogin LoginWithScopes: scopes viewController:viewController handler:^(BOOL isCancel, NSError * _Nullable error, TapTapAccount * _Nullable account) {
+    if (isCancel) {
+           // 登录取消
+       } else if (error != nil) {
+           NSLog(@"Tap 登录失败 ");
+       } else {
+           // 登录成功
+
+           // 登录 token
+           AccessToken *token = account.accessToken;
+
+           // 用户信息，包括 openid、unionid、用户昵称、用户头像
+           UserInfo *userInfo = account.userInfo;
+       }
 }];
 ```
 </>
