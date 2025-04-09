@@ -6,6 +6,7 @@ type LinkInternal = {
 type LinkExternal = {
   label: string;
   href: string;
+  noblank?: boolean;
 };
 
 type Link = LinkInternal | LinkExternal;
@@ -48,6 +49,21 @@ export const getEntries = (brand: string, region: string): Entry[] => {
             {
               label: "查看更多",
               to: "/community",
+            },
+          ],
+        },
+      ]
+      : []),
+    ...(region === "cn"
+      ? [
+        {
+          title: "小游戏",
+          description: "小游戏无需下载安装即可使用，实现了客户端“点开即玩”的优质用户体验",
+          links: [
+            {
+              label: "查看更多",
+              href: "https://developer.taptap.cn/minigameapidoc/快速入门/小游戏文档指引.html",
+              noblank: true,
             },
           ],
         },
