@@ -1,23 +1,19 @@
 ---
-title: TapTap好友开发指南
+title: TapTap好友Lite版开发指南
 sidebar_label: 开发指南
 sidebar_position: 3
 ---
 
 import MultiLang from '/src/docComponents/MultiLang';
 import CodeBlock from '@theme/CodeBlock';
-import UnitySDKInstallation from "../../sdk/_partials/unity-sdk-installation.mdx";
 
 
-本文介绍如何在游戏中加入好友&聊天系统。
+
+本文介绍如何在游戏中加入好友系统。
 
 ## 权限说明
 
-<MultiLang kind="unity_android_v4">
-
-<>
-
-</>
+<MultiLang kind="android_v4">
 
 <>
 
@@ -82,10 +78,6 @@ import UnitySDKInstallation from "../../sdk/_partials/unity-sdk-installation.mdx
 
 </>
 
-<>
-
-</>
-
 </MultiLang>
 
 ## 集成前准备
@@ -96,28 +88,7 @@ import UnitySDKInstallation from "../../sdk/_partials/unity-sdk-installation.mdx
 
 由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapRelation` 、 `TapTapLogin` 模块：
 
-<MultiLang kind="unity_android_v4">
-
-<>
-
-<UnitySDKInstallation
-npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.relation",
-"com.taptap.sdk.login"
-]}
-githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#4.6.0-beta.1}`},
-{package: "com.taptap.sdk.login", url: `https://github.com/taptap/TapSDKLogin-Unity.git#4.6.0-beta.1`},
-{package: "com.taptap.sdk.relation", url: `https://github.com/taptap/TapSDKRelation-Unity.git#4.6.0-beta.1`}
-]}
-unitypackageModules={[
-{name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
-{name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
-{name: "TapSDK_Relation.unitypackage", desc: "TapTapSDK 好友聊天模块，必选"},
-]}/>
-
-</>
+<MultiLang kind="android_v4">
 
 <>
 1. 项目根目录的 build.gradle 添加仓库地址：
@@ -173,27 +144,10 @@ allprojects {
 
 详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
 
-<MultiLang kind="unity_android_v4">
-
+<MultiLang kind="android_v4">
 <>
 
 `TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```cs
-using TapSDK.Core;
-using TapSDK.Relation;
-
-// 核心配置 详细参数见 [TapTapSDK]
-TapTapSdkOptions coreOptions = new TapTapSdkOptions();
-// 设置屏幕方向：0-竖屏 1-横屏
-coreOptions.screenOrientation = 1;
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions, otherOptions);
-```
-
-</>
-
-<>
 
 ```java
 import com.taptap.sdk.core.TapTapRegion;
@@ -262,44 +216,7 @@ TapTapSdk.init(
 
 好友 SDK 中包含多个监听回调，分别会在未登录/有新增粉丝/有新增消息时被调用。
 
-<MultiLang kind="unity_android_v4">
-
-<>
-
-```cs
-using TapSDK.Relation;
-
-RelationCallback callback = new RelationCallback();
-TapTapRelation.RegisterRelationCallback(callback);
-TapTapRelation.UnregisterRelationCallback(callback);
-
-class RelationCallback : ITapTapRelationCallback
-{
-
-    public RelationCallback(){}
-
-    public void OnMessengerCodeResult(int code)
-    {
-        // 处理好友聊天的状态码
-        // code 400001 需要用户登录
-    }
-
-    public void OnNewFansCountChanged(int newFansCount)
-    {
-        // 新增粉丝数量变化
-        // newFansCount 新增粉丝数
-	}
-
-	public void OnUnreadMessageCountChanged(int unreadMsgCount)
-    {
-        // 新增未读消息数量变化
-        // unreadMsgCount 新增未读消息数
-	}
-
-}
-```
-
-</>
+<MultiLang kind="android_v4">
 
 <>
 
@@ -313,7 +230,7 @@ TapTapRelationCallback callback = new TapTapRelationCallback(){
     @Override
     public void onMessengerCodeResult(int code) {
         // 处理好友聊天的状态码
-        // code 400001 需要用户登录
+        // 未登录回返回 TapTapRelationMessengerCode.NEED_LOGIN
     }
     
     @Override
@@ -369,13 +286,7 @@ TapTapRelation.unregisterRelationCallback(callback = callback)
 
 进入聊天之前的一些准备工作。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-TapTapRelation.Prepare();
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
@@ -393,13 +304,7 @@ TapTapRelation.prepare()
 
 打开聊天页面，根据初始化参数 screenOrientation 会有不同的动画表现。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-TapTapRelation.StartMessenger();
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
@@ -417,13 +322,7 @@ TapTapRelation.startMessenger()
 
 打开邀请好友页面，向选中好友发送邀请上线消息。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-TapTapRelation.InviteGame();
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
@@ -441,14 +340,7 @@ TapTapRelation.inviteGame()
 
 打开邀请好友页面，向选中好友发送邀请组队消息，需要传组队相关参数teamId。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-string teamId = "";
-TapTapRelation.InviteTeam(teamId);
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
@@ -468,16 +360,7 @@ TapTapRelation.inviteTeam(teamId = teamId)
 
 获取当前用户新增粉丝的数量，也可在callback中处理。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-TapTapRelation.GetNewFansCount((count) =>
-{
-    Log($"新粉丝数量: {count}");
-});
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
@@ -495,16 +378,7 @@ val fansCount = TapTapRelation.getNewFansCount()
 
 获取当前用户新增消息的数量，也可在callback中处理。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-TapTapRelation.GetUnreadMessageCount((count) =>
-{
-    Log($"未读消息数量: {count}");
-});
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
@@ -520,17 +394,9 @@ val unreadMessageCount = TapTapRelation.getUnreadMessageCount()
 
 ## 展示 TapTap 用户名片
 
-展示指定用户的名片弹窗，可用于关注/取关用户，传入用户的openId或者unionId。
+展示指定用户的名片弹窗，可用于关注/取关用户。
 
-<MultiLang kind="unity_android_v4">
-
-```cs
-using TapSDK.Relation;
-
-string openId = "";
-string unionId = "";
-TapTapRelation.ShowTapUserProfile(openId, unionId);
-```
+<MultiLang kind="android_v4">
 
 ```java
 import com.taptap.sdk.relation.TapTapRelation;
