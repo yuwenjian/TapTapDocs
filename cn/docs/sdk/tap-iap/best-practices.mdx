@@ -1,0 +1,58 @@
+---
+title: TapTap 内购服务最佳实践
+sidebar_label: 最佳实践
+sidebar_position: 2
+---
+import {Red} from '/src/docComponents/doc';
+
+# 最佳实践
+
+## 支付流程
+Tap Payment SDK 提供处理必要用户操作（例如启动购买流程和处理相应结果）所需的方法。
+
+在确认交易阶段，我们提供了两种接入方式:
+* **游戏后端接入 [Tap Payment Server API](/sdk/tap-iap/develop/server/)，完成订单履约，以确保实现高效安全的购买交易管理<Red>(推荐)</Red>。**
+![](https://img.tapimg.com/market/images/3800dba9ec1c400e0efcc4c8a1377c0c.png)
+
+* 游戏客户端直接调用 Tap Payment SDK 方法完成订单履约。
+
+
+![](https://img.tapimg.com/market/images/08ad252de52209d71f85eb1bf41490f7.png)
+
+## 检测和处理购买交易
+我们建议在支付之前先获取未完成订单列表，可能导致出现[未完成订单的原因](/sdk/tap-iap/develop/android/#retrieving-unfinished-orders)
+- **在购买过程中出现网络问题**：用户成功购买了商品并收到了对应渠道的确认消息，但用户设备在通过 `PurchasesUpdatedListener` 收到购买交易的通知之前失去了网络连接。
+- **多部设备**：用户在一部设备上购买了一件商品，然后在切换设备时期望看到该商品。
+- **异常崩溃**：用户在外部购买成功时，应用出现了崩溃的情况。
+
+在确认交易阶段，我们提供了两种接入方式:
+
+* **游戏后端接入 [Tap Payment Server API](/sdk/tap-iap/develop/server/)<Red> (推荐) </Red>。**
+
+![](https://img.tapimg.com/market/images/a358d72500ee4b9065d60f95921f3935.png)
+
+* 游戏客户端直接调用 Tap Payment SDK 方法
+
+![](https://img.tapimg.com/market/images/1ed89d3763d1c110918de51c182a4fcc.png)
+
+## 支付收银台
+* Tap Payment SDK 内部集成了 Tap Login SDK，展示收银台之前，需要用户已经完成授权登录。
+* Tap Payment SDK 内部实现了支付收银台的 UI 样式，帮助游戏完成整个支付流程。
+
+## 商品退款
+
+**游戏后端需要接入 [Tap Server 的 Webhook](/sdk/tap-iap/develop/server/#webhook-callback)，<Red> 以便获取退款结果通知。</Red>**
+
+## Checklist
+
+向玩家提供支付功能前，开发者需要测试支付流程是否正常完成，检查以下事项：
+
+* 游戏是否达到 [SDK 环境要求](/sdk/access/quickstart/#environment-requirements)。
+* 是否在 TapTap 开发者后台填写了 Android 平台或 iOS 平台相关配置。[参考配置签名证书](/sdk/access/get-ready/#configure-signature-certificate)。
+* 在未安装 TapTap 客户端的设备上打开游戏，是否能以 WebView 方式完成登录流程，是否能获取玩家授权的基本信息。
+* 在安装了最新版 TapTap 客户端的设备上打开游戏，是否能拉起 TapTap 客户端完成登录流程，是否能获取玩家授权的基本信息。
+* 游戏是否能拉取到商品列表，将商品信息展示。
+* 完成授权登录后，是否能拉起收银台。
+* 是否可以通过收银台完成支付，测试阶段可以[配置沙盒环境](/sdk/tap-iap/develop/sandbox)进行测试。
+* 完成支付后，是否能在游戏内获取到订单信息，完成订单履约和发货。
+* 模拟用户，在线上环境进行测试，按照上面步骤，查看整个支付流程是否顺畅。
