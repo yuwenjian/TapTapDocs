@@ -1,0 +1,59 @@
+---
+title: TapTap Payment Best Practices
+sidebar_label: Best Practices
+sidebar_position: 2
+---
+import {Red} from '/src/docComponents/doc';
+
+# Best Practices
+
+## Payment Process
+The Tap Payment SDK provides the methods required to handle essential user operations (such as initiating purchase flows and processing corresponding results).
+
+At the transaction confirmation stage, we provide two integration methods:
+* **<Red>(Recommended)</Red>For game backend integration, connect to the [Tap Payment Server API](/sdk/TapPayments/develop/server/) to fulfill orders, enabling efficient and secure purchase transaction management.**
+
+![](https://img.tapimg.com/market/images/6ce9183e5a3f72a203c7229069747465.png)
+
+* Game clients directly call Tap Payment SDK methods to fulfill orders.
+
+![](https://img.tapimg.com/market/images/d196d4b9b7a01295b02613abfca432db.png)
+
+## Detect and process purchase transactions
+We recommend retrieving a list of unfinished orders before processing payments, as this may reveal potential [reasons for unfinished orders](/sdk/TapPayments/develop/android/#retrieving-unfinished-orders)
+
+- **Network Issues During Purchase**: The user successfully purchased an item and received confirmation from the respective channel, but the user's device lost network connectivity before receiving purchase transaction notification via `PurchasesUpdatedListener`.
+- **Multiple Devices**: The user purchased an item on one device and then expected to see the item when switching devices.
+- **Unexpected Crash**: The app crashed when a purchase was successfully made externally.
+
+To help games fulfill unfinished orders, we provide two integration methods:
+* **<Red>(Recommended)</Red> For game backend integration, use the [Tap Payment Server API](/sdk/TapPayments/develop/server/)**
+
+![](https://img.tapimg.com/market/images/5e1fe28911e72ec86613923742a3446f.png)
+
+* Game clients directly call Tap Payment SDK methods.
+
+![](https://img.tapimg.com/market/images/8eddc73e4a4d87251254ee56a6bfe7dc.png)
+
+## Tap Payment Checkout
+* The Tap Payment SDK integrates the Tap Login SDK internally. Users must complete authorization and login before the checkout page can be displayed.
+* Tap Payment SDK provides built-in checkout UI components to streamline the entire payment flow for games.
+
+## Refunds
+Users can initiate refund requests through the TapTap client. For more information, refer to [Refund Processing](/sdk/TapPayments/orders-refunds/#processing-refunds).
+
+**The game backend needs to connect to the [Tap Server Webhook](/sdk/TapPayments/develop/server/#webhook-callback) to <Red>receive refund result notifications</Red>.**
+
+## Checklist
+
+Before providing payment functionality to players, developers need to test whether the payment process is completed normally and check the following items:
+
+* Does the game meet the [SDK Environment Requirements](/sdk/access/quickstart/#environment-requirements)?
+* Have the relevant configurations for the Android platform or iOS platform been filled out in the TapTap Developer Backend? Refer to [Configure Signature Certificate](/sdk/access/get-ready/#configure-signature-certificate).
+* On a device without the TapTap client installed, can the login process be completed using the WebView method, and can the player's authorized basic information be obtained?
+* On a device with the latest TapTap client installed, can the TapTap client be launched to complete the login process, and can the player's authorized basic information be obtained?
+* Can Game fetch the product list and display the product information?
+* After completing Tap authorization and login, can it launch the checkout page?
+* Can payments be completed through the checkout page? During testing, you can [configure a sandbox environment](/sdk/TapPayments/appendix/sandbox) for testing purposes.
+* After payment completion, can the game retrieve the order information to fulfill and deliver the order?
+* Simulate user testing in the production environment to verify the smoothness of the entire payment flow.
