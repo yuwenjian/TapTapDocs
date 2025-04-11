@@ -1,0 +1,140 @@
+---
+title: TapTap PC 客户端接入指南
+sidebar_label: PC 客户端接入指南
+sidebar_position: 2
+slug: /sdk/taptap-login/pc-client-guide/
+---
+
+import MultiLang from '/src/docComponents/MultiLang';
+import {Conditional} from '/src/docComponents/conditional';
+import CodeBlock from '@theme/CodeBlock';
+import Profiles from "/cn/versioned_docs/version-v3/sdk/_partials/tap-login-profile.mdx";
+
+
+## 集成前准备
+
+#### 安装插件
+
+* 下载 [TapSDK UE4](https://github.com/taptap/TapSDK-UE4/tags)，TapSDK_UE_v3.29.8.zip 解压后将 `TapBootstrap`、`TapCommon`、`TapLogin` 文件夹 Copy 到项目的 `Plugins` 目录中
+* 重启 Unreal Editor
+* 打开 编辑 > 插件 > 项目 > TapTap，开启 `TapBootstrap` 和 `TapLogin` 模块
+
+#### 添加依赖
+
+在 Project.Build.cs 中添加所需模块:
+
+```cs
+PublicDependencyModuleNames.AddRange(new string[] { "Core",
+	"CoreUObject",
+	"Engine",
+	"Json",
+	"InputCore",
+	"JsonUtilities",
+	"SlateCore",
+	"Messaging",
+	"TapCommon",
+	"TapBootstrap",
+	"TapLogin",
+	"LeanCloud"
+});
+```
+
+
+## 初始化
+
+根据 TapTap 开发者中心的应用配置信息，调用如下接口完成初始化
+
+```cpp
+#include "TapUECommon.h"
+#include "TapBootstrap.h"
+
+FTUConfig Config;
+Config.ClientID = "your_client_id"; // 必须，开发者中心对应 Client ID
+Config.ClientToken = "your_client_token"; // 必须，开发者中心对应 Client Token
+Config.RegionType = ERegionType::CN; // 仅支持 ERegionType::CN：中国大陆
+Config.ClientPublicKey = "your_client_public_key"; // 必须，开发者中心对应的 Client Public Key
+FTapBootstrap::Init(Config);
+```
+
+## 校验游戏启动方式
+
+为了保证游戏能够通过 TapTap 客户端获取必要的应用和授权信息，开发者在调用初始化接口后，必须调用该接口来完成前置启动方式校验，当返回值为 true 时，游戏可进行后续登录等其他业务流程，当返回结果为 false 时，SDK 会通过弹窗的形式引导用户重新通过 TapTap 客户端启动游戏或下载 TapTap 客户端，游戏需停止进行后续业务流程 。
+
+由于校验过程属于异步操作，所以调用该接口前建议游戏先展示 Loading 弹窗， 当 SDK 返回结果后，再关闭 Loading 弹窗。调用示例如下：
+
+```cpp
+#include "TapUECommon.h"
+
+TapUECommon::IsLaunchedFromTapTapPC([](const bool IsSuccess) {
+    if (IsSuccess)
+    {
+        UE_LOG(LogTap,Log, TEXT("Tap PC Client 校验通过"));
+        // TODO: 进行后续登录等其他业务 
+    }else
+    {
+        UE_LOG(LogTap,Log, TEXT("Tap PC Client 校验未通过"));
+        // 游戏停止后续流程
+    }
+});
+```
+
+
+
+## 登录及获取用户信息
+
+每次发起登录且成功后，SDK 会将登录信息缓存在本地，开发者可先判断本地是否存在有效的登录信息，如果有，直接进入游戏，否则重新发起登录。
+
+通过 TapTap 客户端进行登录授权是无 UI 的异步操作， 建议游戏在发起授权前展示 Loading 弹窗，当收到 SDK 返回结果后，再关闭 Loading 弹窗。调用示例如下：
+
+```cpp
+#include "TapUELogin.h"
+
+// 获取缓存的登录信息
+TSharedPtr<FTUAccessToken> AccessToken = TapUELogin::GetAccessToken();
+if (AccessToken.IsValid())
+{
+    // 已登录，可获取用户信息，直接进入游戏
+    TSharedPtr<FTULoginProfileModel> Profile = TapUELogin::GetProfile();
+}
+else
+{
+    // 未登录, 重新发起登录授权，参数为授权范围，具体可选参数参考 TUType::PermissionScope
+    TapUELogin::Login({TUType::PermissionScope::Profile}, [](const TUAuthResult& Result) {
+        if (Result.GetType() == TUAuthResult::Success) {
+            // 登录成功，获取用户信息
+            TSharedPtr<FTULoginProfileModel> Profile = TapUELogin::GetProfile();
+        }
+        else if (Result.GetType() == TUAuthResult::Cancel) {
+            // 登录取消
+        }
+        else {
+            // 登录失败
+        }
+    });
+}
+```
+
+<Profiles />
+
+
+## 登出
+
+登出将清除本地登录信息及缓存
+
+```cpp
+#include "TapUELogin.h"
+
+TapUELogin::Logout();
+```
+
+## 开发调试设置
+
+当游戏尚未发布时，开发者可以在游戏可执行文件所在目录（通常为 `{游戏名}/Binaries/Win64/`）下创建一个名为 `taptap_client_id.txt` 的文本文件。该文件内容仅需填写当前应用的 `clientId`，即可在调试阶段**无需通过 TapTap 客户端启动游戏**，直接运行可执行文件进行调试。
+
+:::tip
+注意：当发布游戏时，请务必删除游戏内 `taptap_client_id.txt` 文本文件
+:::
+
+[//]: # (<Languages/>)
+
+
