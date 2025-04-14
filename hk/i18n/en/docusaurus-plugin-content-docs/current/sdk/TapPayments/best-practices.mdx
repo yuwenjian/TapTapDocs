@@ -15,6 +15,10 @@ At the transaction confirmation stage, we provide two integration methods:
 
 ![](https://img.tapimg.com/market/images/6ce9183e5a3f72a203c7229069747465.png)
 
+Users can initiate refund requests through the TapTap client. For more information, refer to [Refund Processing](/sdk/TapPayments/orders-refunds/#processing-refunds).
+
+**The game backend <Red>must integrate</Red> the [Tap Server Webhook](/sdk/TapPayments/develop/server/#webhook-callback) to <Red>receive refund result notifications</Red>.**
+
 * Game clients directly call Tap Payment SDK methods to fulfill orders.
 
 ![](https://img.tapimg.com/market/images/d196d4b9b7a01295b02613abfca432db.png)
@@ -38,11 +42,6 @@ To help games fulfill unfinished orders, we provide two integration methods:
 ## Tap Payment Checkout
 * The Tap Payment SDK integrates the Tap Login SDK internally. Users must complete authorization and login before the checkout page can be displayed.
 * Tap Payment SDK provides built-in checkout UI components to streamline the entire payment flow for games.
-
-## Refunds
-Users can initiate refund requests through the TapTap client. For more information, refer to [Refund Processing](/sdk/TapPayments/orders-refunds/#processing-refunds).
-
-**The game backend needs to connect to the [Tap Server Webhook](/sdk/TapPayments/develop/server/#webhook-callback) to <Red>receive refund result notifications</Red>.**
 
 ## Checklist
 
