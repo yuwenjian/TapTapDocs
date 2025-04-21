@@ -210,9 +210,9 @@ allprojects {
 
 <CodeBlock language="groovy">{
 `dependencies {
-    implementation 'com.taptap.sdk:tap-core:4.6.0-beta.1'
-    implementation 'com.taptap.sdk:tap-login:4.6.0-beta.1'
-    implementation 'com.taptap.sdk:tap-relation-lite:4.6.0-beta.1'
+    implementation 'com.taptap.sdk:tap-core:4.6.1-beta.4'
+    implementation 'com.taptap.sdk:tap-login:4.6.1-beta.4'
+    implementation 'com.taptap.sdk:tap-relation-lite:4.6.1-beta.4'
 }`
 }</CodeBlock>
 
@@ -989,34 +989,34 @@ TapTapRelationLite.syncRelationshipWithUnionId(
 <MultiLang kind="unity_android_v4">
 
 ```cs
-using TapSDK.Relation;
+using TapSDK.RelationLite;
 
 string openId = "";
 string unionId = "";
-TapTapRelation.ShowTapUserProfile(openId, unionId);
+TapTapRelationLite.ShowTapUserProfile(openId, unionId);
 ```
 
 ```java
-import com.taptap.sdk.relation.TapTapRelation;
+import com.taptap.sdk.relation.TapTapRelationLite;
 // openId unionId二选一即可
 String openId = "";
 String unionId = "";
-TapTapRelation.showTapUserProfile(openId, unionId);
+TapTapRelationLite.showTapUserProfile(openId, unionId);
 ```
 
 ```kotlin
-import com.taptap.sdk.relation.TapTapRelation
+import com.taptap.sdk.relation.TapTapRelationLite
 // openId unionId二选一即可
 val openId = "";
 val unionId = "";
-TapTapRelation.showTapUserProfile(openId = openId, unionId = unionId)
+TapTapRelationLite.showTapUserProfile(openId = openId, unionId = unionId)
 ```
 
 </MultiLang>
 
 ## 国际化
 
-TapTapRelation 支持设置语言：目前只支持简体中文
+TapTapRelationLite 支持设置语言：目前只支持简体中文
 
 [//]: # (<Languages/>)
 
