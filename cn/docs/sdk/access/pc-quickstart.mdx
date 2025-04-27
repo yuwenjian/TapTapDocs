@@ -1,0 +1,196 @@
+---
+title: TapTap PC 端集成
+sidebar_label: TapTap PC 端集成
+sidebar_position: 2
+---
+
+import MultiLang from "/src/docComponents/MultiLang";
+import CodeBlock from "@theme/CodeBlock";
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
+
+本文介绍如何快速通过 TapSDK 接入 TapTap PC 端。
+
+## 环境要求
+
+- Unity 2019.4 或更高版本
+
+## 项目配置
+
+### 1. 添加 SDK 所需的外部依赖
+
+SDK 内部使用的 JSON 解析库为 `Newtonsoft-json`，如果当前工程已接入该依赖库，则不需额外处理，否则需在 `Packages/manifest.json` 添加如下依赖：
+
+```json
+"com.unity.nuget.newtonsoft-json":"3.2.1"
+```
+
+### 2. 添加 SDK 依赖
+
+SDK 支持远程依赖 (Unity Package Manager) 及本地文件导入两种集成方式，开发者根据需求选择其中一种即可，推荐使用远程依赖。
+
+#### 远程依赖
+
+SDK 支持通过 NPMJS 及 GitHub 两种方式，开发者选择其中一种即可。
+
+##### 1. NPMJS 接入
+
+
+在项目的 `Packages/manifest.json` 文件中添加以下依赖：
+
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":${v4SDKVersions.taptap.unity}
+  }`}
+</CodeBlock>
+
+
+但需要注意的是，需在 `Packages/manifest.json` 中 `dependencies` 同级下声明 `scopedRegistries`：
+
+
+```json
+"scopedRegistries":[
+  {
+    "name": "NPMJS",
+    "url": "https://registry.npmjs.org/",
+    "scopes": ["com.taptap"]
+  }
+]
+```
+
+
+##### 2. GitHub 接入
+
+在项目的 `Packages/manifest.json` 文件中添加以下依赖：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.unity}"
+}`}
+</CodeBlock>
+
+在 Unity 顶部菜单中选择 **Window > Package Manager** 可查看已经安装在项目中的包。
+
+#### 本地文件导入
+
+1. 在 [下载页](/tap-download) 下载下列模块对应 `unitypackage` 文件，并在 Unity 项目中依次通过 **Assets > Import Packages > Custom Packages** 进行导入，包括：
+
+  <ul>
+    <li><code>TapSDK_Core.unitypackage</code> TapTapSDK 核心模块，必选</li>
+  </ul>
+
+2. 如果当前项目已集成 `Newtonsoft.Json` 依赖，则忽略该步骤，否则在 `NuGet.org` [ Newtonsoft.Json ](https://www.nuget.org/packages/Newtonsoft.Json) 页面中通过点击右侧 「Download package」 下载库文件，并将下载的文件后缀从`.nupkg` 修改为 `.zip`，同时解压该文件并复制内部的 `Newtonsoft.Json.dll` 文件拷贝到工程 `Assets` 的 `Plugins` 目录下，另外为了避免导出 IL2CPP 平台时删除必要数据，需在 `Assets` 目录下创建 `link.xml` 文件（如果已有该文件，则添加如下内容），其内容如下：
+
+```xml
+<linker>
+  <assembly fullname="System.Core">
+    <type fullname="System.Linq.Expressions.Interpreter.LightLambda" preserve="all" />
+  </assembly>
+</linker>
+
+```
+
+## 初始化
+
+根据 TapTap 开发者中心的应用配置信息，调用如下接口完成初始化
+
+```cs
+using TapSDK.Core;
+
+// 核心配置
+TapTapSdkOptions coreOptions = new TapTapSdkOptions
+{
+   // 客户端 ID，开发者后台获取
+   clientId = "游戏 clientId",
+   // 客户端令牌，开发者后台获取
+   clientToken = "游戏 clientToken",
+   // 地区，仅支持 CN 国内
+   region = TapTapRegionType.CN,
+   // 是否开启日志，Release 版本请设置为 false
+   enableLog = true,
+   // 客户端公钥，开发者后台获取
+   clientPublicKey = "游戏 clientPublicKey"
+};
+// TapSDK 初始化
+TapTapSDK.Init(coreOptions);
+
+// 当需要添加其他模块的初始化配置项，例如合规认证等， 请使用如下 API
+TapTapSdkBaseOptions[] otherOptions = new TapTapSdkBaseOptions[]
+{
+    // 其他模块配置项
+};
+TapTapSDK.Init(coreOptions, otherOptions);
+
+```
+
+## 启动校验
+
+为了保证游戏能够通过 TapTap PC 端获取必要的应用和授权信息，开发者在调用初始化接口后，必须调用该接口来完成前置启动校验，当返回值为 true 时，游戏可进行后续登录等其他业务流程，当返回结果为 false 时，SDK 会通过弹窗的形式引导用户重新通过 TapTap PC 端启动游戏或下载 TapTap PC 端，游戏需停止进行后续业务流程 。
+
+由于校验过程属于异步操作，所以调用该接口前建议游戏先显示加载（Loading）弹窗， 当 SDK 返回结果后，再关闭该弹窗。调用示例如下：
+
+```cs
+using TapSDK.Core;
+
+bool IsSuccess = await TapTapSDK.IsLaunchedFromTapTapPC();
+if (IsSuccess)
+{
+    UnityEngine.Debug.Log(" TapTap PC 端校验通过");
+    // TODO: 继续后续登录等其他业务流程
+}
+else
+{
+    UnityEngine.Debug.Log(" TapTap PC 端校验未通过");
+    // 停止执行后续业务流程
+}
+```
+
+
+
+## 登录及获取用户信息
+
+接入 TapTap PC 端的游戏在登录流程上与未接入的游戏存在显著差异，游戏接入后，在用户登录时，SDK 会基于当前 TapTap PC 端已登录的账号信息自动完成静默登录，无需用户进行额外操作，从而显著提升登录体验。
+
+由于该流程为异步操作，建议开发者在发起登录前显示加载（Loading）弹窗，并在登录流程完成后关闭该弹窗，以提升用户体验。具体接入方式请参考 [TapTap 登录开发指南](/sdk/taptap-login/guide/#%E7%99%BB%E5%BD%95)。
+
+## 合规认证
+
+通过 TapTap PC 端完成登录后，SDK 将会通过 TapTap PC 端获取用户的实名信息并进行后续合规认证检查，避免了用户额外授权。
+
+具体接入方式请参考 [合规认证开发指南](/sdk/anti-addiction/guide/)。
+
+## 开发调试方式
+
+在游戏尚未发布期间，开发者可参照以下流程完成本地调试配置，配置完成后，即可在调试阶段**无需依赖 TapTap PC 端启动游戏**，直接运行游戏可执行文件进行测试。
+
+### 1. 下载及配置调试文件
+
+在 TapTap 开发者中心游戏「商店」的 「PC 游戏管理」 -> 「开放能力」 页面下载调试文件 (`taptap_client_id.txt`)，如图所示：
+
+![](/img/pc-quickstart/download_debug_file.png)
+
+点击 「taptap_client_id.txt」 后，浏览器会下载一个对应名称的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下。
+
+### 2. 添加测试用户白名单
+
+在上一步骤同一页面中，选择 「设置自测用户」，将弹出设置自测用户窗口，如下图：
+
+![](/img/pc-quickstart/add_new_tester.png)
+
+点击「添加用户」，输入用户 `TapTap ID` 并点击右侧的搜索按钮，待搜索结果返回后，选择对应用户并点击「提交」按钮，即可完成添加操作。
+
+![](/img/pc-quickstart/submit_tester.png)
+
+### 3. 下载 TapTap PC 端并登录
+
+下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的自测用户账号，即可在本地启动游戏，开始测试相关业务功能。
+
+
+:::tip
+注意：当发布游戏时，请务必删除游戏目录中的 `taptap_client_id.txt` 调试文本文件
+:::
+
+[//]: # (<Languages/>)
+
+
