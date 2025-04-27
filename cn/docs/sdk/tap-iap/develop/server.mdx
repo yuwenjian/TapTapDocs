@@ -15,7 +15,7 @@ import MultiLang from "/src/docComponents/MultiLang";
 - `https://cloud-payment.tapapis.cn`
 
 
-| ** 接口地址 **                      | **Method** | **描述**             |
+| **接口地址**                      | **Method** | **描述**             |
 | ----------------------------- | ---------- | -------------------- |
 | `/order/v1/info?client_id={{client_id}}&order_id={{order_id}}`        | `GET`        | 查询订单信息         |
 | `/order/v1/unconfirmed?client_id={{client_id}}` | `GET`        | 查询未核销的订单列表 |
@@ -97,7 +97,7 @@ curl -X GET \
 
 #### 请求正文信息
 
-| ** 参数名称 ** | ** 必填 ** | ** 格式 ** |  ** 描述 ** |
+| **参数名称** | **必填** | **格式** |  **描述** |
 | --------------| --------------| --------------| --------------|
 | `order_id`    |    Y      |   string |  订单唯一 ID |
 | `purchase_token` |    Y      |   string |  用于订单核销的 token |
@@ -155,7 +155,7 @@ curl -X POST \
 
 #### 请求正文信息
 
-| ** 参数名称 ** | ** 必填 ** | ** 格式 ** |  ** 描述 ** |
+| **参数名称** | **必填** | **格式** |  **描述** |
 | --------------| --------------| --------------| --------------|
 | `order`    |    Y      |   object |  对象结构见 [订单信息](/sdk/tap-iap/develop/server/#订单信息) |
 | `event_type` |    Y      |   string |  事件枚举见 [Webhook的事件枚举](/sdk/tap-iap/develop/server/#webhook的事件枚举) |
