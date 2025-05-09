@@ -42,3 +42,8 @@ sidebar_position: 4
 ### unity 项目集成 TapSDK 然后导出 Xcode 项目，运行时报错 `NullReferenceException: Object reference not set to an instance of an object TapTap.Login.Editor. TapLoginlOSProcessor.OnPostprocessBuild ...`
 
 请参考文档 [iOS 配置](/sdk/taptap-login/guide)描述，检查是否有创建 `TDS-Info.plist` 文件。（注意复制配置内容时，请删除注释行）
+
+### 在 iOS 的 OC 项目中调用 SDK 登录接口时，报错 `No type or protocol named 'TapTapSDKVerifyProtocol' `
+
+在该 OC 文件对应的头文件类声明 （ `@interface` ) 前添加 `@protocol TapTapSDKVerifyProtocol;` 。
+

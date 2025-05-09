@@ -303,7 +303,11 @@ enableAutoIAPEvent = true,
 // OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效
 oaidCert = null,
 // 是否开启日志，Release 版本请设置为 false
-enableLog = true
+enableLog = true,
+// 是否禁用 OAID 反射，默认为 true
+disableReflectionOAID = true,
+// 是否禁用自动上报设备登录事件，默认为 false
+disableAutoLogDeviceLogin = false
 };
 // TapSDK 初始化
 TapTapSDK.Init(coreOptions);
@@ -335,6 +339,8 @@ TapTapSDK.Init(coreOptions, otherOptions);
 | enableAdvertiserIDCollection | 是   | 是否开启广告商 ID 收集，仅 iOS ，默认为 false，开启时需添加[工程配置](#idfaios)                            |
 | enableAutoIAPEvent           | 是   | 是否开启自动上报 IAP 事件                                    |
 | oaidCert                     | 是   | OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效 |
+| disableReflectionOAID        | 是   | 是否禁用 OAID 反射，默认为 true                              |
+| disableAutoLogDeviceLogin    | 是   | 是否禁用自动上报设备登录事件，默认为 false                           |
 
 
 </>
@@ -353,15 +359,18 @@ import com.taptap.sdk.core.TapTapSdkOptions;
 String clientId = "";
 // 开发者中心对应 Client Token
 String clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-boolean enableLog = BuildConfig.DEBUG;
 
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
         clientId, // 游戏 Client ID
         clientToken, // 游戏 Client Token
         TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
 );
-tapSdkOptions.setEnableLog(enableLog);
+
+// 是否禁用 OAID 反射, 默认 true
+tapSdkOptions.setDisableReflectionOAID(true);
+// 是否即用禁用自动上报设备登录事件, 默认 false
+tapSdkOptions.setDisableAutoLogDeviceLogin(false);
+
 // 初始化 TapSDK
 TapTapSdk.init(context, tapSdkOptions);
 ```
@@ -385,7 +394,11 @@ TapTapSdk.init(
          clientToken = clientToken,
          region = TapTapRegion.CN,
          preferredLanguage = TapTapLanguage.ZH_HANS,
-         enableLog = false
+         enableLog = false,
+         // 是否禁用 OAID 反射, 默认 true
+         disableReflectionOAID = true,
+         // 是否即用禁用自动上报设备登录事件, 默认 false
+         disableAutoLogDeviceLogin = false
    )
 )
 ```
@@ -1692,9 +1705,93 @@ TapTapEvent.userAdd(["totalPoints": 10])
 请在权限申请、设置 IDFA 开关等操作结束后初始化 SDK，以保证设备指纹能够正常上报。
 :::
 
-### OAID（Android）
+### 手动设置 OAID（Android 推荐做法）
 
-> 注意：SDK 版本 3.28.2 及以上支持 OAID 版本为 1.0.5 ~ 2.4.0； 3.15.0 ~ 3.28.0 支持 OAID 版本为 1.0.5 ~ 2.1.0； 3.14.0 及以下支持 OAID 版本为 1.0.5 ~
+我们强烈推荐开发者使用手动设置 OAID 的方式，而不是依赖 SDK 自动获取。这样做可以避免 OAID 相关的兼容性问题，提高稳定性和性能。设置方法如下：
+
+1. **初始化时禁用相关自动功能**：
+   - 设置 `disableReflectionOAID = true` 禁用反射获取 OAID（默认为 true）
+   - 设置 `disableAutoLogDeviceLogin = true` 禁用自动上报设备登录事件（默认为 false）
+
+2. **手动调用相关 API 完成设置**：
+
+<MultiLang kind="unity_android_ios_v4">
+
+<>
+
+```cs
+using TapSDK.Core
+
+// 手动设置 OAID (仅 Android 平台)
+TapTapEvent.SetOAID("your_oaid_value");
+
+// 手动上报设备登录事件
+TapTapEvent.LogDeviceLoginEvent();
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.core.TapTapEvent;
+
+// 手动设置 OAID
+TapTapEvent.setOAID("your_oaid_value");
+
+// 手动上报设备登录事件
+TapTapEvent.logDeviceLoginEvent();
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapEvent
+
+// 手动设置 OAID
+TapTapEvent.setOAID(oaid = "your_oaid_value")
+
+// 手动上报设备登录事件
+TapTapEvent.logDeviceLoginEvent()
+```
+
+</>
+
+<>
+
+```swift
+import TapTapCoreSDK
+
+// iOS 平台不适用 OAID 设置
+
+// 手动上报设备登录事件
+TapTapEvent.logDeviceLoginEvent()
+```
+
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapEvent.h"
+
+// iOS 平台不适用 OAID 设置
+
+// 手动上报设备登录事件
+[TapTapEvent logDeviceLoginEvent];
+```
+
+</>
+
+</MultiLang>
+
+### OAID 自动获取（Android 已废弃）
+
+> **注意：为提高兼容性和性能，SDK 默认已禁用自动获取 OAID 功能（`disableReflectionOAID = true`）。我们强烈推荐使用"手动设置 OAID"的方式。如果您仍需使用自动获取 OAID 功能，可在初始化时设置 `disableReflectionOAID = false` 开启此功能，但需注意这可能带来兼容性问题。**
+> 
+> SDK 版本 3.28.2 及以上支持 OAID 版本为 1.0.5 ~ 2.4.0； 3.15.0 ~ 3.28.0 支持 OAID 版本为 1.0.5 ~ 2.1.0； 3.14.0 及以下支持 OAID 版本为 1.0.5 ~
 > 1.0.25
 
 
@@ -1742,6 +1839,8 @@ System.loadLibrary("msaoaidsec");
 3. 对于 1.0.26 及以上版本是否加载了其库文件以及库文件名称是否和版本对应
 4. 应用在 Android 12 报错 `java.lang.UnsatisfiedLinkError`且 应用 minSdkVersion 大于等于 23 ，建议在 AndroidManifest.xml 文件 application
    标签中添加 `android:extractNativeLibs="true"`
+
+
 
 ### IMEI（Android）
 
