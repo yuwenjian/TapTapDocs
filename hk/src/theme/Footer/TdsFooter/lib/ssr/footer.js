@@ -1917,7 +1917,7 @@ const Ot = ne((n, e, t, o) => {
         {
           name: s.t("ssp"),
           track: j.FooterCommercializationSmp,
-          href: "https://ssp.taptap.cn/",
+          href: "https://ssp.dirichlet.cn/",
           blank: !0
         }
       ]

@@ -25,10 +25,6 @@ const v4SDKVersions = {
             storage: "0.7.10",
             realtime: "1.0.1",
         }
-    },
-    tapadn: {
-        unity: "3.16.3.45",
-        android: "3.16.3.45",
     }
 };
 
