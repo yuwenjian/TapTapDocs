@@ -1,0 +1,311 @@
+---
+title: TapTap 标准化运营：开发者快速入门指南
+sidebar_position: 1.101
+---
+
+import { Red, Blue, Black, Gray } from "/src/docComponents/doc";
+
+# TapTap 开发者快速入门指南
+
+本文档面向 TapTap 开发者，系统地覆盖了行业分析、游戏上架、游戏生命周期管理及运营支持体系等核心环节，助力开发者快速打通平台运营链路。
+
+**了解手游行业：了解手游行业的基本构成、商业模式、政策法规。**
+  - [手游行业简介](#1-手游行业简介)
+  - [TapTap 平台介绍](#2-taptap-平台介绍)
+
+**在 TapTap 上架游戏：在 TapTap 完成开发者入驻后，即可提交游戏上架审核。**
+  - [入驻平台：获取 TapTap 认证开发者身份](#1-获取-taptap-认证开发者身份)
+  - [上架游戏：补充游戏资料&资质，提交上架审核](#2-游戏物料和资质)
+
+**在 TapTap 运营游戏：游戏发布后，可以对其进行日常运营，运营时需要遵守相关运营规范和协议。**
+  - [游戏运营：伴随整个游戏生命周期完成长线运营](#三在-taptap-完整地运营一款游戏)
+
+**遇到问题如何求助：在 TapTap 上架&运营游戏时，可以通过多种渠道解决遇到的问题。**
+  - [提交工单：面向所有 TapTap 开发者的一站式自助功能](#1-提交工单)
+  - [加入社群](#2-加入官方社群)
+  - [建联官方运营](#五常见问题)
+
+
+## 一、行业概览
+
+### 1. 手游行业简介
+#### 1.1 行业基本构成
+手机游戏行业主要由游戏开发者、发行商、平台及玩家构成。开发者创作游戏内容，发行商负责推向市场，平台则是连接各方的桥梁。国内游戏平台多采用联运模式与开发者、发行商合作。
+联运模式下，平台凭借用户流量、推广渠道和技术支持，为游戏提供曝光及下载入口，并收取分成，常见分成比例在 30% - 70% 间浮动。
+#### 1.2 主要商业模式介绍
+##### 1. 付费下载
+  - 玩家在获取一款手机游戏时，需要预先向游戏开发者或发行商支付一定金额的费用，完成支付后，才能将游戏下载并安装到自己的手机设备上进行游玩。在国内手机游戏市场中，付费下载模式的占比较小。<b>采用付费下载，首先游戏必须获得版号</b>。
+##### 2. 内购模式
+  - 游戏本身可以免费下载和安装到手机上，玩家在游戏过程中，可通过游戏内的付费系统，购买虚拟道具、付费解锁特定关卡、提升角色能力属性等，以此来丰富游戏体验。这种模式是国内手机游戏行业的主流盈利方式。<b>采用内购模式，首先游戏必须获得版号</b>。
+##### 3. 广告变现
+  - 游戏中展示各类广告，常见的有开屏广告，即玩家打开游戏时全屏展示的广告；插屏广告，会在游戏特定节点，如关卡切换、暂停时弹出；激励视频广告，玩家观看完一段视频广告后，可获得游戏内奖励，如金币、道具等。玩家观看这些广告后，游戏开发者能够从与之合作的广告平台获取相应的收入分成。
+#### 1.3 行业政策法规
+##### 1. 实名认证与防沉迷政策
+  - 必须在游戏内建立实名认证系统，注册游戏账号需提供真实有效的身份信息进行验证。
+  - 游戏需标注适龄范围（如“8+”“12+”“16+”）。
+  - 对未成年人进行游戏时长和充值限制。
+##### 2. 隐私政策
+  - 需要在游戏中显著位置向玩家提供清晰易懂的隐私声明。
+  - 需要明确告知玩家游戏收集、使用、存储和共享玩家个人信息的方式、目的和范围。
+##### 3. 版号
+  - 无版号游戏不得进行收费或内购，否则属于非法经营，可能面临下架、罚款等处罚。
+##### 4. ICP 备案
+  - 根据《工业和信息化部关于开展移动互联网应用程序备案工作的通知》要求联网游戏都必须进行 ICP 备案。
+##### 5. 软著
+  - 开发者需提供权利获取方式为「原始取得」的软件著作权登记号以及登记证书扫描件。
+
+
+### 2. TapTap 平台介绍
+#### 2.1 平台概述
+从 2016 年成立伊始，TapTap 为发现好游戏而来。从游戏收入全部归开发者所有开始，尝试用一小步撬动行业的一大步。我们探索真实，真实的推荐好玩的游戏，真实的讨论游戏！我们探索自由，致力于帮助开发者自由的挥洒游戏创意，帮助玩家自由的发现所爱！我们相信，美好的游戏世界来自共创！欢迎来到 TapTap，与数千万玩家和开发者一起，无限探索，发现好玩！
+#### 2.2 TapTap 平台特色与优势
+##### 1. 不联运、不分成模式
+  - TapTap 不联运、不分成的独特模式，为开发者提供更加公平、透明的环境。
+  -  “零分成”允许开发者保留全部游戏收入，显著缓解中小团队的资金压力。
+##### 2. 真实客观的游戏评价
+  - TapTap 致力于维护评价内容的真实性，评分完全由真实玩家基于自己的游戏体验进行打分。
+  - 拒绝开发者利用奖励干预玩家对游戏的真实点评。
+  - 拒绝开发者任何有关刷分等异常灰产行为。
+##### 3. 精准流量分发机制
+  - 社区生态形成核心玩家圈层，通过 UGC 内容自然沉淀用户口碑。
+  - 智能推荐系统基于用户行为数据实现精准匹配，提升长尾游戏曝光效率。
+##### 4. 全周期运营支持
+  - 开发阶段集成多种测试工具，支持快速验证核心玩法。
+  - TapSDK 集成登录、更新唤起等多种技术服务，降低游戏研发、运营成本。
+  - 运营阶段配备礼包系统、签到配置、活动创建等标准化组件，解决中小团队缺乏专业中台支持的痛点。
+
+:::tip
+开发者选择 TapTap 上架游戏可享受<b><Red>零分成收益、精准用户触达、流量支持及开发扶持政策</Red></b>，显著提升盈利与推广效率。
+:::
+
+
+## 二、在 TapTap 上架游戏需要做哪些准备工作
+![](https://img.tapimg.com/market/images/6ee10acf74c8530f6f02beb1fd354b6d.png)
+
+### 1. 获取 TapTap 认证开发者身份
+TapTap 开发者分为 <Blue>注册开发者</Blue> 和 <Blue>认证开发者</Blue>，提交入驻申请的 TapTap 账号，将在开发者审核通过后自动成为该开发者账号的超级管理员。
+
+第一步：获取 TapTap **<Blue>认证开发者</Blue>** 身份，首先需要一个完成实名认证的 TapTap 账号。 
+
+第二步：注册完成个人账号后，进入 [开发者中心](https://developer.taptap.cn/)，按照 [开发者入驻流程和入驻审核规范说明](https://developer.taptap.cn/docs/store/store-onboard/) 步骤操作即可。
+
+:::info 特别注意
+已成为 <b><Blue>注册开发者</Blue></b> 账号的厂商主体，可以在 <b>[开发者中心](https://developer.taptap.cn/) >> 财务与管理 >> 厂商设置 >> 成为认证开发者</b> 位置申请转换开发者类型，无需重复创建厂商申请账号。
+:::
+
+### 2. 游戏物料和资质
+#### 2.1 游戏物料
+上架游戏前开发者需要准备的「[游戏物料](https://developer.taptap.cn/docs/store/release/store-material/)」。
+#### 2.2 游戏资质
+
+| 游戏性质             | 需要提交的资质                                                                 | 上线形式     |
+|----------------------|----------------------------------------------------------------------------------|--------------|
+| **案例1：联网 + 有内购** | 1. [游戏版号](https://developer.taptap.cn/docs/store/release/store-agree/#64-%E7%89%88%E5%8F%B7) 2. [软件著作权（软著）](https://developer.taptap.cn/docs/store/release/store-agree/#65-%E8%BD%AF%E8%91%97) 3. [ICP 备案](https://developer.taptap.cn/docs/store/release/store-policy/filing-notice/) 4. [防沉迷认证](https://developer.taptap.cn/docs/store/release/store-policy/#3%E9%98%B2%E6%B2%89%E8%BF%B7%E6%94%BF%E7%AD%96%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83) 5. [隐私合规](https://developer.taptap.cn/docs/store/release/store-policy/#2-%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96%E5%A3%B0%E6%98%8E%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83) | 「正式上线」 |
+| **案例2：联网 + 无内购** | 1. [ICP 备案](https://developer.taptap.cn/docs/store/release/store-policy/filing-notice/) 2. [防沉迷认证](https://developer.taptap.cn/docs/store/release/store-policy/#3%E9%98%B2%E6%B2%89%E8%BF%B7%E6%94%BF%E7%AD%96%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83) 3. [隐私合规](https://developer.taptap.cn/docs/store/release/store-policy/#2-%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96%E5%A3%B0%E6%98%8E%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83)                                        | 「开放试玩」 |
+| **案例3：不联网 + 有内购** | 1. [游戏版号](https://developer.taptap.cn/docs/store/release/store-agree/#64-%E7%89%88%E5%8F%B7) 2. [软件著作权（软著）](https://developer.taptap.cn/docs/store/release/store-agree/#65-%E8%BD%AF%E8%91%97)3. [防沉迷认证](https://developer.taptap.cn/docs/store/release/store-policy/#3%E9%98%B2%E6%B2%89%E8%BF%B7%E6%94%BF%E7%AD%96%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83) 4. [隐私合规](https://developer.taptap.cn/docs/store/release/store-policy/#2-%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96%E5%A3%B0%E6%98%8E%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83)                | 「正式上线」 |
+| **案例4：不联网 + 无内购** | 1. [防沉迷认证](https://developer.taptap.cn/docs/store/release/store-policy/#3%E9%98%B2%E6%B2%89%E8%BF%B7%E6%94%BF%E7%AD%96%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83) 2. [隐私合规](https://developer.taptap.cn/docs/store/release/store-policy/#2-%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96%E5%A3%B0%E6%98%8E%E5%8F%8A%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83)                                                      | 「开放试玩」 |
+
+:::info 特别注意
+- <Red><b>「正式上线」</b></Red>开放下载或开放内购，必须提供<Red><b>官方游戏出版物号（ISBN）</b></Red>，若游戏没有提供游戏版号，只能以「开放试玩」形式上架。
+- <Red><b>联网游戏</b></Red>提供包体测试、下载，请提供 App 的 <Red><b>ICP 备案信息</b></Red>。对于暂时无版号无法进行 ICP 备案的游戏，可通过 TapTap 申请游戏测试，TapTap 将提供《测试游戏备案辅助证明》用于开展 APP 备案 [《TapTap 测试游戏备案辅助证明申请介绍》](https://developer.taptap.cn/docs/store/release/store-policy/filing-certificate/)。
+- 提供包体<Red><b>测试、下载</b></Red>，必须完善<Red><b>未成年人防沉迷</b></Red>系统，并提供未成年人防沉迷系统接入视频证明。
+- 游戏物料、资质提审周期一般为 5-7 天左右。
+:::
+
+## 三、在 TapTap 完整地运营一款游戏
+
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="2">游戏阶段</th>
+      <th style={{width: "27%"}}>运营动作</th>
+      <th style={{width: "25%"}}>价值与意义</th>
+      <th>TapTap 资源扶持</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{width: "13%",textAlign: "center" }}>
+        研发预热期<br/>(上线前游戏)
+      </td>
+      <td style={{width: "15%"}}>
+        形成了基本的游戏概念，同时储备了一定的素材
+      </td>
+      <td>
+        - [上架页面并开启预约](https://developer.taptap.cn/docs/store/release/store-creategame/)
+        - 提交工单[完善游戏标签](https://developer.taptap.cn/docs/store/teaser/tag-management/)
+        - 开启[预约里程碑](https://developer.taptap.cn/docs/store/teaser/tag-management/)
+      </td>
+      <td>
+        - 以素材、标签、核心玩法初步积累游戏核心用户
+        - 利用冷启动扶持冲击榜单
+      </td>
+      <td>
+        - [今日游戏](https://developer.taptap.cn/docs/store/operations-skills/today/#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BB%8A%E6%97%A5%E6%B8%B8%E6%88%8F)
+        - 为期三天的冷启动流量
+      </td>
+    </tr>
+    <tr>
+      <td rowspan="2" style={{textAlign: "center" }}>测试期</td>
+      <td>
+        游戏初步具备核心玩法，还未完全成型，只想面向小体量目标用户开放，通过玩家反馈验证核心玩法的合理性
+      </td>
+      <td>
+        - <b><Red>推荐</Red></b>[包体接入 Tap 登录](https://developer.taptap.cn/docs/sdk/taptap-login/features/)
+        - 创建[封闭式测试](https://developer.taptap.cn/docs/store/test/test-closedbetatest/) or [篝火测试](https://developer.taptap.cn/docs/store/test/test-gameplaytest/)
+        - <b><Red>推荐</Red></b>提前[开启招募](https://developer.taptap.cn/docs/store/test/test-closedbetatest/#%E5%A6%82%E4%BD%95%E6%8B%9B%E5%8B%9F%E7%94%A8%E6%88%B7%E5%B9%B6%E5%8F%91%E6%94%BE%E6%B5%8B%E8%AF%95%E8%B5%84%E6%A0%BC)
+        - 评价维护
+      </td>
+      <td>
+       - 游戏只会在首页定向推送至目标用户群体，无页面入口和榜单曝光
+       - 基于用户反馈优化核心玩法
+      </td>
+      <td rowspan="2">
+        - [篝火测试](https://developer.taptap.cn/docs/store/test/test-gameplaytest/)为保密测试，仅支持首页推荐和站内投放（本质为封闭测试）
+        - [接入 Tap 登录可置换 REP 流量金](https://rep.taptap.cn/docs/taprep-loginsdk)
+        - 对于测试事件，同一种测试形式（封闭式测试、开放式测试）在 **<Red>90 天内至多在[今日游戏](https://developer.taptap.cn/docs/store/operations-skills/today/#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BB%8A%E6%97%A5%E6%B8%B8%E6%88%8F)展示一次</Red>**
+        - [活动中心：测试招募](https://developer.taptap.cn/docs/store/test/test-handbook/#1-%E6%B5%8B%E8%AF%95%E6%8B%9B%E5%8B%9F%E9%9C%80%E7%94%B3%E8%AF%B7)
+      </td>
+    </tr>
+    <tr>
+      <td>在完善阶段借助想吸引更多用户，同时需要对游戏做优化</td>
+      <td>
+        - <b><Red>推荐</Red></b>[包体接入 Tap 登录](https://developer.taptap.cn/docs/sdk/taptap-login/features/)
+        - 开启[开放式测试](https://developer.taptap.cn/docs/store/test/test-openbetatest/)
+        - <b><Red>推荐</Red></b>配置先到先得
+        - 评价维护  
+      </td>
+      <td>
+        - 积累首发前第一波深度用户
+        - 基于用户反馈完善游戏各功能
+        - 冲击新品榜
+      </td>
+    </tr>
+    <tr>
+      <td  style={{textAlign: "center" }}>首发期</td>
+      <td>
+        游戏打磨完成，正式开放给玩家
+      </td>
+      <td>
+        - 接入 [TapSDK](https://developer.taptap.cn/docs/sdk/) （可在测试期完成）
+          - <b><Red>必接</Red></b>[唤起更新](https://developer.taptap.cn/docs/sdk/update/features/)
+          - <b><Red>推荐</Red></b> [TapTap 分享](https://developer.taptap.cn/docs/sdk/share/features/)
+          - <b><Red>推荐</Red></b> [TapTap 评价](https://developer.taptap.cn/docs/sdk/review/features/)
+          - <b><Red>推荐</Red></b>[成就系统](https://developer.taptap.cn/docs/sdk/achievement/guide/)
+        - 接入 [TapADN](https://developer.taptap.cn/docs/sdk/tap-adn/scheme/) 获取广告收益
+        - 使用 [TapAD](https://tapaddoc.tapapis.cn/docs/tapad-about/) 推广中心获客
+        - 使用 [TapREP](https://rep.taptap.cn/docs/taprep-about) 置换免费流量金
+        - 开启 [论坛管理](https://developer.taptap.cn/docs/community/)
+      </td>
+      <td>
+        - 面向全体玩家开放游戏
+        - 接入 TapSDK 服务提升玩家游戏体验
+        - 多渠道获量，一定程度上开始获得收益
+        - 打造良好的社区论坛氛围，提升用户归属感
+      </td>
+      <td>
+        - [通过**游戏内跳转**置换 TapREP 合作流量金](https://rep.taptap.cn/docs/taprep-game-jump)
+        - [今日游戏](https://developer.taptap.cn/docs/store/operations-skills/today/#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BB%8A%E6%97%A5%E6%B8%B8%E6%88%8F)（在首发当日资源展示15天）
+        - [活动中心](https://developer.taptap.cn/docs/store/test/test-handbook/#1-%E6%B5%8B%E8%AF%95%E6%8B%9B%E5%8B%9F%E9%9C%80%E7%94%B3%E8%AF%B7)
+        - 首页流量倾斜：为期三天的冷启动流量
+        - 新品榜单（新品周期内可以参与新品榜的排名）
+      </td>
+    </tr>
+    <tr>
+      <td  style={{textAlign: "center" }}>长线运营期</td>
+      <td>
+        游戏版本优化迭代，留存已有用户，唤回流失用户，保证游戏口碑延长生命周期
+      </td>
+      <td>
+        - <b><Red>推荐</Red></b>配置[新版本详情页](https://developer.taptap.cn/docs/store/operations-skills/in-game-events/)
+        - <b><Red>推荐</Red></b>定期配置[签到活动](https://developer.taptap.cn/docs/store/operations-skills/game-sign/)
+        - 定期使用[官方帖推送](https://developer.taptap.cn/docs/store/operations-skills/information-dissemination/)
+      </td>
+      <td>
+        - 提升用户粘性，促进游戏内社交
+        - 帮助新老玩家融入游戏版本，提升玩家游戏体验
+        - 预热新版本信息，引导新老玩家更新或回流
+        - 保持与玩家沟通，塑造良好的官方形象
+      </td>
+      <td>
+        - [通过<b>游戏内跳转</b>置换 TapREP 合作流量金](https://rep.taptap.cn/docs/taprep-game-jump)
+        - [今日游戏](https://developer.taptap.cn/docs/store/operations-skills/today/#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BB%8A%E6%97%A5%E6%B8%B8%E6%88%8F)
+        - 游戏每周有一次官方帖推送的机会
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## 四、遇到问题如何求助
+### 1. 提交工单
+工单系统是面向所有 TapTap 开发者的一站式自助功能，遇到问题即可在 **<Blue>[开发者中心](https://developer.taptap.cn/)</Blue> >> 工单** 中创建工单咨询。
+提交工单可以处理大部分的运营事项，例如**修改游戏标签、配置蓝 V 认证**等；收到反馈后，TapTap 的工作人员将在 **2 个工作日内**尽快处理您的问题。
+![](https://img.tapimg.com/market/images/3cf03e6e91a5ac6a52865c91c7c79f51.png)
+
+### 2. 加入官方社群
+TapTap 开发者交流群是官方社群，您可以加入社群中畅所欲言，有任何疑问也可以反馈至群内或私信工作人员，收到反馈后我们将尽快回复。
+
+![](https://img.tapimg.com/market/images/18caf5abe485d7c22141e12b4a8373e1.png)
+
+## 五、常见问题
+### 1. 认证开发者身份
+
+### 开发者注册
+- [如何进入开发者中心](https://developer.taptap.cn/)
+- [开发者注册流程开发者中心申请流程](https://developer.taptap.cn/docs/store/store-onboard/)
+- [注册开发者和认证开发者有什么区别？](https://developer.taptap.cn/docs/store/store-onboard/#%E4%B8%89%E8%AE%A4%E8%AF%81%E5%BC%80%E5%8F%91%E8%80%85%E5%85%A5%E9%A9%BB%E7%94%B3%E8%AF%B7%E5%AE%A1%E6%A0%B8%E8%A7%84%E8%8C%83%E7%BB%86%E5%88%99)
+- [个人开发者如何填写厂商名称？](https://developer.taptap.cn/docs/store/store-onboard/#2%E4%B8%AA%E4%BA%BA%E5%BC%80%E5%8F%91%E8%80%85%E6%B2%A1%E6%9C%89%E5%85%AC%E5%8F%B8%E5%A6%82%E4%BD%95%E5%A1%AB%E5%86%99%E5%8E%82%E5%95%86%E5%90%8D%E7%A7%B0)
+- [如何认领厂商账号？](https://developer.taptap.cn/docs/store/store-onboard/#3-%E5%8E%82%E5%95%86%E5%90%8D%E7%A7%B0%E5%B7%B2%E5%AD%98%E5%9C%A8%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E5%8E%82%E5%95%86%E8%B4%A6%E5%8F%B7%E8%AE%A4%E9%A2%86)
+- [如何修改厂商名称？](https://developer.taptap.cn/docs/store/store-onboard/#4-%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9%E5%8E%82%E5%95%86%E5%9C%A8%E8%AF%A6%E6%83%85%E9%A1%B5%E7%9A%84%E5%B1%95%E7%A4%BA%E5%90%8D%E7%A7%B0)
+
+### 开发者权限管理
+- [如何添加成员或超级管理员？](https://developer.taptap.cn/docs/store/#21-%E6%B7%BB%E5%8A%A0%E6%88%90%E5%91%98%E6%88%96%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98)
+- [如何设置管理员权限？](https://developer.taptap.cn/docs/store/#22-%E6%88%90%E5%91%98%E7%9A%84%E6%9D%83%E9%99%90%E8%AE%BE%E7%BD%AE%E5%92%8C%E5%88%A0%E9%99%A4)
+- [如何删除管理员？](https://developer.taptap.cn/docs/store/#22-%E6%88%90%E5%91%98%E7%9A%84%E6%9D%83%E9%99%90%E8%AE%BE%E7%BD%AE%E5%92%8C%E5%88%A0%E9%99%A4)
+- [如何解绑或更换主管理员？](https://developer.taptap.cn/docs/store/#6-%E4%B8%BB%E7%AE%A1%E7%90%86%E5%91%98%E5%8F%AF%E4%BB%A5%E8%A7%A3%E7%BB%91%E5%90%97%E5%8F%AF%E4%BB%A5%E8%AE%BE%E7%BD%AE%E6%96%B0%E7%9A%84%E4%B8%BB%E7%AE%A1%E7%90%86%E5%91%98%E5%90%97)
+- [什么是开发者认证？](https://developer.taptap.cn/docs/store/#%E4%B8%89%E5%BC%80%E5%8F%91%E8%80%85%E8%AE%A4%E8%AF%81)
+- [如何获得或移除开发者认证？](https://developer.taptap.cn/docs/store/#%E4%B8%89%E5%BC%80%E5%8F%91%E8%80%85%E8%AE%A4%E8%AF%81)
+
+
+## 2. 游戏上架
+
+### 创建游戏
+- [游戏入库流程](https://developer.taptap.cn/docs/store/release/store-creategame/#1-%E6%B8%B8%E6%88%8F%E5%85%A5%E5%BA%93)
+- [游戏入库后需要立即发布吗？](https://developer.taptap.cn/docs/store/release/store-creategame/#2-%E5%88%9B%E5%BB%BA%E6%B8%B8%E6%88%8F%E5%AE%A1%E6%A0%B8%E9%80%9A%E8%BF%87%E5%90%8E%E5%8F%AF%E6%9A%82%E4%B8%8D%E5%8F%91%E5%B8%83%E6%B8%B8%E6%88%8F%E5%90%97)
+- [TapTap 游戏收录标准](https://developer.taptap.cn/docs/store/release/store-agree/#17-%E6%9A%82%E4%B8%8D%E6%94%B6%E5%BD%95%E6%B8%B8%E6%88%8F)
+- [游戏上架需要哪些资质？](https://developer.taptap.cn/docs/store/release/store-agree/#%E5%85%AD-%E8%B5%84%E8%B4%A8%E6%96%87%E4%BB%B6%E5%8F%8A%E6%8E%88%E6%9D%83)
+- [如何进行游戏认领？](https://developer.taptap.cn/docs/store/release/store-creategame/#3-%E6%88%91%E7%9A%84%E6%B8%B8%E6%88%8F%E5%B7%B2%E7%BB%8F%E8%A2%AB-taptap-%E6%94%B6%E5%BD%95%E5%8F%AF%E4%BB%A5%E8%BF%9B%E8%A1%8C%E6%B8%B8%E6%88%8F%E8%AE%A4%E9%A2%86%E5%90%97)
+- [如何进行游戏转移？](https://developer.taptap.cn/docs/store/release/store-creategame/#4-%E6%B8%B8%E6%88%8F%E4%B8%BB%E4%BD%93%E5%8F%AF%E4%BB%A5%E8%BF%9B%E8%A1%8C%E8%BD%AC%E7%A7%BB%E5%90%97)
+- [如何进行游戏下架？](https://developer.taptap.cn/docs/store/release/store-creategame/#5-%E5%A6%82%E4%BD%95%E4%B8%8B%E6%9E%B6%E6%B8%B8%E6%88%8F%E8%AF%A6%E6%83%85%E9%A1%B5)
+
+### 物料要求和审核规则
+- [图标要求](https://developer.taptap.cn/docs/store/release/store-material/#1-%E5%9B%BE%E6%A0%87-)
+- [简介要求及展示位置](https://developer.taptap.cn/docs/store/release/store-material/#%E4%B8%89-%E6%96%87%E6%A1%88)
+- [实机视频要求及展示位置](https://developer.taptap.cn/docs/store/release/store-material/#1-%E6%B8%B8%E6%88%8F%E5%AE%9E%E6%9C%BA%E5%BD%95%E5%B1%8F-%E5%8F%AF%E4%B8%8B%E8%BD%BD%E6%88%96%E5%8F%AF%E8%AF%95%E7%8E%A9%E5%BF%85%E5%A1%AB)
+- [截图要求及展示位置](https://developer.taptap.cn/docs/store/release/store-material/#2-%E6%88%AA%E5%9B%BE-%E5%BF%85%E5%A1%AB)
+- [推广图要求及展示位置](https://developer.taptap.cn/docs/store/release/store-material/#%E4%BA%94%E6%8E%A8%E5%B9%BF%E7%89%A9%E6%96%99)
+
+
+## 3. 游戏运营
+
+### 游戏预约
+- [如何开启预约功能？](https://developer.taptap.cn/docs/store/release/store-creategame/#%E4%BA%8C%E6%B8%B8%E6%88%8F%E9%A2%84%E7%BA%A6)
+- [什么是预约里程碑？](https://developer.taptap.cn/docs/store/release/store-creategame/#%E5%85%AB%E9%A2%84%E7%BA%A6%E9%87%8C%E7%A8%8B%E7%A2%91)
+- [如何修改预约里程碑？](https://developer.taptap.cn/docs/store/release/store-creategame/#%E5%85%AB%E9%A2%84%E7%BA%A6%E9%87%8C%E7%A8%8B%E7%A2%91)
+- [如何发放预约里程碑奖励？](https://developer.taptap.cn/docs/store/release/store-creategame/#9-%E5%A6%82%E4%BD%95%E5%90%91%E7%8E%A9%E5%AE%B6%E5%8F%91%E6%94%BE%E9%A2%84%E7%BA%A6%E9%87%8C%E7%A8%8B%E7%A2%91%E5%A5%96%E5%8A%B1)
+- [如何修改游戏详情页资料？](https://developer.taptap.cn/docs/store/release/store-creategame/#%E5%9B%9B%E6%B8%B8%E6%88%8F%E6%9B%B4%E6%96%B0)
+- [游戏预约期需要准备什么？](https://developer.taptap.cn/docs/store/teaser/reserve-handbook/)
+
+### 游戏测试
+- [关于开启测试](https://developer.taptap.cn/docs/store/test/test-support/)
+- [关于早期测试（篝火测试）](https://developer.taptap.cn/docs/store/test/test-gameplaytest/)
+- [关于内部测试](https://developer.taptap.cn/docs/store/test/test-internaltest/)
+- [关于封闭式测试](https://developer.taptap.cn/docs/store/test/test-closedbetatest/)
+- [关于开放式测试](https://developer.taptap.cn/docs/store/test/test-openbetatest/)
+- [游戏测试期需要准备什么？](https://developer.taptap.cn/docs/store/test/test-handbook/)
+
+### 游戏上线
+- [游戏首次上线需要准备什么？](https://developer.taptap.cn/docs/store/events/events-handbook/)
+- [游戏版本更新需要准备什么？](https://developer.taptap.cn/docs/store/long-termops/long-term/)
+
