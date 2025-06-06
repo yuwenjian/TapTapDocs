@@ -1,0 +1,200 @@
+---
+title: 接口公共说明
+sidebar_label: 接口公共说明
+sidebar_position: 1
+---
+
+## S2S 接口域名
+
+厂商请求 TapTap，https://cloud.tapapis.cn
+
+## 公共参数
+
+### HTTP 请求 Method
+
+- GET
+- POST
+
+### HTTP 请求 Content-type
+
+- application/json
+
+### HTTP 请求 Parameters
+
+| 字段名    | 描述                                                                                           | 类型   | 示例                 |
+| --------- | ---------------------------------------------------------------------------------------------- | ------ | -------------------- |
+| client_id | TapTap 开放平台 ID                                                                             | string | `tapclientid1234567` |
+| app_id    | 游戏在 TapTap 商店的唯一身份标识, 例如：https://www.taptap.cn/app/187168 其中 187168 是 app_id | uint64 | `187168`             |
+
+### HTTP Headers
+
+| 字段名      | 描述                     | 类型   | 示例                                           |
+| ----------- | ------------------------ | ------ | ---------------------------------------------- |
+| x-tap-ts    | 请求时间，秒级时间戳     | uint64 | `1692347090`                                   |
+| x-tap-nonce | 8 位随机字符串           | string | `q1w2e3r4`                                     |
+| x-tap-sign  | 签算结果，不参与签算过程 | string | `a7Tx92/+Dr53CJgqTPypjd6O3EiMsuIv3XUbJISNUG4=` |
+
+## 签名方法
+
+### 构造待签名的请求内容 `SignParts`
+
+```plaintext
+{method}\n
+{url_path_and_query}\n
+{headers}\n
+{body}\n
+```
+
+参数说明如下
+
+| 字段名             | 描述                                                                                                                                                                  | 示例                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| method             | HTTP 方法，如 `GET` / `POST` (须为全部大写)                                                                                                                           | `GET`                                                                                   |
+| url_path_and_query | 完整请求路径及 QueryString                                                                                                                                            | `/apk/v1/upload-params?app_id=187168&file_name=taptap.apk&client_id=tapclientid1234567` |
+| headers            | 所有以 `x-tap-` 为前缀的请求头（`x-tap-sign` 除外），将其 header keys 转小写并按 ANSII 排序后，key 和 value 以 `:` 分隔，各个 header 以换行符 `\n` 分隔，拼接成字符串 | `x-tap-nonce:q1w2e3r4\nx-tap-ts:1692347090`                                             |
+| body               | 完整请求体                                                                                                                                                            | `{"key":"value"}`                                                                       |
+
+### 计算签名
+
+```shell
+Signature = Base64Encode(HMAC-SHA256(ServerSecret, SignParts))
+```
+
+- `HMAC-SHA256` 方法的第一个参数是 key，第二个参数是待签名字符串
+- `ServerSecret` 为开放平台的服务端密钥，在 TapTap 开发者中心开通游戏服务后即可获取。
+- `SignParts` 为第一步计算所得字符串
+
+```go
+// Golang 示例
+package main
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"sort"
+	"strings"
+)
+
+func main() {
+	// 创建一个新的 http request
+	req, err := http.NewRequest("GET", "https://cloud.tapapis.cn/apk/v1/upload-params?app_id=187168&file_name=taptap.apk&client_id=tapclientid1234567", strings.NewReader("{\"key\":\"value\"}"))
+	if err != nil {
+		fmt.Println("Failed to create request:", err)
+		return
+	}
+
+	// 设置自定义请求头
+	req.Header.Set("x-tap-nonce", "q1w2e3r4")
+	req.Header.Set("x-tap-ts", "1692347090")
+
+	// 定义签名密钥
+	secret := "your-secret-key"
+
+	// 调用 Sign 函数生成签名
+	sign, err := Sign(req, secret)
+	if err != nil {
+		fmt.Println("Failed to generate signature:", err)
+		return
+	}
+
+	// 打印签名结果
+	fmt.Println("sign:", sign)
+}
+
+func Sign(req *http.Request, secret string) (string, error) {
+	// 获取 request method
+	methodPart := req.Method
+
+	// 获取完整 request
+	urlPathAndQueryPart := req.URL.RequestURI()
+
+	// 获取 request headers
+	headersPart, err := getHeadersPart(req.Header)
+	if err != nil {
+		return "", err
+	}
+
+	// 获取 request body
+	bodyPart, err := io.ReadAll(req.Body)
+	if err != nil {
+		return "", err
+	}
+
+	// 计算签名
+	signParts := methodPart + "\n" + urlPathAndQueryPart + "\n" + headersPart + "\n" + string(bodyPart) + "\n"
+	fmt.Println(signParts)
+
+	h := hmac.New(sha256.New, []byte(secret))
+	h.Write([]byte(signParts))
+	rawSign := h.Sum(nil)
+
+	sign := base64.StdEncoding.EncodeToString(rawSign)
+
+	return sign, nil
+}
+
+func getHeadersPart(header http.Header) (string, error) {
+	var headerKeys []string
+
+	for k, v := range header {
+		k = strings.ToLower(k)
+		if !strings.HasPrefix(k, "x-tap-") {
+			continue
+		}
+
+		if k == "x-tap-sign" {
+			continue
+		}
+
+		if len(v) > 1 {
+			return "", errors.New(fmt.Sprintf("invalid header, %q has multiple values", k))
+		}
+
+		headerKeys = append(headerKeys, k)
+	}
+	sort.Strings(headerKeys)
+	headers := make([]string, 0, len(headerKeys))
+	for _, k := range headerKeys {
+		headers = append(headers, fmt.Sprintf("%s:%s", k, header.Get(k)))
+	}
+
+	return strings.Join(headers, "\n"), nil
+}
+```
+
+## 验签方法
+
+通过上述签算方法获取签名后和 `HTTP Request header` 中 `x-tap-sign` 对比，一致则验签通过。
+
+## Response 通用结构
+
+```json
+{
+  "code": 0,
+  "msg": "OK",
+  "data": {
+    // response data
+  }
+}
+```
+
+| 字段名 | 类型   | 描述                                                                            |
+| ------ | ------ | ------------------------------------------------------------------------------- |
+| code   | uint64 | 业务返回状态码<br />`0` 表示请求成功，`非 0` 表示请求异常，参见具体业务的错误吗 |
+| msg    | string | 业务返回状态描述<br />`OK` 表示请求成功，其他表示请求异常，错误信息见字段内容   |
+| data   | object | 成功时返回业务数据，失败时不读取                                                |
+
+## FAQ
+
+#### 签名验证不通过，如何处理？
+
+请对以下项目进行自检：
+
+1.确保 `x-tap-sign` 没有参与签名计算
+
+2.检查使用的 `Server Secret` 与 TapTap 开发者中心提供的是否一致
