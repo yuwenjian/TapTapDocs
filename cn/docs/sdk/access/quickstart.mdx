@@ -459,3 +459,18 @@ tools:remove="android:requestLegacyExternalStorage"
 解决方案：
 将 Gradle 升级到 6.1.1 或更高版本，同时将 AGP 升级到 4.0.1 或更高版本。
 
+### Failed to transform retrofit2-1.0.4.jar
+
+解决方案：
+
+1. Unity 开启自定义 Gradle 模板，如图：
+
+![](https://img.tapimg.com/market/images/0b7dd17074a80e67d29fa073929c0eed.png)
+
+2. 定位 `Assets/Plugins/Android/launcherTemplate.gradle` 文件，如图：
+
+![](https://img.tapimg.com/market/images/2d31120fb4678b5364f29fa0e2b2db98.png)
+
+3. 打开 `launcherTemplate.gradle` 文件，找到 compileSdkVersion，修改为 33，如图：
+
+![](https://img.tapimg.com/market/images/e258785a591ae31f4ce722da719a1dae.png)
