@@ -19,7 +19,7 @@ slug: /sdk/pc-sdk/quickstart/
 在开始集成前，您需要：
 
 1. 在[TapTap 开发者中心](https://developer.taptap.cn/)注册开发者账号
-2. 创建游戏应用并在 「你的游戏」 - 「游戏服务 - 「应用配置」 获取以下信息：
+2. 创建游戏应用并在「你的游戏」→「游戏服务」→「应用配置」获取以下信息：
    - **Client ID**：应用的唯一标识符
    - **Client Public Key**：用于 SDK 初始化的公钥字符串
 
@@ -72,7 +72,7 @@ int main() {
     const char* pubKey = "your_client_public_key_here";
     
     // 1. 检查是否需要重启应用
-    // SDK 依赖从 TapTap 启动器游戏，如果用户直接运行游戏可执行文件，此函数返回 true
+    // SDK 依赖从 TapTap 启动游戏，如果用户直接运行游戏可执行文件，此函数返回 true
     if (TapSDK_RestartAppIfNecessary(clientID)) {
         std::cout << "需要重启应用，TapTap 将重新启动游戏" << std::endl;
         return 0; // 立即退出，等待 TapTap 重启
@@ -296,15 +296,15 @@ void ShowPurchasePrompt() {
 
 ### 1. 下载及配置调试文件
 
-在 TapTap 开发者中心游戏「商店」的 「PC 游戏管理」 -> 「开放能力」 页面下载调试文件 (`taptap_client_id.txt`)，如图所示：
+在 TapTap 开发者中心游戏「商店」的「PC 游戏管理」→「开放能力」页面下载调试文件 (`taptap_client_id.txt`)，如图所示：
 
 ![](/img/pc-quickstart/download_debug_file.png)
 
-点击 「taptap_client_id.txt」 后，浏览器会下载一个对应名称的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下。
+点击「taptap_client_id.txt」后，浏览器会下载一个对应名称的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下。
 
 ### 2. 添加测试用户白名单
 
-在上一步骤同一页面中，选择 「设置自测用户」，将弹出设置自测用户窗口，如下图：
+在上一步骤同一页面中，选择「设置自测用户」，将弹出设置自测用户窗口，如下图：
 
 ![](/img/pc-quickstart/add_new_tester.png)
 
@@ -333,5 +333,5 @@ void ShowPurchasePrompt() {
 * 正确处理 `TapEventID::AuthorizeFinished` 事件返回的用户取消、出错数据，提示用户并引导重试
 
 ### 正版验证（买断制游戏）
-* 监听 `TapEventID::GamePlayableStatusChanged` 以获取游戏主体不可玩事件（用户退款、被屏蔽等情况触发）
+* 监听 `TapEventID::GamePlayableStatusChanged` 以获取游戏本体不可玩事件（用户退款、被屏蔽等情况触发）
 * 监听 `TapEventID::DLCPlayableStatusChanged` 以获取用户购买、退款 DLC 事件
