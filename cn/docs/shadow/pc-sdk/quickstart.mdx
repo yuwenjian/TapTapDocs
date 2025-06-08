@@ -1,0 +1,337 @@
+---
+title: 快速开始
+sidebar_label: 快速开始
+sidebar_position: 2
+slug: /sdk/pc-sdk/quickstart/
+---
+
+## 环境要求
+
+- **操作系统**：Windows 7 或更高版本的 64 位操作系统
+- **运行环境**：游戏必须通过 TapTap 启动器启动
+- **网络要求**：需要网络连接以进行授权和验证
+- **SDK 类型**：动态链接库（DLL）
+
+## 准备工作
+
+### 1. 获取开发者资源
+
+在开始集成前，您需要：
+
+1. 在[TapTap 开发者中心](https://developer.taptap.cn/)注册开发者账号
+2. 创建游戏应用并在 「你的游戏」 - 「游戏服务 - 「应用配置」 获取以下信息：
+   - **Client ID**：应用的唯一标识符
+   - **Client Public Key**：用于 SDK 初始化的公钥字符串
+
+### 2. 下载 SDK
+
+访问 [TapSDK PC C++ Releases](https://github.com/taptap/TapSDK-PC-cpp/releases) 页面下载最新版本的 SDK。
+
+SDK 包含以下文件：
+- `taptap_api.h`：头文件
+- `taptap_api.dll`：动态库文件（Windows）
+
+## 集成步骤
+
+### 语言支持说明
+
+PC SDK 以动态链接库（DLL）形式提供，支持多种编程语言集成：
+
+- **C++**：直接包含头文件 `taptap_api.h` 使用
+- **其他语言**：通过各自语言的 DLL 调用机制实现
+
+本文档以 **C++** 为例演示集成步骤，其他语言可参考相应的 DLL 调用方式。
+
+### 1. 添加 SDK 文件
+
+将下载的 SDK 文件添加到您的项目中：
+
+**C++ 项目：**
+```cpp
+#include "taptap_api.h"
+```
+
+**其他语言：**
+- 将 `taptap_api.dll` 放置在可执行文件同目录或系统路径中
+- 根据语言特性加载 DLL 并声明函数签名
+
+### 2. 初始化与启动校验示例
+
+:::warning 初始化要求
+除了 `TapSDK_RestartAppIfNecessary` 之外，调用其他所有 API 函数前必须先成功调用 `TapSDK_Init` 进行初始化。
+未初始化或初始化失败时调用其他函数将返回错误或者非预期结果。
+:::
+
+```cpp
+#include "taptap_api.h"
+#include <iostream>
+#include <string>
+
+int main() {
+    const char* clientID = "your_client_id_here";
+    const char* pubKey = "your_client_public_key_here";
+    
+    // 1. 检查是否需要重启应用
+    // SDK 依赖从 TapTap 启动器游戏，如果用户直接运行游戏可执行文件，此函数返回 true
+    if (TapSDK_RestartAppIfNecessary(clientID)) {
+        std::cout << "需要重启应用，TapTap 将重新启动游戏" << std::endl;
+        return 0; // 立即退出，等待 TapTap 重启
+    }
+    
+    // 2. 初始化 SDK
+    ErrMsg errMsg;
+    TapSDK_Init_Result result = TapSDK_Init(&errMsg, pubKey);
+    
+    switch (result) {
+        case TapSDK_Init_Result::OK:
+            std::cout << "SDK 初始化成功" << std::endl;
+            break;
+        case TapSDK_Init_Result::NoPlatform:
+            std::cout << "未找到 TapTap 平台，请下载并安装 TapTap 启动器" << std::endl;
+            std::cout << "下载地址：https://www.taptap.cn/mobile" << std::endl;
+            return -1;
+        case TapSDK_Init_Result::NotLaunchedByPlatform:
+            std::cout << "游戏未通过 TapTap 启动器启动，请从启动器重新打开游戏" << std::endl;
+            return -1;
+        case TapSDK_Init_Result::PlatformVersionMismatch:
+            std::cout << "平台版本不匹配，请升级 TapTap 启动器或游戏到最新版本" << std::endl;
+            return -1;
+        default:
+            std::cout << "初始化失败: " << errMsg << std::endl;
+            std::cout << "请关闭游戏，并从 TapTap 重新打开" << std::endl;
+            return -1;
+    }
+    
+    // 3. 游戏主循环
+    bool running = true;
+    while (running) {
+        // 处理 SDK 回调事件
+        TapSDK_RunCallbacks();
+        
+        // 您的游戏逻辑
+        // ...
+        
+        // 控制帧率
+        Sleep(16); // 约 60 FPS
+    }
+    
+    // 4. 清理资源
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 3. 登录示例
+
+通过用户授权可获取到授权凭证（包括 Token、MAC 密钥等），您可以使用这些凭证在服务端调用 TapTap 开放 API 来获取用户详细信息。
+具体的 API 调用方法请参考 [TapTap OAuth 文档](/sdk/taptap-login/taptap-oauth/)。
+
+```cpp
+#include "taptap_api.h"
+
+// 授权完成回调函数
+void T_CALLTYPE OnAuthorizeFinished(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::AuthorizeFinished) {
+        AuthorizeFinishedResponse* response = (AuthorizeFinishedResponse*)data;
+        
+        if (response->is_cancel) {
+            std::cout << "用户取消授权" << std::endl;
+        } else if (strlen(response->error) > 0) {
+            std::cout << "授权失败: " << response->error << std::endl;
+        } else {
+            std::cout << "授权成功" << std::endl;
+            
+            // 打印 response 的所有内容
+            std::cout << "=== 授权响应详细信息 ===" << std::endl;
+            std::cout << "Token 类型: " << response->token_type << std::endl;
+            std::cout << "Key ID: " << response->kid << std::endl;
+            std::cout << "MAC 密钥: " << response->mac_key << std::endl;
+            std::cout << "MAC 算法: " << response->mac_algorithm << std::endl;
+            std::cout << "权限范围: " << response->scope << std::endl;
+            std::cout << "=========================" << std::endl;
+        }
+    }
+}
+
+void RequestUserAuthorization() {
+    // 注册授权完成回调
+    TapSDK_RegisterCallback(TapEventID::AuthorizeFinished, OnAuthorizeFinished);
+    
+    // 请求用户授权
+    TapUser_AsyncAuthorize_Result result = TapUser_AsyncAuthorize("public_profile");
+    switch (result) {
+        case TapUser_AsyncAuthorize_Result::OK:
+            std::cout << "授权请求已发送，等待用户确认..." << std::endl;
+            break;
+        case TapUser_AsyncAuthorize_Result::Failed:
+            std::cout << "发起授权失败，请重试" << std::endl;
+            break;
+        case TapUser_AsyncAuthorize_Result::InFlight:
+            std::cout << "授权流程正在进行中，请等待" << std::endl;
+            break;
+        case TapUser_AsyncAuthorize_Result::Unknown:
+            std::cout << "授权失败，请检查 SDK 初始化状态" << std::endl;
+            break;
+    }
+}
+```
+
+### 4. DLC 管理示例
+
+```cpp
+// DLC 状态变化回调
+void T_CALLTYPE OnDLCStatusChanged(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::DLCPlayableStatusChanged) {
+        DLCPlayableStatusChangedResponse* response = (DLCPlayableStatusChangedResponse*)data;
+        
+        std::cout << "DLC " << response->dlc_id 
+                  << (response->is_playable ? " 现在可用" : " 现在不可用") << std::endl;
+        
+        // 根据 DLC 状态更新游戏功能
+        if (response->is_playable) {
+            // 启用 DLC 功能
+            EnableDLCFeatures(response->dlc_id);
+        } else {
+            // 禁用 DLC 功能
+            DisableDLCFeatures(response->dlc_id);
+        }
+    }
+}
+
+void CheckDLCStatus() {
+    // 注册 DLC 状态变化回调
+    TapSDK_RegisterCallback(TapEventID::DLCPlayableStatusChanged, OnDLCStatusChanged);
+    
+    const char* dlcID = "your_dlc_id";
+    
+    // 检查 DLC 所有权
+    if (TapDLC_IsOwned(dlcID)) {
+        std::cout << "用户拥有 DLC: " << dlcID << std::endl;
+        EnableDLCFeatures(dlcID);
+    } else {
+        std::cout << "用户未拥有 DLC: " << dlcID << std::endl;
+        // 可以引导用户购买
+        // TapDLC_ShowStore(dlcID);
+    }
+}
+```
+
+### 5. 游戏本体状态变更监听示例
+
+对于买断制游戏，当用户发生退款等情况时，游戏本体的可玩状态会发生变化。SDK 会通过回调事件通知游戏，开发者可以根据状态变化对用户进行提示或执行相应操作。
+
+```cpp
+// 游戏本体状态变化回调
+void T_CALLTYPE OnGamePlayableStatusChanged(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::GamePlayableStatusChanged) {
+        GamePlayableStatusChangedResponse* response = (GamePlayableStatusChangedResponse*)data;
+        
+        if (response->is_playable) {
+            std::cout << "游戏本体现在可以正常游玩" << std::endl;
+            // 恢复游戏功能
+            EnableGameFeatures();
+        } else {
+            std::cout << "游戏本体不可游玩，可能由于退款等原因" << std::endl;
+            
+            // 显示提示信息给用户
+            ShowRefundNotification();
+            
+            // 可选：保存用户进度后退出游戏
+            SaveUserProgress();
+            
+            // 延迟退出，给用户时间查看提示
+            std::cout << "游戏将在 10 秒后退出..." << std::endl;
+            Sleep(10000);
+            ExitGame();
+        }
+    }
+}
+
+void SetupGameStatusMonitoring() {
+    // 注册游戏本体状态变化回调
+    TapSDK_RegisterCallback(TapEventID::GamePlayableStatusChanged, OnGamePlayableStatusChanged);
+    
+    // 检查当前游戏本体所有权状态
+    if (TapApps_IsOwned()) {
+        std::cout << "用户拥有游戏本体，可以正常游玩" << std::endl;
+        EnableGameFeatures();
+    } else {
+        std::cout << "用户不拥有游戏本体或已退款" << std::endl;
+        ShowPurchasePrompt();
+    }
+}
+
+// 辅助函数示例
+void ShowRefundNotification() {
+    std::cout << "=== 重要通知 ===" << std::endl;
+    std::cout << "检测到您的游戏已退款，游戏功能将被限制。" << std::endl;
+    std::cout << "如有疑问，请联系客服或重新购买游戏。" << std::endl;
+    std::cout << "===============" << std::endl;
+}
+
+void EnableGameFeatures() {
+    // 启用完整游戏功能
+    std::cout << "启用完整游戏功能" << std::endl;
+}
+
+void SaveUserProgress() {
+    // 保存用户游戏进度
+    std::cout << "正在保存游戏进度..." << std::endl;
+}
+
+void ExitGame() {
+    // 清理资源并退出游戏
+    TapSDK_Shutdown();
+    exit(0);
+}
+
+void ShowPurchasePrompt() {
+    std::cout << "请先购买游戏以继续游玩" << std::endl;
+}
+```
+
+## 开发调试方式
+
+在游戏尚未发布期间，开发者可参照以下流程完成本地调试配置，配置完成后，即可在调试阶段**无需依赖 TapTap 启动器启动游戏**，直接运行游戏可执行文件进行测试。
+
+### 1. 下载及配置调试文件
+
+在 TapTap 开发者中心游戏「商店」的 「PC 游戏管理」 -> 「开放能力」 页面下载调试文件 (`taptap_client_id.txt`)，如图所示：
+
+![](/img/pc-quickstart/download_debug_file.png)
+
+点击 「taptap_client_id.txt」 后，浏览器会下载一个对应名称的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下。
+
+### 2. 添加测试用户白名单
+
+在上一步骤同一页面中，选择 「设置自测用户」，将弹出设置自测用户窗口，如下图：
+
+![](/img/pc-quickstart/add_new_tester.png)
+
+点击「添加用户」，输入用户 `TapTap ID` 并点击右侧的搜索按钮，待搜索结果返回后，选择对应用户并点击「提交」按钮，即可完成添加操作。
+
+![](/img/pc-quickstart/submit_tester.png)
+
+### 3. 下载 TapTap PC 端并登录
+
+下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的自测用户账号，即可在本地启动游戏，开始测试相关业务功能。
+
+:::tip
+注意：当发布游戏时，请务必删除游戏目录中的 `taptap_client_id.txt` 调试文本文件
+:::
+
+## 游戏上线检查列表
+
+### 初始化与启动校验
+* 在 `TapSDK_RestartAppIfNecessary` 接口返回 `true` 时退出游戏
+* 在 `TapSDK_Init` 接口返回非 `TapSDK_Init_Result::OK` 时提示用户，并退出游戏
+* 在每帧或者多帧调用一次 `TapSDK_RunCallbacks` 接口
+* 在退出游戏时调用 `TapSDK_Shutdown` 接口
+
+### 登录
+* 在 `TapUser_AsyncAuthorize` 接口返回非 `TapUser_AsyncAuthorize_Result::OK` 时提示用户并引导重试
+* 正确处理 `TapEventID::AuthorizeFinished` 事件返回的用户取消、出错数据，提示用户并引导重试
+
+### 正版验证（买断制游戏）
+* 监听 `TapEventID::GamePlayableStatusChanged` 以获取游戏主体不可玩事件（用户退款、被屏蔽等情况触发）
+* 监听 `TapEventID::DLCPlayableStatusChanged` 以获取用户购买、退款 DLC 事件
