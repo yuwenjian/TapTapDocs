@@ -1,0 +1,901 @@
+---
+title: TapTap排行榜开发指南
+sidebar_label: 开发指南
+sidebar_position: 3
+slug: /sdk/leaderboard/guide/
+---
+
+import MultiLang from '/src/docComponents/MultiLang';
+import CodeBlock from '@theme/CodeBlock';
+
+本文介绍如何在游戏中加入排行榜系统。
+
+## 权限说明
+
+<MultiLang kind="android_v4">
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 写入外部存储权限 | 用于保存排行榜分享图片到设备存储 | 用户首次使用分享功能时会申请权限 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+</>
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 写入外部存储权限 | 用于保存排行榜分享图片到设备存储 | 用户首次使用分享功能时会申请权限 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+</>
+
+</MultiLang>
+
+## 集成前准备
+
+参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启排行榜服务。
+
+## SDK 获取
+
+由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapLeaderboard` 、 `TapTapLogin` 模块：
+
+<MultiLang kind="android_v4">
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects { 
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-leaderboard:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-login:4.7.0-beta.0'
+}`
+}</CodeBlock>
+
+</>
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects { 
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-login:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-leaderboard:4.7.0-beta.0'
+}`
+}</CodeBlock>
+
+</>
+
+</MultiLang>
+
+## SDK 初始化
+
+详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.core.TapTapRegion;
+import com.taptap.sdk.core.TapTapSdk;
+import com.taptap.sdk.core.TapTapSdkOptions;
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+String clientId = "";
+// 开发者中心对应 Client Token
+String clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+boolean enableLog = BuildConfig.DEBUG;
+// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
+int screenOrientation = ScreenOrientation.PORTRAIT
+
+TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+        clientId, // 游戏 Client ID
+        clientToken, // 游戏 Client Token
+        screenOrientation, // 屏幕方向
+        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+);
+tapSdkOptions.setEnableLog(enableLog);
+// 初始化 TapSDK
+TapTapSdk.init(context, tapSdkOptions);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapSdk
+import com.taptap.sdk.core.TapTapSdkOptions
+import com.taptap.sdk.core.TapTapLanguage
+import com.taptap.sdk.core.TapTapRegion
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+val clientId = "";
+// 开发者中心对应 Client Token
+val clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+val enableLog = BuildConfig.DEBUG;
+// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
+val screenOrientation = ScreenOrientation.PORTRAIT
+
+TapTapSdk.init(
+    context = context,
+    sdkOptions = TapTapSdkOptions(
+        clientId = clientId,
+        clientToken = clientToken,
+        region = TapTapRegion.CN,
+        screenOrientation = screenOrientation,
+        preferredLanguage = TapTapLanguage.ZH_HANS,
+        enableLog = false
+    )
+)
+```
+</>
+
+</MultiLang>
+
+## 注册排行榜事件回调
+
+排行榜 SDK 提供事件回调接口，用于处理排行榜相关事件，如用户未登录等状态。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.TapTapLeaderboardCallback;
+
+// 注册排行榜事件回调
+TapTapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
+    @Override
+    public void onCallback(int code, String message) {
+        // 处理排行榜事件
+        switch (code) {
+            case 500102:
+                // 用户未登录，需要引导用户登录
+                // showLoginDialog();
+                break;
+            // 处理其他事件
+            default:
+                Log.d("Leaderboard", "code: " + code + ", message: " + message);
+                break;
+        }
+    }
+};
+TapTapLeaderboard.registerLeaderboardCallback(callback);
+TapTapLeaderboard.unregisterLeaderboardCallback(callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.TapTapLeaderboardCallback
+
+// 注册排行榜事件回调
+TapTapLeaderboard.registerLeaderboardCallback(
+    callback = object : TapTapLeaderboardCallback {
+        override fun onCallback(code: Int, message: String) {
+            // 处理排行榜事件
+            when (code) {
+                500102 -> {
+                    // 用户未登录，需要引导用户登录
+                    // showLoginDialog()
+                }
+                // 处理其他事件
+                else -> {
+                    Log.d("Leaderboard", "code: $code, message: $message")
+                }
+            }
+        }
+    }
+)
+
+// 取消注册回调
+TapTapLeaderboard.unregisterLeaderboardCallback(callback = callback)
+```
+
+</>
+
+</MultiLang>
+
+## 设置分享功能
+
+设置分享回调后，排行榜H5页面会显示分享按钮，用户点击分享按钮后，排行榜截图会保存到本地，并触发分享成功回调。开发者可以根据自己的需要判断是否实现分享失败的回调方法。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.TapTapLeaderboard.ShareCallback;
+
+// 设置分享回调
+TapTapLeaderboard.setShareCallback(new TapTapLeaderboard.ShareCallback() {
+    @Override
+    public void onShareSuccess(String localPath) {
+        // 处理排行榜分享图片保存成功
+        // localPath 为本地图片路径，可用于分享到系统
+        // shareImageToSystem(localPath);
+    }
+    
+    @Override
+    public void onShareFailed(Throwable error) {
+        // 处理分享失败（可选实现）
+        // 开发者可以根据需要选择是否实现此方法
+        Log.e("Leaderboard", "分享失败", error);
+    }
+});
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+
+// 设置分享回调
+TapTapLeaderboard.setShareCallback(object : TapTapLeaderboard.ShareCallback {
+    override fun onShareSuccess(localPath: String) {
+        // 处理排行榜分享图片保存成功
+        // localPath 为本地图片路径，可用于分享到系统
+        // shareImageToSystem(localPath)
+    }
+    
+    override fun onShareFailed(error: Throwable) {
+        // 处理分享失败（可选实现）
+        // 开发者可以根据需要选择是否实现此方法
+        Log.e("Leaderboard", "分享失败", error)
+    }
+})
+```
+
+</>
+
+</MultiLang>
+
+## 打开排行榜页面
+
+打开排行榜H5页面对话框，支持总榜和好友榜两种类型。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.LeaderboardDialogArguments;
+
+// 打开总榜
+TapTapLeaderboard.openLeaderboard(
+    this, // Activity
+    new LeaderboardDialogArguments(
+        "your_leaderboard_id", // 排行榜ID
+        "public" // 总榜
+    )
+);
+
+// 打开好友榜
+TapTapLeaderboard.openLeaderboard(
+    this, // Activity
+    new LeaderboardDialogArguments(
+        "your_leaderboard_id", // 排行榜ID
+        "friends" // 好友榜
+    )
+);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.LeaderboardDialogArguments
+
+// 打开总榜
+TapTapLeaderboard.openLeaderboard(
+    activity = this,
+    arguments = LeaderboardDialogArguments(
+        leaderBoardID = "your_leaderboard_id", // 排行榜ID
+        collection = "public" // 总榜
+    )
+)
+
+// 打开好友榜
+TapTapLeaderboard.openLeaderboard(
+    activity = this,
+    arguments = LeaderboardDialogArguments(
+        leaderBoardID = "your_leaderboard_id", // 排行榜ID
+        collection = "friends" // 好友榜
+    )
+)
+```
+
+</>
+
+</MultiLang>
+
+## 打开用户个人资料
+
+展示指定用户的个人资料对话框，传入用户的openId。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.UserProfileDialogArguments;
+
+String openId = "user_open_id";
+TapTapLeaderboard.openUserProfile(
+    this, // Activity
+    new UserProfileDialogArguments(openId)
+);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.UserProfileDialogArguments
+
+val openId = "user_open_id"
+TapTapLeaderboard.openUserProfile(
+    activity = this,
+    arguments = UserProfileDialogArguments(openId = openId)
+)
+```
+
+</>
+
+</MultiLang>
+
+## 提交分数
+
+批量提交用户排行榜分数，一次最多提交5个分数。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.SubmitScoresRequest;
+import com.taptap.sdk.leaderboard.LeaderboardCallback;
+import com.taptap.sdk.leaderboard.SubmitScoresResponse;
+import java.util.Arrays;
+import java.util.List;
+
+List<SubmitScoresRequest.ScoreItem> scores = Arrays.asList(
+    new SubmitScoresRequest.ScoreItem("leaderboard_1", 1000L),
+    new SubmitScoresRequest.ScoreItem("leaderboard_2", 2000L)
+);
+
+TapTapLeaderboard.submitScores(
+    this, // Activity
+    scores,
+    new LeaderboardCallback<SubmitScoresResponse>() {
+        @Override
+        public void onSuccess(SubmitScoresResponse data) {
+            // 提交成功
+            Log.d("Leaderboard", "提交成功: " + data);
+        }
+
+        @Override
+        public void onFailure(int code, String message) {
+            // 提交失败
+            Log.e("Leaderboard", "提交失败: code=" + code + ", message=" + message);
+        }
+    }
+);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.SubmitScoresRequest
+import com.taptap.sdk.leaderboard.LeaderboardCallback
+import com.taptap.sdk.leaderboard.SubmitScoresResponse
+
+val scores = listOf(
+    SubmitScoresRequest.ScoreItem("leaderboard_1", 1000),
+    SubmitScoresRequest.ScoreItem("leaderboard_2", 2000)
+)
+
+TapTapLeaderboard.submitScores(
+    activity = this,
+    scores = scores,
+    callback = object : LeaderboardCallback<SubmitScoresResponse> {
+        override fun onSuccess(data: SubmitScoresResponse) {
+            // 提交成功
+            Log.d("Leaderboard", "提交成功: $data")
+        }
+
+        override fun onFailure(code: Int, message: String) {
+            // 提交失败
+            Log.e("Leaderboard", "提交失败: code=$code, message=$message")
+        }
+    }
+)
+```
+
+</>
+
+</MultiLang>
+
+## 获取排行榜数据
+
+分页获取排行榜数据，支持总榜和好友榜。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.LeaderboardCollection;
+import com.taptap.sdk.leaderboard.LeaderboardCallback;
+import com.taptap.sdk.leaderboard.LeaderboardScoreResponse;
+
+TapTapLeaderboard.loadLeaderboardScores(
+    this, // Activity
+    "your_leaderboard_id", // 排行榜ID
+    null, // nextPage - 首次请求传null
+    LeaderboardCollection.PUBLIC, // 总榜
+    null, // periodToken - 时间周期标识
+    new LeaderboardCallback<LeaderboardScoreResponse>() {
+        @Override
+        public void onSuccess(LeaderboardScoreResponse data) {
+            // 获取成功
+            List<Score> scores = data.getScores();
+            String nextPage = data.getNextPage(); // 用于下一页请求
+        }
+
+        @Override
+        public void onFailure(int code, String message) {
+            // 获取失败
+            Log.e("Leaderboard", "获取排行榜数据失败: code=" + code + ", message=" + message);
+        }
+    }
+);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.LeaderboardCollection
+import com.taptap.sdk.leaderboard.LeaderboardCallback
+import com.taptap.sdk.leaderboard.LeaderboardScoreResponse
+
+TapTapLeaderboard.loadLeaderboardScores(
+    activity = this,
+    leaderboardId = "your_leaderboard_id", // 排行榜ID
+    nextPage = null, // 首次请求传null
+    leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
+    periodToken = null, // 时间周期标识
+    callback = object : LeaderboardCallback<LeaderboardScoreResponse> {
+        override fun onSuccess(data: LeaderboardScoreResponse) {
+            // 获取成功
+            val scores = data.scores
+            val nextPage = data.nextPage // 用于下一页请求
+        }
+
+        override fun onFailure(code: Int, message: String) {
+            // 获取失败
+            Log.e("Leaderboard", "获取排行榜数据失败: code=$code, message=$message")
+        }
+    }
+)
+```
+
+</>
+
+</MultiLang>
+
+## 获取当前用户分数
+
+获取当前登录用户在指定排行榜的分数和排名。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.LeaderboardCollection;
+import com.taptap.sdk.leaderboard.LeaderboardCallback;
+import com.taptap.sdk.leaderboard.UserScoreResponse;
+
+TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
+    this, // Activity
+    "your_leaderboard_id", // 排行榜ID
+    LeaderboardCollection.PUBLIC, // 总榜
+    null, // periodToken - 时间周期标识
+    new LeaderboardCallback<UserScoreResponse>() {
+        @Override
+        public void onSuccess(UserScoreResponse data) {
+            // 获取成功
+            Score score = data.getScore();
+            Integer rank = data.getRank();
+            Log.d("Leaderboard", "用户分数: " + score + ", 排名: " + rank);
+        }
+
+        @Override
+        public void onFailure(int code, String message) {
+            // 获取失败
+            Log.e("Leaderboard", "获取用户分数失败: code=" + code + ", message=" + message);
+        }
+    }
+);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.LeaderboardCollection
+import com.taptap.sdk.leaderboard.LeaderboardCallback
+import com.taptap.sdk.leaderboard.UserScoreResponse
+
+TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
+    activity = this,
+    leaderboardId = "your_leaderboard_id", // 排行榜ID
+    leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
+    periodToken = null, // 时间周期标识
+    callback = object : LeaderboardCallback<UserScoreResponse> {
+        override fun onSuccess(data: UserScoreResponse) {
+            // 获取成功
+            val score = data.score
+            val rank = data.rank
+            Log.d("Leaderboard", "用户分数: $score, 排名: $rank")
+        }
+
+        override fun onFailure(code: Int, message: String) {
+            // 获取失败
+            Log.e("Leaderboard", "获取用户分数失败: code=$code, message=$message")
+        }
+    }
+)
+```
+
+</>
+
+</MultiLang>
+
+## 获取用户相近分数
+
+查询当前用户相近的其他用户成绩（上下X位）。
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.LeaderboardCollection;
+import com.taptap.sdk.leaderboard.LeaderboardCallback;
+import com.taptap.sdk.leaderboard.LeaderboardScoreResponse;
+
+TapTapLeaderboard.loadPlayerCenteredScores(
+    this, // Activity
+    "your_leaderboard_id", // 排行榜ID
+    LeaderboardCollection.FRIENDS, // 好友榜
+    "weekly", // periodToken - 时间周期标识
+    10, // maxCount - 最大返回数量
+    new LeaderboardCallback<LeaderboardScoreResponse>() {
+        @Override
+        public void onSuccess(LeaderboardScoreResponse data) {
+            // 获取成功
+            List<Score> scores = data.getScores();
+            Log.d("Leaderboard", "相近用户数量: " + scores.size());
+        }
+
+        @Override
+        public void onFailure(int code, String message) {
+            // 获取失败
+            Log.e("Leaderboard", "获取相近分数失败: code=" + code + ", message=" + message);
+        }
+    }
+);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.LeaderboardCollection
+import com.taptap.sdk.leaderboard.LeaderboardCallback
+import com.taptap.sdk.leaderboard.LeaderboardScoreResponse
+
+TapTapLeaderboard.loadPlayerCenteredScores(
+    activity = this,
+    leaderBoardId = "your_leaderboard_id", // 排行榜ID
+    leaderboardCollection = LeaderboardCollection.FRIENDS, // 好友榜
+    periodToken = "weekly", // 时间周期标识
+    maxCount = 10, // 最大返回数量
+    callback = object : LeaderboardCallback<LeaderboardScoreResponse> {
+        override fun onSuccess(data: LeaderboardScoreResponse) {
+            // 获取成功
+            val scores = data.scores
+            Log.d("Leaderboard", "相近用户数量: ${scores?.size}")
+        }
+
+        override fun onFailure(code: Int, message: String) {
+            // 获取失败
+            Log.e("Leaderboard", "获取相近分数失败: code=$code, message=$message")
+        }
+    }
+)
+```
+
+</>
+
+</MultiLang>
+
+## 错误处理
+
+排行榜 SDK 的所有异步操作都通过 `LeaderboardCallback` 返回结果，开发者需要在 `onFailure` 方法中处理错误情况。
+
+### 错误码说明
+
+| 错误码 | 错误类型 | 描述 |
+| ------ | -------- | ---- |
+| 500000 | 排行榜周期已过期 | 提示用户排行榜周期已结束，引导查看其他周期 |
+| 500001 | 排行榜 ID 未找到 | 检查排行榜ID是否正确，提示用户排行榜不存在 |
+| 500002 | 排行榜参数错误 | leaderboard_id 与 client_id 不匹配 |
+| 500101 | 当前用户未授权获取此产品（服务） | 提示用户权限不足，联系管理员 |
+| 500102 | 用户未登录 | 引导用户登录 |
+| 500199 | 未知错误 | 通用错误处理，建议重试或联系技术支持 |
+
+### 错误处理示例
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+new LeaderboardCallback<LeaderboardScoreResponse>() {
+    @Override
+    public void onSuccess(LeaderboardScoreResponse data) {
+        // 处理成功结果
+    }
+
+    @Override
+    public void onFailure(int code, String message) {
+        // 根据错误码处理不同的错误情况
+        switch (code) {
+            case 500000:
+                // 排行榜周期已过期
+                // showMessage("排行榜周期已结束，请查看其他周期排行榜");
+                break;
+            case 500001:
+                // 排行榜 ID 未找到
+                // showMessage("排行榜不存在，请检查排行榜ID");
+                break;
+            case 500002:
+                // 排行榜参数错误
+                // showMessage("参数错误，请检查输入参数");
+                break;
+            case 500101:
+                // 用户未授权
+                // showMessage("权限不足，请联系管理员");
+                break;
+            case 500102:
+                // 用户未登录
+                // showMessage("请先登录");
+                // redirectToLogin();
+                break;
+            case 500199:
+                // 未知错误
+                // showMessage("未知错误，请稍后重试");
+                break;
+            default:
+                // 其他错误
+                // showMessage("操作失败: " + message);
+                break;
+        }
+    }
+}
+```
+
+</>
+
+<>
+
+```kotlin
+object : LeaderboardCallback<LeaderboardScoreResponse> {
+    override fun onSuccess(data: LeaderboardScoreResponse) {
+        // 处理成功结果
+    }
+
+    override fun onFailure(code: Int, message: String) {
+        // 根据错误码处理不同的错误情况
+        when (code) {
+            500000 -> {
+                // 排行榜周期已过期
+                // showMessage("排行榜周期已结束，请查看其他周期排行榜")
+            }
+            500001 -> {
+                // 排行榜 ID 未找到
+                // showMessage("排行榜不存在，请检查排行榜ID")
+            }
+            500002 -> {
+                // 排行榜参数错误
+                // showMessage("参数错误，请检查输入参数")
+            }
+            500101 -> {
+                // 用户未授权
+                // showMessage("权限不足，请联系管理员")
+            }
+            500102 -> {
+                // 用户未登录
+                // showMessage("请先登录")
+                // redirectToLogin()
+            }
+            500199 -> {
+                // 未知错误
+                // showMessage("未知错误，请稍后重试")
+            }
+            else -> {
+                // 其他错误
+                // showMessage("操作失败: $message")
+            }
+        }
+    }
+}
+```
+
+</>
+
+</MultiLang>
+
+## 最佳实践
+
+### 1. 内存管理
+
+记得在适当的时机取消注册回调，避免内存泄漏：
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    // 取消注册回调
+    TapTapLeaderboard.unregisterLeaderboardCallback(callback);
+}
+```
+
+</>
+
+<>
+
+```kotlin
+override fun onDestroy() {
+    super.onDestroy()
+    // 取消注册回调
+    TapTapLeaderboard.unregisterLeaderboardCallback(callback)
+}
+```
+
+</>
+
+</MultiLang>
+
+### 2. 用户登录检测
+
+在使用排行榜功能前，建议先检查用户登录状态：
+
+<MultiLang kind="android_v4">
+
+<>
+
+```java
+// 在排行榜回调中处理未登录状态
+TapTapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
+    @Override
+    public void onCallback(int code, String message) {
+        if (code == 500102) {
+            // 引导用户登录
+            // showLoginDialog();
+        }
+    }
+};
+```
+
+</>
+
+<>
+
+```kotlin
+// 在排行榜回调中处理未登录状态
+val callback = object : TapTapLeaderboardCallback {
+    override fun onCallback(code: Int, message: String) {
+        when (code) {
+            500102 -> {
+                // 引导用户登录
+                // showLoginDialog()
+            }
+        }
+    }
+}
+```
+
+</>
+
+</MultiLang>
+
+ 
