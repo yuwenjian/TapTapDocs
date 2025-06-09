@@ -196,7 +196,7 @@ TapTapSdk.init(
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.TapTapLeaderboardCallback;
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardCallback;
 
 // 注册排行榜事件回调
 TapTapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
@@ -225,7 +225,7 @@ TapTapLeaderboard.unregisterLeaderboardCallback(callback);
 
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.TapTapLeaderboardCallback
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardCallback
 
 // 注册排行榜事件回调
 TapTapLeaderboard.registerLeaderboardCallback(
@@ -264,10 +264,10 @@ TapTapLeaderboard.unregisterLeaderboardCallback(callback = callback)
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.TapTapLeaderboard.ShareCallback;
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardShareCallback;
 
 // 设置分享回调
-TapTapLeaderboard.setShareCallback(new TapTapLeaderboard.ShareCallback() {
+TapTapLeaderboard.setShareCallback(new TapTapLeaderboardShareCallback() {
     @Override
     public void onShareSuccess(String localPath) {
         // 处理排行榜分享图片保存成功
@@ -292,7 +292,7 @@ TapTapLeaderboard.setShareCallback(new TapTapLeaderboard.ShareCallback() {
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
 
 // 设置分享回调
-TapTapLeaderboard.setShareCallback(object : TapTapLeaderboard.ShareCallback {
+TapTapLeaderboard.setShareCallback(object : TapTapLeaderboardShareCallback {
     override fun onShareSuccess(localPath: String) {
         // 处理排行榜分享图片保存成功
         // localPath 为本地图片路径，可用于分享到系统
@@ -321,7 +321,7 @@ TapTapLeaderboard.setShareCallback(object : TapTapLeaderboard.ShareCallback {
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.LeaderboardDialogArguments;
+import com.taptap.sdk.leaderboard.data.model.LeaderboardDialogArguments;
 
 // 打开总榜
 TapTapLeaderboard.openLeaderboard(
@@ -348,7 +348,7 @@ TapTapLeaderboard.openLeaderboard(
 
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.LeaderboardDialogArguments
+import com.taptap.sdk.leaderboard.data.model.LeaderboardDialogArguments
 
 // 打开总榜
 TapTapLeaderboard.openLeaderboard(
@@ -383,7 +383,7 @@ TapTapLeaderboard.openLeaderboard(
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.UserProfileDialogArguments;
+import com.taptap.sdk.leaderboard.data.model.UserProfileDialogArguments;
 
 String openId = "user_open_id";
 TapTapLeaderboard.openUserProfile(
@@ -398,7 +398,7 @@ TapTapLeaderboard.openUserProfile(
 
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.UserProfileDialogArguments
+import com.taptap.sdk.leaderboard.data.model.UserProfileDialogArguments
 
 val openId = "user_open_id"
 TapTapLeaderboard.openUserProfile(
@@ -422,8 +422,8 @@ TapTapLeaderboard.openUserProfile(
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
 import com.taptap.sdk.leaderboard.SubmitScoresRequest;
-import com.taptap.sdk.leaderboard.LeaderboardCallback;
-import com.taptap.sdk.leaderboard.SubmitScoresResponse;
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
+import com.taptap.sdk.leaderboard.data.response.SubmitScoresResponse;
 import java.util.Arrays;
 import java.util.List;
 
@@ -435,7 +435,7 @@ List<SubmitScoresRequest.ScoreItem> scores = Arrays.asList(
 TapTapLeaderboard.submitScores(
     this, // Activity
     scores,
-    new LeaderboardCallback<SubmitScoresResponse>() {
+    new TapTapLeaderboardResponseCallback<SubmitScoresResponse>() {
         @Override
         public void onSuccess(SubmitScoresResponse data) {
             // 提交成功
@@ -458,8 +458,8 @@ TapTapLeaderboard.submitScores(
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
 import com.taptap.sdk.leaderboard.SubmitScoresRequest
-import com.taptap.sdk.leaderboard.LeaderboardCallback
-import com.taptap.sdk.leaderboard.SubmitScoresResponse
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
+import com.taptap.sdk.leaderboard.data.response.SubmitScoresResponse
 
 val scores = listOf(
     SubmitScoresRequest.ScoreItem("leaderboard_1", 1000),
@@ -469,7 +469,7 @@ val scores = listOf(
 TapTapLeaderboard.submitScores(
     activity = this,
     scores = scores,
-    callback = object : LeaderboardCallback<SubmitScoresResponse> {
+    callback = object : TapTapLeaderboardResponseCallback<SubmitScoresResponse> {
         override fun onSuccess(data: SubmitScoresResponse) {
             // 提交成功
             Log.d("Leaderboard", "提交成功: $data")
@@ -497,9 +497,9 @@ TapTapLeaderboard.submitScores(
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.LeaderboardCollection;
-import com.taptap.sdk.leaderboard.LeaderboardCallback;
-import com.taptap.sdk.leaderboard.LeaderboardScoreResponse;
+import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
+import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
 
 TapTapLeaderboard.loadLeaderboardScores(
     this, // Activity
@@ -507,7 +507,7 @@ TapTapLeaderboard.loadLeaderboardScores(
     null, // nextPage - 首次请求传null
     LeaderboardCollection.PUBLIC, // 总榜
     null, // periodToken - 时间周期标识
-    new LeaderboardCallback<LeaderboardScoreResponse>() {
+    new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>() {
         @Override
         public void onSuccess(LeaderboardScoreResponse data) {
             // 获取成功
@@ -530,9 +530,9 @@ TapTapLeaderboard.loadLeaderboardScores(
 
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.LeaderboardCollection
-import com.taptap.sdk.leaderboard.LeaderboardCallback
-import com.taptap.sdk.leaderboard.LeaderboardScoreResponse
+import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
+import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
 
 TapTapLeaderboard.loadLeaderboardScores(
     activity = this,
@@ -540,7 +540,7 @@ TapTapLeaderboard.loadLeaderboardScores(
     nextPage = null, // 首次请求传null
     leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
     periodToken = null, // 时间周期标识
-    callback = object : LeaderboardCallback<LeaderboardScoreResponse> {
+    callback = object : TapTapLeaderboardResponseCallback<LeaderboardScoreResponse> {
         override fun onSuccess(data: LeaderboardScoreResponse) {
             // 获取成功
             val scores = data.scores
@@ -569,16 +569,16 @@ TapTapLeaderboard.loadLeaderboardScores(
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.LeaderboardCollection;
-import com.taptap.sdk.leaderboard.LeaderboardCallback;
-import com.taptap.sdk.leaderboard.UserScoreResponse;
+import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
+import com.taptap.sdk.leaderboard.data.response.UserScoreResponse;
 
 TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
     this, // Activity
     "your_leaderboard_id", // 排行榜ID
     LeaderboardCollection.PUBLIC, // 总榜
     null, // periodToken - 时间周期标识
-    new LeaderboardCallback<UserScoreResponse>() {
+    new TapTapLeaderboardResponseCallback<UserScoreResponse>() {
         @Override
         public void onSuccess(UserScoreResponse data) {
             // 获取成功
@@ -602,16 +602,16 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
 
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.LeaderboardCollection
-import com.taptap.sdk.leaderboard.LeaderboardCallback
-import com.taptap.sdk.leaderboard.UserScoreResponse
+import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
+import com.taptap.sdk.leaderboard.data.response.UserScoreResponse
 
 TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
     activity = this,
     leaderboardId = "your_leaderboard_id", // 排行榜ID
     leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
     periodToken = null, // 时间周期标识
-    callback = object : LeaderboardCallback<UserScoreResponse> {
+    callback = object : TapTapLeaderboardResponseCallback<UserScoreResponse> {
         override fun onSuccess(data: UserScoreResponse) {
             // 获取成功
             val score = data.score
@@ -641,9 +641,9 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
 
 ```java
 import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.LeaderboardCollection;
-import com.taptap.sdk.leaderboard.LeaderboardCallback;
-import com.taptap.sdk.leaderboard.LeaderboardScoreResponse;
+import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
+import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
 
 TapTapLeaderboard.loadPlayerCenteredScores(
     this, // Activity
@@ -651,7 +651,7 @@ TapTapLeaderboard.loadPlayerCenteredScores(
     LeaderboardCollection.FRIENDS, // 好友榜
     "weekly", // periodToken - 时间周期标识
     10, // maxCount - 最大返回数量
-    new LeaderboardCallback<LeaderboardScoreResponse>() {
+    new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>() {
         @Override
         public void onSuccess(LeaderboardScoreResponse data) {
             // 获取成功
@@ -674,9 +674,9 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 
 ```kotlin
 import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.LeaderboardCollection
-import com.taptap.sdk.leaderboard.LeaderboardCallback
-import com.taptap.sdk.leaderboard.LeaderboardScoreResponse
+import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
+import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
+import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
 
 TapTapLeaderboard.loadPlayerCenteredScores(
     activity = this,
@@ -684,7 +684,7 @@ TapTapLeaderboard.loadPlayerCenteredScores(
     leaderboardCollection = LeaderboardCollection.FRIENDS, // 好友榜
     periodToken = "weekly", // 时间周期标识
     maxCount = 10, // 最大返回数量
-    callback = object : LeaderboardCallback<LeaderboardScoreResponse> {
+    callback = object : TapTapLeaderboardResponseCallback<LeaderboardScoreResponse> {
         override fun onSuccess(data: LeaderboardScoreResponse) {
             // 获取成功
             val scores = data.scores
@@ -705,7 +705,7 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 
 ## 错误处理
 
-排行榜 SDK 的所有异步操作都通过 `LeaderboardCallback` 返回结果，开发者需要在 `onFailure` 方法中处理错误情况。
+排行榜 SDK 的所有异步操作都通过 `TapTapLeaderboardResponseCallback` 返回结果，开发者需要在 `onFailure` 方法中处理错误情况。
 
 ### 错误码说明
 
@@ -725,7 +725,7 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 <>
 
 ```java
-new LeaderboardCallback<LeaderboardScoreResponse>() {
+new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>() {
     @Override
     public void onSuccess(LeaderboardScoreResponse data) {
         // 处理成功结果
@@ -774,7 +774,7 @@ new LeaderboardCallback<LeaderboardScoreResponse>() {
 <>
 
 ```kotlin
-object : LeaderboardCallback<LeaderboardScoreResponse> {
+object : TapTapLeaderboardResponseCallback<LeaderboardScoreResponse> {
     override fun onSuccess(data: LeaderboardScoreResponse) {
         // 处理成功结果
     }
