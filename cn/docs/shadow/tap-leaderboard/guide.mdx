@@ -83,7 +83,7 @@ allprojects {
 <CodeBlock language="groovy">{
 `dependencies {
     implementation 'com.taptap.sdk:tap-core:4.7.0-beta.0'
-    implementation 'com.taptap.sdk:tap-leaderboard:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-leaderboard-androidx:4.7.0-beta.0'
     implementation 'com.taptap.sdk:tap-login:4.7.0-beta.0'
 }`
 }</CodeBlock>
@@ -108,7 +108,7 @@ allprojects {
 `dependencies {
     implementation 'com.taptap.sdk:tap-core:4.7.0-beta.0'
     implementation 'com.taptap.sdk:tap-login:4.7.0-beta.0'
-    implementation 'com.taptap.sdk:tap-leaderboard:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-leaderboard-androidx:4.7.0-beta.0'
 }`
 }</CodeBlock>
 
@@ -195,7 +195,7 @@ TapTapSdk.init(
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardCallback;
 
 // 注册排行榜事件回调
@@ -224,7 +224,7 @@ TapTapLeaderboard.unregisterLeaderboardCallback(callback);
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardCallback
 
 // 注册排行榜事件回调
@@ -263,7 +263,7 @@ TapTapLeaderboard.unregisterLeaderboardCallback(callback = callback)
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardShareCallback;
 
 // 设置分享回调
@@ -289,7 +289,7 @@ TapTapLeaderboard.setShareCallback(new TapTapLeaderboardShareCallback() {
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 
 // 设置分享回调
 TapTapLeaderboard.setShareCallback(object : TapTapLeaderboardShareCallback {
@@ -320,7 +320,7 @@ TapTapLeaderboard.setShareCallback(object : TapTapLeaderboardShareCallback {
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.model.LeaderboardDialogArguments;
 
 // 打开总榜
@@ -347,7 +347,7 @@ TapTapLeaderboard.openLeaderboard(
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.model.LeaderboardDialogArguments
 
 // 打开总榜
@@ -382,7 +382,7 @@ TapTapLeaderboard.openLeaderboard(
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.model.UserProfileDialogArguments;
 
 String openId = "user_open_id";
@@ -397,7 +397,7 @@ TapTapLeaderboard.openUserProfile(
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.model.UserProfileDialogArguments
 
 val openId = "user_open_id"
@@ -420,9 +420,9 @@ TapTapLeaderboard.openUserProfile(
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.SubmitScoresRequest;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
+import com.taptap.sdk.leaderboard.data.request.SubmitScoresRequest;
 import com.taptap.sdk.leaderboard.data.response.SubmitScoresResponse;
 import java.util.Arrays;
 import java.util.List;
@@ -456,10 +456,10 @@ TapTapLeaderboard.submitScores(
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
-import com.taptap.sdk.leaderboard.SubmitScoresRequest
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
-import com.taptap.sdk.leaderboard.data.response.SubmitScoresResponse
+import com.taptap.sdk.leaderboard.data.request.SubmitScoresRequest;
+import com.taptap.sdk.leaderboard.data.response.SubmitScoresResponse;
 
 val scores = listOf(
     SubmitScoresRequest.ScoreItem("leaderboard_1", 1000),
@@ -496,7 +496,7 @@ TapTapLeaderboard.submitScores(
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
@@ -529,7 +529,7 @@ TapTapLeaderboard.loadLeaderboardScores(
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
@@ -568,7 +568,7 @@ TapTapLeaderboard.loadLeaderboardScores(
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.UserScoreResponse;
@@ -601,7 +601,7 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.UserScoreResponse
@@ -640,7 +640,7 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
 <>
 
 ```java
-import com.taptap.sdk.leaderboard.TapTapLeaderboard;
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
@@ -673,7 +673,7 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 <>
 
 ```kotlin
-import com.taptap.sdk.leaderboard.TapTapLeaderboard
+import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
