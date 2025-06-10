@@ -82,9 +82,9 @@ allprojects {
 
 <CodeBlock language="groovy">{
 `dependencies {
-    implementation 'com.taptap.sdk:tap-core:4.7.0-beta.0'
-    implementation 'com.taptap.sdk:tap-leaderboard-androidx:4.7.0-beta.0'
-    implementation 'com.taptap.sdk:tap-login:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-core:4.7.0-beta.1'
+    implementation 'com.taptap.sdk:tap-leaderboard-androidx:4.7.0-beta.1'
+    implementation 'com.taptap.sdk:tap-login:4.7.0-beta.1'
 }`
 }</CodeBlock>
 
@@ -106,9 +106,9 @@ allprojects {
 
 <CodeBlock language="groovy">{
 `dependencies {
-    implementation 'com.taptap.sdk:tap-core:4.7.0-beta.0'
-    implementation 'com.taptap.sdk:tap-login:4.7.0-beta.0'
-    implementation 'com.taptap.sdk:tap-leaderboard-androidx:4.7.0-beta.0'
+    implementation 'com.taptap.sdk:tap-core:4.7.0-beta.1'
+    implementation 'com.taptap.sdk:tap-login:4.7.0-beta.1'
+    implementation 'com.taptap.sdk:tap-leaderboard-androidx:4.7.0-beta.1'
 }`
 }</CodeBlock>
 
@@ -215,8 +215,8 @@ TapTapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
         }
     }
 };
-TapTapLeaderboard.registerLeaderboardCallback(callback);
-TapTapLeaderboard.unregisterLeaderboardCallback(callback);
+TapLeaderboard.registerLeaderboardCallback(callback);
+TapLeaderboard.unregisterLeaderboardCallback(callback);
 ```
 
 </>
@@ -228,7 +228,7 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardCallback
 
 // 注册排行榜事件回调
-TapTapLeaderboard.registerLeaderboardCallback(
+TapLeaderboard.registerLeaderboardCallback(
     callback = object : TapTapLeaderboardCallback {
         override fun onCallback(code: Int, message: String) {
             // 处理排行榜事件
@@ -247,7 +247,7 @@ TapTapLeaderboard.registerLeaderboardCallback(
 )
 
 // 取消注册回调
-TapTapLeaderboard.unregisterLeaderboardCallback(callback = callback)
+TapLeaderboard.unregisterLeaderboardCallback(callback = callback)
 ```
 
 </>
@@ -267,7 +267,7 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardShareCallback;
 
 // 设置分享回调
-TapTapLeaderboard.setShareCallback(new TapTapLeaderboardShareCallback() {
+TapLeaderboard.setShareCallback(new TapTapLeaderboardShareCallback() {
     @Override
     public void onShareSuccess(String localPath) {
         // 处理排行榜分享图片保存成功
@@ -292,7 +292,7 @@ TapTapLeaderboard.setShareCallback(new TapTapLeaderboardShareCallback() {
 import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 
 // 设置分享回调
-TapTapLeaderboard.setShareCallback(object : TapTapLeaderboardShareCallback {
+TapLeaderboard.setShareCallback(object : TapTapLeaderboardShareCallback {
     override fun onShareSuccess(localPath: String) {
         // 处理排行榜分享图片保存成功
         // localPath 为本地图片路径，可用于分享到系统
@@ -324,7 +324,7 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.model.LeaderboardDialogArguments;
 
 // 打开总榜
-TapTapLeaderboard.openLeaderboard(
+TapLeaderboard.openLeaderboard(
     this, // Activity
     new LeaderboardDialogArguments(
         "your_leaderboard_id", // 排行榜ID
@@ -333,7 +333,7 @@ TapTapLeaderboard.openLeaderboard(
 );
 
 // 打开好友榜
-TapTapLeaderboard.openLeaderboard(
+TapLeaderboard.openLeaderboard(
     this, // Activity
     new LeaderboardDialogArguments(
         "your_leaderboard_id", // 排行榜ID
@@ -351,7 +351,7 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.model.LeaderboardDialogArguments
 
 // 打开总榜
-TapTapLeaderboard.openLeaderboard(
+TapLeaderboard.openLeaderboard(
     activity = this,
     arguments = LeaderboardDialogArguments(
         leaderBoardID = "your_leaderboard_id", // 排行榜ID
@@ -360,7 +360,7 @@ TapTapLeaderboard.openLeaderboard(
 )
 
 // 打开好友榜
-TapTapLeaderboard.openLeaderboard(
+TapLeaderboard.openLeaderboard(
     activity = this,
     arguments = LeaderboardDialogArguments(
         leaderBoardID = "your_leaderboard_id", // 排行榜ID
@@ -386,7 +386,7 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 import com.taptap.sdk.leaderboard.data.model.UserProfileDialogArguments;
 
 String openId = "user_open_id";
-TapTapLeaderboard.openUserProfile(
+TapLeaderboard.openUserProfile(
     this, // Activity
     new UserProfileDialogArguments(openId)
 );
@@ -401,7 +401,7 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 import com.taptap.sdk.leaderboard.data.model.UserProfileDialogArguments
 
 val openId = "user_open_id"
-TapTapLeaderboard.openUserProfile(
+TapLeaderboard.openUserProfile(
     activity = this,
     arguments = UserProfileDialogArguments(openId = openId)
 )
@@ -432,7 +432,7 @@ List<SubmitScoresRequest.ScoreItem> scores = Arrays.asList(
     new SubmitScoresRequest.ScoreItem("leaderboard_2", 2000L)
 );
 
-TapTapLeaderboard.submitScores(
+TapLeaderboard.submitScores(
     this, // Activity
     scores,
     new TapTapLeaderboardResponseCallback<SubmitScoresResponse>() {
@@ -466,7 +466,7 @@ val scores = listOf(
     SubmitScoresRequest.ScoreItem("leaderboard_2", 2000)
 )
 
-TapTapLeaderboard.submitScores(
+TapLeaderboard.submitScores(
     activity = this,
     scores = scores,
     callback = object : TapTapLeaderboardResponseCallback<SubmitScoresResponse> {
@@ -501,13 +501,13 @@ import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
 
-TapTapLeaderboard.loadLeaderboardScores(
+TapLeaderboard.loadLeaderboardScores(
     this, // Activity
     "your_leaderboard_id", // 排行榜ID
     null, // nextPage - 首次请求传null
     LeaderboardCollection.PUBLIC, // 总榜
     null, // periodToken - 时间周期标识
-    new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>() {
+    new TapLeaderboardResponseCallback<LeaderboardScoreResponse>() {
         @Override
         public void onSuccess(LeaderboardScoreResponse data) {
             // 获取成功
@@ -534,7 +534,7 @@ import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
 
-TapTapLeaderboard.loadLeaderboardScores(
+TapLeaderboard.loadLeaderboardScores(
     activity = this,
     leaderboardId = "your_leaderboard_id", // 排行榜ID
     nextPage = null, // 首次请求传null
@@ -573,7 +573,7 @@ import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.UserScoreResponse;
 
-TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
+TapLeaderboard.loadCurrentPlayerLeaderboardScore(
     this, // Activity
     "your_leaderboard_id", // 排行榜ID
     LeaderboardCollection.PUBLIC, // 总榜
@@ -606,7 +606,7 @@ import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.UserScoreResponse
 
-TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
+TapLeaderboard.loadCurrentPlayerLeaderboardScore(
     activity = this,
     leaderboardId = "your_leaderboard_id", // 排行榜ID
     leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
@@ -645,7 +645,7 @@ import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
 
-TapTapLeaderboard.loadPlayerCenteredScores(
+TapLeaderboard.loadPlayerCenteredScores(
     this, // Activity
     "your_leaderboard_id", // 排行榜ID
     LeaderboardCollection.FRIENDS, // 好友榜
@@ -678,7 +678,7 @@ import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection
 import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
 
-TapTapLeaderboard.loadPlayerCenteredScores(
+TapLeaderboard.loadPlayerCenteredScores(
     activity = this,
     leaderBoardId = "your_leaderboard_id", // 排行榜ID
     leaderboardCollection = LeaderboardCollection.FRIENDS, // 好友榜
@@ -835,7 +835,7 @@ object : TapTapLeaderboardResponseCallback<LeaderboardScoreResponse> {
 protected void onDestroy() {
     super.onDestroy();
     // 取消注册回调
-    TapTapLeaderboard.unregisterLeaderboardCallback(callback);
+    TapLeaderboard.unregisterLeaderboardCallback(callback);
 }
 ```
 
@@ -847,7 +847,7 @@ protected void onDestroy() {
 override fun onDestroy() {
     super.onDestroy()
     // 取消注册回调
-    TapTapLeaderboard.unregisterLeaderboardCallback(callback)
+    TapLeaderboard.unregisterLeaderboardCallback(callback)
 }
 ```
 
@@ -865,7 +865,7 @@ override fun onDestroy() {
 
 ```java
 // 在排行榜回调中处理未登录状态
-TapTapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
+TapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
     @Override
     public void onCallback(int code, String message) {
         if (code == 500102) {
