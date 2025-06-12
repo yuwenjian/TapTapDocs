@@ -433,7 +433,6 @@ List<SubmitScoresRequest.ScoreItem> scores = Arrays.asList(
 );
 
 TapLeaderboard.submitScores(
-    this, // Activity
     scores,
     new TapTapLeaderboardResponseCallback<SubmitScoresResponse>() {
         @Override
@@ -467,7 +466,6 @@ val scores = listOf(
 )
 
 TapLeaderboard.submitScores(
-    activity = this,
     scores = scores,
     callback = object : TapTapLeaderboardResponseCallback<SubmitScoresResponse> {
         override fun onSuccess(data: SubmitScoresResponse) {
@@ -502,7 +500,6 @@ import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
 
 TapLeaderboard.loadLeaderboardScores(
-    this, // Activity
     "your_leaderboard_id", // 排行榜ID
     null, // nextPage - 首次请求传null
     LeaderboardCollection.PUBLIC, // 总榜
@@ -535,7 +532,6 @@ import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
 
 TapLeaderboard.loadLeaderboardScores(
-    activity = this,
     leaderboardId = "your_leaderboard_id", // 排行榜ID
     nextPage = null, // 首次请求传null
     leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
@@ -574,7 +570,6 @@ import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.UserScoreResponse;
 
 TapLeaderboard.loadCurrentPlayerLeaderboardScore(
-    this, // Activity
     "your_leaderboard_id", // 排行榜ID
     LeaderboardCollection.PUBLIC, // 总榜
     null, // periodToken - 时间周期标识
@@ -607,7 +602,6 @@ import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.UserScoreResponse
 
 TapLeaderboard.loadCurrentPlayerLeaderboardScore(
-    activity = this,
     leaderboardId = "your_leaderboard_id", // 排行榜ID
     leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
     periodToken = null, // 时间周期标识
@@ -646,7 +640,6 @@ import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse;
 
 TapLeaderboard.loadPlayerCenteredScores(
-    this, // Activity
     "your_leaderboard_id", // 排行榜ID
     LeaderboardCollection.FRIENDS, // 好友榜
     "weekly", // periodToken - 时间周期标识
@@ -679,7 +672,6 @@ import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback
 import com.taptap.sdk.leaderboard.data.response.LeaderboardScoreResponse
 
 TapLeaderboard.loadPlayerCenteredScores(
-    activity = this,
     leaderBoardId = "your_leaderboard_id", // 排行榜ID
     leaderboardCollection = LeaderboardCollection.FRIENDS, // 好友榜
     periodToken = "weekly", // 时间周期标识
