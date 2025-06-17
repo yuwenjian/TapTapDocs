@@ -1,5 +1,5 @@
 ---
-title: TapTap好友Lite版开发指南
+title: 好友（不含聊天）开发指南
 sidebar_label: 好友（不含聊天）开发指南
 sidebar_position: 3
 ---
@@ -87,38 +87,6 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 <MultiLang kind="unity_android_v4">
 
-### 第一步：添加 SDK 所需的外部依赖
-
-SDK 内部使用了部分第三方库，开发者接入时需先确保 SDK 外部依赖库已正常接入，具体设置如下：
-
-1. SDK 使用的 JSON 解析库为 `Newtonsoft-json`，如果当前工程已接入该依赖库，则不需额外处理，否则需在 `Packages/manifest.json` 添加如下依赖：
-
-```json
-"com.unity.nuget.newtonsoft-json":"3.2.1"
-```
-
-2. SDK 使用 `com.google.external-dependency-manager`
-管理 Android、iOS 依赖，如果当前工程已接入该依赖库，则不需额外处理，否则需在 `Packages/manifest.json` 添加如下依赖：
-
-```json
-{
-   "dependencies": {
-      "com.google.external-dependency-manager": "1.2.179"
-   },
-   "scopedRegistries": [
-      {
-         "name": "package.openupm.com",
-         "url": "https://package.openupm.com",
-         "scopes": [
-            "com.google.external-dependency-manager"
-         ]
-      }
-  ]
-}
-```
-
-### 第二步：添加 SDK 依赖
-
 <>
 
 <UnitySDKInstallation
@@ -135,7 +103,7 @@ githubDeps={[
 unitypackageModules={[
 {name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
 {name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
-{name: "TapSDK_RelationLite.unitypackage", desc: "TapTapSDK 好友Lite模块，必选"},
+{name: "TapSDK_RelationLite.unitypackage", desc: "TapTapSDK 好友 Lite 模块，必选"},
 ]}/>
 
 </>
@@ -182,7 +150,7 @@ allprojects {
 `dependencies {
     implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
     implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-relation:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-relation-lite:${v4SDKVersions.taptap.android}'
 }`
 }</CodeBlock>
 
