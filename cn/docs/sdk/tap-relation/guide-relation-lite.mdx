@@ -1,0 +1,993 @@
+---
+title: TapTap好友Lite版开发指南
+sidebar_label: 好友（不含聊天）开发指南
+sidebar_position: 3
+---
+
+import MultiLang from '/src/docComponents/MultiLang';
+import CodeBlock from '@theme/CodeBlock';
+import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+
+本文介绍如何在游戏中加入好友系统。
+
+## 权限说明
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
+| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
+| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
+| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
+| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
+| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.VIBRATE" />
+```
+
+</>
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
+| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
+| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
+| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
+| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
+| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.VIBRATE" />
+```
+
+</>
+
+</MultiLang>
+
+## 集成前准备
+
+参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启好友服务。
+
+## SDK 获取
+
+由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapRelationLite` 、 `TapTapLogin` 模块：
+
+<MultiLang kind="unity_android_v4">
+
+### 第一步：添加 SDK 所需的外部依赖
+
+SDK 内部使用了部分第三方库，开发者接入时需先确保 SDK 外部依赖库已正常接入，具体设置如下：
+
+1. SDK 使用的 JSON 解析库为 `Newtonsoft-json`，如果当前工程已接入该依赖库，则不需额外处理，否则需在 `Packages/manifest.json` 添加如下依赖：
+
+```json
+"com.unity.nuget.newtonsoft-json":"3.2.1"
+```
+
+2. SDK 使用 `com.google.external-dependency-manager`
+管理 Android、iOS 依赖，如果当前工程已接入该依赖库，则不需额外处理，否则需在 `Packages/manifest.json` 添加如下依赖：
+
+```json
+{
+   "dependencies": {
+      "com.google.external-dependency-manager": "1.2.179"
+   },
+   "scopedRegistries": [
+      {
+         "name": "package.openupm.com",
+         "url": "https://package.openupm.com",
+         "scopes": [
+            "com.google.external-dependency-manager"
+         ]
+      }
+  ]
+}
+```
+
+### 第二步：添加 SDK 依赖
+
+<>
+
+<UnitySDKInstallation
+npmDeps={[
+"com.taptap.sdk.core",
+"com.taptap.sdk.login",
+"com.taptap.sdk.relationlite",
+]}
+githubDeps={[
+{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.sdk.login", url: `https://github.com/taptap/TapSDKLogin-Unity.git#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.sdk.relationlite", url: `https://github.com/taptap/TapSDKRelationLite-Unity.git#${v4SDKVersions.taptap.unity}`}
+]}
+unitypackageModules={[
+{name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
+{name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
+{name: "TapSDK_RelationLite.unitypackage", desc: "TapTapSDK 好友Lite模块，必选"},
+]}/>
+
+</>
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects { 
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-relation-lite:${v4SDKVersions.taptap.android}'
+}`
+}</CodeBlock>
+
+</>
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-relation:${v4SDKVersions.taptap.android}'
+}`
+}</CodeBlock>
+
+</>
+
+</MultiLang>
+
+## SDK 初始化
+
+详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```cs
+using TapSDK.Core;
+using TapSDK.RelationLite;
+
+// 核心配置 详细参数见 [TapTapSDK]
+TapTapSdkOptions coreOptions = new TapTapSdkOptions();
+// 设置屏幕方向：0-竖屏 1-横屏
+coreOptions.screenOrientation = 1;
+// TapSDK 初始化
+TapTapSDK.Init(coreOptions, otherOptions);
+```
+
+</>
+
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```java
+import com.taptap.sdk.core.TapTapRegion;
+import com.taptap.sdk.core.TapTapSdk;
+import com.taptap.sdk.core.TapTapSdkOptions;
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+String clientId = "";
+// 开发者中心对应 Client Token
+String clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+boolean enableLog = BuildConfig.DEBUG;
+// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
+int screenOrientation = ScreenOrientation.PORTRAIT
+
+TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+        clientId, // 游戏 Client ID
+        clientToken, // 游戏 Client Token
+        screenOrientation, // 屏幕方向
+        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+);
+tapSdkOptions.setEnableLog(enableLog);
+// 初始化 TapSDK
+TapTapSdk.init(context, tapSdkOptions);
+
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapSdk
+import com.taptap.sdk.core.TapTapSdkOptions
+import com.taptap.sdk.core.TapTapLanguage
+import com.taptap.sdk.core.TapTapRegion
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+val clientId = "";
+// 开发者中心对应 Client Token
+val clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+val enableLog = BuildConfig.DEBUG;
+// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
+val screenOrientation = ScreenOrientation.PORTRAIT
+
+TapTapSdk.init(
+    context = context,
+    sdkOptions = TapTapSdkOptions(
+        clientId = clientId,
+        clientToken = clientToken,
+        region = TapTapRegion.CN,
+        screenOrientation = screenOrientation,
+        preferredLanguage = TapTapLanguage.ZH_HANS,
+        enableLog = false
+    )
+)
+```
+</>
+
+</MultiLang>
+
+## 注册/注销 统一状态码监听回调
+统一状态回调，不同 code 代表不同的状态。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.RelationLite;
+
+RelationLiteCallback callback = new RelationLiteCallback();
+TapTapRelationLite.RegisterRelationLiteCallback(callback);
+TapTapRelationLite.UnregisterRelationLiteCallback(callback);
+
+class RelationLiteCallback : ITapTapRelationLiteCallback
+{
+
+    public RelationLiteCallback(){}
+
+    public void OnResult(int code)
+    {
+        // 处理好友 SDK 的状态码
+        // 700001：需要登录
+        // 700002：需要授权 TapTap 好友关系权限
+    }
+
+}
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.relation.lite.internal.TapTapRelationLiteCallback;
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+import com.taptap.sdk.relation.lite.internal.TapTapRelationLiteCode;
+
+TapTapRelationLiteCallback callback = new TapTapRelationLiteCallback(){
+
+    @Override
+    public void onRelationLiteResult(int code) {
+        // 处理好友 SDK 的状态码
+        // TapTapRelationLiteCode.NEED_LOGIN：需要登录
+        // TapTapRelationLiteCode.NEED_USER_FRIENDS_SCOPE：需要授权 TapTap 好友关系权限
+    }
+};
+
+TapTapRelationLite.registerRelationLiteCallback(callback);
+TapTapRelationLite.unregisterRelationLiteCallback(callback);
+
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.relation.lite.internal.TapTapRelationLiteCallback
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+import com.taptap.sdk.relation.lite.internal.TapTapRelationLiteCode
+
+private val relationLiteCallback = object : TapTapRelationLiteCallback {
+        override fun onRelationLiteResult(code: Int) {
+            when (code) {
+                NEED_LOGIN -> appendLog("未登录，请先登录")
+                NEED_USER_FRIENDS_SCOPE -> appendLog("未授权好友关系，请授权")
+            }
+        }
+    }
+
+TapTapRelationLite.registerRelationLiteCallback(callback = relationLiteCallback)
+TapTapRelationLite.unregisterRelationLiteCallback(callback = relationLiteCallback)
+```
+
+</>
+
+</MultiLang>
+
+## 邀请好友上线
+
+打开邀请好友页面，向选中好友发送邀请上线消息。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+TapTapRelationLite.InviteGame();
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+
+TapTapRelationLite.inviteGame();
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+
+TapTapRelationLite.inviteGame()
+```
+
+</MultiLang>
+
+## 邀请好友组队
+
+打开邀请好友页面，向选中好友发送邀请组队消息，需要传组队相关参数teamId。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+string teamId = "";
+TapTapRelationLite.InviteTeam(teamId);
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+
+String teamId = "";
+TapTapRelationLite.inviteTeam(teamId);
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+
+val teamId = ""
+TapTapRelationLite.inviteTeam(teamId = teamId)
+```
+
+</MultiLang>
+
+## 获取好友列表
+
+获取当前用户的好友列表。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+{
+
+    public RelationLiteRequestCallback(){}
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 好友列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：好友列表请求结果
+    }
+
+    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
+    {
+        // 关注列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：关注列表请求结果
+    }
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 粉丝列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：粉丝列表请求结果
+    }
+
+    public void OnSyncRelationshipSuccess(string openId, string unionId)
+    {
+        // 同步好友关系成功
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
+    {
+        // 同步好友关系失败
+        // errorMessage：错误信息
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnRequestError(string errorMessage)
+    {
+        // 接口请求错误
+        // errorMessage：错误信息
+    }
+
+    // 如非第一页 使用接口返回的nextPageToken
+    string nextPageToken = "";
+    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
+    TapTapRelationLite.GetFriendsList(nextPageToken, callback);
+}
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback;
+import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem;
+
+String nextPage = "";
+TapTapRelationLite.getFriendsList(nextPage, new TapTapRelationRequestCallback() {
+    @Override
+    public void onFriendsListResult(@NonNull List<RelationLiteUserItem> friendsList, @NonNull String nextPageToken) {
+
+    }
+});
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback
+import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem
+
+val nextPage = ""
+        TapTapRelationLite.getFansList(
+            nextPageToken = nextPage,
+            callback = object : TapTapRelationRequestCallback() {
+                override fun onFriendsListResult(
+                    friendsList: List<RelationLiteUserItem>,
+                    nextPageToken: String
+                ) {
+
+                }
+            })
+```
+
+</MultiLang>
+
+## 获取关注列表
+
+获取当前用户的关注列表。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+{
+
+    public RelationLiteRequestCallback(){}
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 好友列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：好友列表请求结果
+    }
+
+    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
+    {
+        // 关注列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：关注列表请求结果
+    }
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 粉丝列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：粉丝列表请求结果
+    }
+
+    public void OnSyncRelationshipSuccess(string openId, string unionId)
+    {
+        // 同步好友关系成功
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
+    {
+        // 同步好友关系失败
+        // errorMessage：错误信息
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnRequestError(string errorMessage)
+    {
+        // 接口请求错误
+        // errorMessage：错误信息
+    }
+
+    // 如非第一页 使用接口返回的nextPageToken
+    string nextPageToken = "";
+    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
+    TapTapRelationLite.GetFollowingList(nextPageToken, callback);
+}
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback;
+import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem;
+
+String nextPage = "";
+TapTapRelationLite.getFollowingList(nextPage, new TapTapRelationRequestCallback() {
+    @Override
+    public void onFollowingListResult(@NonNull List<RelationLiteUserItem> followingList, @NonNull String nextPageToken) {
+
+    }
+});
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback
+import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem
+
+val nextPage = ""
+        TapTapRelationLite.getFollowingList(
+            nextPageToken = nextPage,
+            callback = object : TapTapRelationRequestCallback() {
+                override fun onFollowingListResult(
+                    followingList: List<RelationLiteUserItem>,
+                    nextPageToken: String
+                ) {
+
+                }
+            })
+```
+
+</MultiLang>
+
+## 获取粉丝列表
+
+获取当前用户的粉丝列表。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+{
+
+    public RelationLiteRequestCallback(){}
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 好友列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：好友列表请求结果
+    }
+
+    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
+    {
+        // 关注列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：关注列表请求结果
+    }
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 粉丝列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：粉丝列表请求结果
+    }
+
+    public void OnSyncRelationshipSuccess(string openId, string unionId)
+    {
+        // 同步好友关系成功
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
+    {
+        // 同步好友关系失败
+        // errorMessage：错误信息
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnRequestError(string errorMessage)
+    {
+        // 接口请求错误
+        // errorMessage：错误信息
+    }
+
+    // 如非第一页 使用接口返回的nextPageToken
+    string nextPageToken = "";
+    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
+    TapTapRelationLite.GetFansList(nextPageToken, callback);
+}
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback;
+import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem;
+
+String nextPage = "";
+TapTapRelationLite.getFansList(nextPage, new TapTapRelationRequestCallback() {
+    @Override
+    public void onFansListResult(@NonNull List<RelationLiteUserItem> fansList, @NonNull String nextPageToken) {
+
+    }
+});
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback
+import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem
+
+val nextPage = ""
+        TapTapRelationLite.getFansList(
+            nextPageToken = nextPage,
+            callback = object : TapTapRelationRequestCallback() {
+                override fun onFansListResult(
+                    fansList: List<RelationLiteUserItem>,
+                    nextPageToken: String
+                ) {
+
+                }
+            })
+```
+
+</MultiLang>
+
+## 同步好友关系（openId）
+
+使用好友 openId 将好友关系同步至 TapTap。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+{
+
+    public RelationLiteRequestCallback(){}
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 好友列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：好友列表请求结果
+    }
+
+    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
+    {
+        // 关注列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：关注列表请求结果
+    }
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 粉丝列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：粉丝列表请求结果
+    }
+
+    public void OnSyncRelationshipSuccess(string openId, string unionId)
+    {
+        // 同步好友关系成功
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
+    {
+        // 同步好友关系失败
+        // errorMessage：错误信息
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnRequestError(string errorMessage)
+    {
+        // 接口请求错误
+        // errorMessage：错误信息
+    }
+
+    // 0-新增好友 1-删除好友
+    int action = 1;
+    // 当前用户昵称
+    string nickname = "";
+    // 好友用户昵称
+    string friendNickname = "";
+    // 好友openId
+    string friendOpenId = "";
+
+    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
+    TapTapRelationLite.SyncRelationshipWithOpenId(action, nickname, friendNickname, friendOpenId, callback);
+}
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback;
+
+int action = 1;
+String nickname = "";
+String friendNickname = "";
+String friendOpenId = "";
+
+TapTapRelationLite.syncRelationshipWithOpenId(action, nickname, friendNickname, friendOpenId, new TapTapRelationRequestCallback() {
+    @Override
+    public void onSyncRelationshipSuccess(@NonNull String openId, @NonNull String unionId) {
+
+    }
+
+    @Override
+    public void onSyncRelationshipFail(@Nullable String errorMessage, @NonNull String openId, @NonNull String unionId) {
+
+    }
+});
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback
+
+val action = 1
+val nickname = ""
+val friendNickname = ""
+val friendOpenId = ""
+
+TapTapRelationLite.syncRelationshipWithOpenId(
+        action = action,
+        nickname = nickname,
+        friendNickname = friendNickname,
+        friendOpenId = friendOpenId,
+        callback = object : TapTapRelationRequestCallback() {
+            override fun onSyncRelationshipSuccess(openId: String, unionId: String) {
+
+             }
+
+            override fun onSyncRelationshipFail(
+                errorMessage: String?,
+                openId: String,
+                unionId: String
+            ) {
+
+        }
+})
+```
+
+</MultiLang>
+
+## 同步好友关系（unionId）
+
+使用好友 unionId 将好友关系同步至 TapTap。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+{
+
+    public RelationLiteRequestCallback(){}
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 好友列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：好友列表请求结果
+    }
+
+    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
+    {
+        // 关注列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：关注列表请求结果
+    }
+
+    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
+    {
+        // 粉丝列表
+        // nextPageToken： 下一页请求token，分页请求需传入
+        // friendsList：粉丝列表请求结果
+    }
+
+    public void OnSyncRelationshipSuccess(string openId, string unionId)
+    {
+        // 同步好友关系成功
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
+    {
+        // 同步好友关系失败
+        // errorMessage：错误信息
+        // openId： 好友openId
+        // unionId：好友unionId
+    }
+
+    public void OnRequestError(string errorMessage)
+    {
+        // 接口请求错误
+        // errorMessage：错误信息
+    }
+
+    // 0-新增好友 1-删除好友
+    int action = 1;
+    // 当前用户昵称
+    string nickname = "";
+    // 好友用户昵称
+    string friendNickname = "";
+    // 好友unionId
+    string friendUnionId = "";
+
+    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
+    TapTapRelationLite.SyncRelationshipWithUnionId(action, nickname, friendNickname, friendUnionId, callback);
+}
+```
+
+```java
+import com.taptap.sdk.relation.lite.TapTapRelationLite;
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback;
+
+int action = 1;
+String nickname = "";
+String friendNickname = "";
+String friendUnionId = "";
+
+TapTapRelationLite.syncRelationshipWithUnionId(action, nickname, friendNickname, friendUnionId, new TapTapRelationRequestCallback() {
+    @Override
+    public void onSyncRelationshipSuccess(@NonNull String openId, @NonNull String unionId) {
+
+    }
+
+    @Override
+    public void onSyncRelationshipFail(@Nullable String errorMessage, @NonNull String openId, @NonNull String unionId) {
+
+    }
+});
+```
+
+```kotlin
+import com.taptap.sdk.relation.lite.TapTapRelationLite
+import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback
+
+val action = 1
+val nickname = ""
+val friendNickname = ""
+val friendUnionId = ""
+
+TapTapRelationLite.syncRelationshipWithUnionId(
+        action = action,
+        nickname = nickname,
+        friendNickname = friendNickname,
+        friendUnionId = friendUnionId,
+        callback = object : TapTapRelationRequestCallback() {
+            override fun onSyncRelationshipSuccess(openId: String, unionId: String) {
+
+             }
+
+            override fun onSyncRelationshipFail(
+                errorMessage: String?,
+                openId: String,
+                unionId: String
+            ) {
+
+        }
+})
+```
+
+</MultiLang>
+
+## 展示 TapTap 用户名片
+
+展示指定用户的名片弹窗，可用于关注/取关用户。
+
+<MultiLang kind="unity_android_v4">
+
+```cs
+using TapSDK.RelationLite;
+
+string openId = "";
+string unionId = "";
+TapTapRelationLite.ShowTapUserProfile(openId, unionId);
+```
+
+```java
+import com.taptap.sdk.relation.TapTapRelationLite;
+// openId unionId二选一即可
+String openId = "";
+String unionId = "";
+TapTapRelationLite.showTapUserProfile(openId, unionId);
+```
+
+```kotlin
+import com.taptap.sdk.relation.TapTapRelationLite
+// openId unionId二选一即可
+val openId = "";
+val unionId = "";
+TapTapRelationLite.showTapUserProfile(openId = openId, unionId = unionId)
+```
+
+</MultiLang>
+
+## 国际化
+
+TapTapRelationLite 支持设置语言：目前只支持简体中文
+
+[//]: # (<Languages/>)
+
+
