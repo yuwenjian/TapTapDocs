@@ -286,6 +286,7 @@ int resultCode = new TapTapShareBuilder()
     .addContents("content") // 分享内容
     .addHashtagIds("hashtag ids") // 话题 Id
     .addGroupLabelId("group ids") // 论坛标签 Id
+    .addFailUrl("fail url") // 未安装 TapTap 应用时跳转链接
     .addFooterImageUrls(new ArrayList<Uri>(uri1, uri2)) // 分享的图片
     .build()
     .share(activity);
