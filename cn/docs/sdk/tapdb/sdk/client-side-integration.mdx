@@ -278,47 +278,48 @@ using TapSDK.Core;
 // 核心配置
 TapTapSdkOptions coreOptions = new TapTapSdkOptions
 {
-// 客户端 ID，开发者后台获取
-clientId = clientId,
-// 客户端令牌，开发者后台获取
-clientToken = clientToken,
-// 地区，CN 为国内，Overseas 为海外
-region = TapTapRegionType.CN,
-// 渠道，如 AppStore、GooglePlay
-channel = "AppStore",
-// 语言，默认为 Auto，默认情况下，国内为 zh_Hans，海外为 en
-preferredLanguage = TapTapLanguageType.zh_Hans,
-// 游戏版本号，如果不传则默认读取应用的版本号
-gameVersion = "1.1.0",
-// 初始化时传入的自定义参数，会在初始化时上报到 device_login 事件
-propertiesJson = "{\"device_login_custom_key\": \"这是初始化的时候传入的数据，会上报到 device_login 事件\"}",
-// CAID，仅国内 iOS
-caid = "000-000-0000-00000",
-// 是否能够覆盖内置参数，默认为 false
-overrideBuiltInParameters = false,
-// 是否开启广告商 ID 收集，默认为 false
-enableAdvertiserIDCollection = true,
-// 是否开启自动上报 IAP 事件
-enableAutoIAPEvent = true,
-// OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效
-oaidCert = null,
-// 是否开启日志，Release 版本请设置为 false
-enableLog = true,
-// 是否禁用 OAID 反射，默认为 true
-disableReflectionOAID = true,
-// 是否禁用自动上报设备登录事件，默认为 false
-disableAutoLogDeviceLogin = false
+    // 客户端 ID，开发者后台获取
+    clientId = clientId,
+    // 客户端令牌，开发者后台获取
+    clientToken = clientToken,
+    // 地区，CN 为国内，Overseas 为海外
+    region = TapTapRegionType.CN,
+    // 语言，默认为 Auto，默认情况下，国内为 zh_Hans，海外为 en
+    preferredLanguage = TapTapLanguageType.zh_Hans,
+    // 游戏版本号，如果不传则默认读取应用的版本号
+    gameVersion = "1.1.0",
+    // CAID，仅国内 iOS
+    caid = "000-000-0000-00000",
+    // 是否开启广告商 ID 收集，默认为 false
+    enableAdvertiserIDCollection = true,
+    // OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效
+    oaidCert = null,
+    // 是否开启日志，Release 版本请设置为 false
+    enableLog = true,
+    // 是否禁用 OAID 反射，默认为 true
+    disableReflectionOAID = true
 };
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions);
+
+//数据分析相关配置
+TapTapEventOptions eventOptions =  new TapTapEventOptions
+{
+    // 渠道，如 AppStore、GooglePlay
+    channel = "AppStore",
+    // 初始化时传入的自定义参数，会在初始化时上报到 device_login 事件
+    propertiesJson = "{\"device_login_custom_key\": \"这是初始化的时候传入的数据，会上报到 device_login 事件\"}",
+    // 是否能够覆盖内置参数，默认为 false
+    overrideBuiltInParameters = false,
+    // 是否开启自动上报 IAP 事件
+    enableAutoIAPEvent = true,
+    // 是否禁用自动上报设备登录事件，默认为 false
+    disableAutoLogDeviceLogin = false
+};
 
 
-// 如果有其他TapTap模块配置可以一起初始化配置, 请使用如下API
-// 其他模块配置项
 TapTapSdkBaseOptions[] otherOptions = new TapTapSdkBaseOptions[]
 {
-achievementOptions,
-// ...
+    eventOptions,
+    // ... 其他模块配置项
 };
 TapTapSDK.Init(coreOptions, otherOptions);
 
@@ -360,6 +361,15 @@ String clientId = "";
 // 开发者中心对应 Client Token
 String clientToken = "";
 
+TapTapEventOptions eventOptions = new TapTapEventOptions(
+    "channel",
+    true,
+    false,
+    new JSONObject(),
+    false,
+    true
+);
+
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
         clientId, // 游戏 Client ID
         clientToken, // 游戏 Client Token
@@ -372,7 +382,7 @@ tapSdkOptions.setDisableReflectionOAID(true);
 tapSdkOptions.setDisableAutoLogDeviceLogin(false);
 
 // 初始化 TapSDK
-TapTapSdk.init(context, tapSdkOptions);
+TapTapSdk.init(context, tapSdkOptions, eventOptions);
 ```
 
 </>
@@ -387,6 +397,14 @@ import com.taptap.sdk.core.TapTapSdkOptions
 import com.taptap.sdk.core.TapTapRegion
 import com.taptap.sdk.core.TapTapLanguage
 
+val eventOptions = TapTapEventOptions(
+    channel = "channel",
+    autoIAPEventEnabled = true,
+    overrideBuiltInParameters = true,
+    properties = JSONObject(),
+    disableAutoLogDeviceLogin = false
+)
+
 TapTapSdk.init(
    context = context,
    sdkOptions = TapTapSdkOptions(
@@ -399,7 +417,8 @@ TapTapSdk.init(
          disableReflectionOAID = true,
          // 是否即用禁用自动上报设备登录事件, 默认 false
          disableAutoLogDeviceLogin = false
-   )
+   ),
+   eventOptions
 )
 ```
 
@@ -413,22 +432,23 @@ TapTapSdk.init(
 import TapTapCoreSDK
 
 let options = TapTapSdkOptions()
-
-// TODO: 应用信息配置
+options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
+options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
+options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
+// ... 其他全局配置
 
 // 数据分析相关属性配置
-options.channel = "channel name" // 分包渠道名称
-options.gameVersion = "gameVersion" // 游戏版本（默认会读取主包 info.plist 中的版本号）
-options.caid = "caid" // 国内 iOS CAID
-options.overrideBuiltInParameters = true //  自定义字段是否能覆盖内置字段,默认 false
-options.enableAdvertiserIDCollection = false // 是否可以获取 IDFA，默认值为 false
-options.enableAutoIAPEvent = false // 是否自动上报苹果内购支付成功事件
-// 自定义属性配置
-let properties = ["custom_key": "value"]
-options.properties = properties // 自定义属性，启动首个预置事件（device_login）会携带该属性
+let eventOptions = TapTapEventOptions()
+eventOptions.channel = "channel name" // 分包渠道名称
+eventOptions.overrideBuiltInParameters = true //  自定义字段是否能覆盖内置字段,默认 false
+eventOptions.enableAutoIAPEvent = false // 是否自动上报苹果内购支付成功事件
 
+let properties = ["custom_key": "value"] // 自定义属性配置
+eventOptions.properties = properties // 自定义属性，启动首个预置事件（device_login）会携带该属性
+
+let otherOptions = [eventOptions]
 // 初始化 SDK
-TapTapSDK.initWith(options)
+TapTapSDK.initWith(options, otherOptions: otherOptions)
 
 ```
 **注意**：启用 IDFA 时需添加[工程配置](#idfaios)
@@ -440,22 +460,27 @@ TapTapSDK.initWith(options)
 ```objc
 #import "TapTapCoreSDK/TapTapSDK.h"
 
-TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
-// TODO: 应用信息配置
+TapTapSdkOptions *options = [TapTapSdkOptions new];
+options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
+options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
+options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
+// ... 其他全局配置
 
 // 数据分析相关属性配置
-options.channel = @"channel name"; // 分包渠道名称
-options.gameVersion = @"gameVersion"; // 游戏版本（默认会读取主包 info.plist 中的版本号）
-options.caid = @"caid"; // 国内 iOS CAID
-options.overrideBuiltInParameters = YES; //  自定义字段是否能覆盖内置字段,默认 false
-options.enableAdvertiserIDCollection = NO; // 是否可以获取 IDFA，默认值为 false
-options.enableAutoIAPEvent = NO; // 是否自动上报苹果内购支付成功事件
-// 自定义属性配置
-NSDictionary  *properties = @{@"custom_key": @"value"};
-options.properties = properties; // 自定义属性，启动首个预置事件（device_login）会携带该属性
+TapTapEventOptions *eventOptions = [TapTapEventOptions new];
+eventOptions.channel = @"channel name"; // 分包渠道名称
+eventOptions.overrideBuiltInParameters = YES; //  自定义字段是否能覆盖内置字段,默认 NO
+eventOptions.enableAutoIAPEvent = NO; // 是否自动上报苹果内购支付成功事件
+
+NSDictionary *properties = @{@"custom_key": @"value"}; // 自定义属性配置
+eventOptions.properties = properties; // 自定义属性，启动首个预置事件（device_login）会携带该属性
+
+// 其他模块配置项
+NSArray *otherOptions = @[eventOptions];
 
 // 初始化 SDK
-[TapTapSDK initWithOptions:options];
+[TapTapSDK initWithOptions: options otherOptions:otherOptions];
+
 ```
 </>
 
