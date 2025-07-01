@@ -284,10 +284,10 @@ import com.taptap.sdk.share.TapTapShareResult;
 int resultCode = new TapTapShareBuilder()
     .addTitle("title") // 分享标题
     .addContents("content") // 分享内容
-    .addHashtagIds("hashtag ids") // 话题 Id
-    .addGroupLabelId("group ids") // 论坛标签 Id
+    .addHashtagIds("hashtag ids") // 话题 Id 最多支持 5 个，多个话题 Id 以英文逗号,分割 例如："hashtag1,hashtag2"
+    .addGroupLabelId("group ids") // 论坛标签 Id 最多支持 1 个
     .addFailUrl("fail url") // 未安装 TapTap 应用时跳转链接，推荐使用 REP 生成的游戏详情页效果链接
-    .addFooterImageUrls(new ArrayList<Uri>(uri1, uri2)) // 分享的图片
+    .addFooterImageUrls(new ArrayList<Uri>(uri1, uri2)) // 可选，分享的图片，最多支持 9 张
     .build()
     .share(activity);
 
@@ -309,10 +309,10 @@ import com.taptap.sdk.share.TapTapShareResult
 val resultCode: Int = TapTapShareBuilder()
     .addTitle(title) // 分享标题
     .addContents(content) // 分享内容
-    .addHashtagIds(hashtag) // 话题 Id
-    .addGroupLabelId(group) // 论坛标签 Id
+    .addHashtagIds(hashtag) // 话题 Id 最多支持 5 个，多个话题 Id 以英文逗号,分割 例如："hashtag1,hashtag2"
+    .addGroupLabelId(group) // 论坛标签 Id 最多支持 1 个
     .addFailUrl("fail url") // 未安装 TapTap 应用时跳转链接，推荐使用 REP 生成的游戏详情页效果链接
-    .addFooterImageUrls(picList) // 分享的图片
+    .addFooterImageUrls(picList) // 可选，分享的图片，最多支持 9 张
     .build()
     .share(this)
 
@@ -338,8 +338,8 @@ images.append(imageData)
 let obj = TapTapShareObj(
     title: "title", // 分享标题
     contents: "content", // 分享内容
-    groupLabelId: "groupid", // 论坛标签 ID
-    hashtagIds: "ids", // 话题 ID
+    groupLabelId: "groupid", // 论坛标签 ID 最多支持 1 个
+    hashtagIds: "ids", // 话题 ID  最多支持 5 个，多个话题 Id 以英文逗号,分割 例如："hashtag1,hashtag2"
     footerImages: images, // 可选，最多支持 9 个，总大小未见苹果说明限制，但应尽量保持小
     failUrl: "https://***", // 未安装 TapTap 应用时跳转链接，推荐使用 REP 生成的游戏详情页效果链接
     backUrl: "gameUrl" // 返回游戏时的 URLScheme，应符合 ****://*** 格式
@@ -358,12 +358,15 @@ TapTapShare.share(obj) { result in
 #import "UIKit/UIKit.h"
 #import "TapTapShareSDK/TapTapShareSDK-Swift.h"
 
+// 可选，最多支持 9 张，总大小未见苹果说明限制，但应尽量保持小
 NSMutableArray *imageDatas = [[NSMutableArray alloc] init];
 
 UIImage *image = [UIImage imageNamed:@"avatar"];
 NSData *data = UIImagePNGRepresentation(image);
 [imageDatas addObject:data];
 
+// groupLabelId 论坛标签 ID 最多支持 1 个
+// hashtagIds 话题 ID  最多支持 5 个，多个话题 Id 以英文逗号,分割 例如："hashtag1,hashtag2"
 // backUrl 为返回游戏时的 URLScheme，应符合 ****://*** 格式
 TapTapShareObj *obj = [[TapTapShareObj alloc] initWithTitle:@"分享标题" contents:@"分享内容" groupLabelId:@"论坛标签 ID" hashtagIds:@"HashTag 和 活动ID" footerImages:imageDatas failUrl:@"未安装 TapTap 应用时跳转链接，推荐使用 REP 生成的游戏详情页效果链接" backUrl:@"返回游戏时的 URLScheme"];
 [TapTapShare share:obj completion:^(NSInteger result)  {
