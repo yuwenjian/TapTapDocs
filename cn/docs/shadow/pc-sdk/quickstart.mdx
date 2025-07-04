@@ -292,29 +292,78 @@ void ShowPurchasePrompt() {
 
 ## 开发调试方式
 
-在游戏尚未发布期间，开发者可参照以下流程完成本地调试配置，配置完成后，即可在调试阶段**无需依赖 TapTap 启动器启动游戏**，直接运行游戏可执行文件进行测试。
+在游戏尚未发布期间，开发者可通过添加测试用户到白名单并下载 TapTap PC 端后，根据不同开发阶段选择对应测试方案进行测试。
 
-### 1. 下载及配置调试文件
+### 添加白名单
 
-在 TapTap 开发者中心游戏「商店」的「PC 游戏管理」→「开放能力」页面下载调试文件 (`taptap_client_id.txt`)，如图所示：
+前往 开发者中心 > 商店 > 版本发布 > 测试 > 内部测试 页面， 选择创建测试计划并添加测试用户白名单，示例视频如下：
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/uUndygS1VXnHBzVVxnucussxQEGGDk6u/add_tester.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+###  下载 TapTap PC 端
+
+下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的白名单账号
+
+### 本地测试方案
+
+该方案适用于开发阶段自测，无需传包至 TapTap。开发者可前往 TapTap 开发者中心 >>游戏服务 >>启动校验 页面点击 `配置文件`，如图所示：
 
 ![](/img/pc-quickstart/download_debug_file.png)
 
-点击「taptap_client_id.txt」后，浏览器会下载一个对应名称的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下。
+浏览器会下载一个名称为 `taptap_client_id.txt` 的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下，即可在本地启动游戏，开始测试相关业务功能。
 
-### 2. 添加测试用户白名单
 
-在上一步骤同一页面中，选择「设置自测用户」，将弹出设置自测用户窗口，如下图：
+### 传包测试方案
 
-![](/img/pc-quickstart/add_new_tester.png)
+该方案适用于上架前自测，可传包至 TapTap 平台后下载游戏测试
 
-点击「添加用户」，输入用户 `TapTap ID` 并点击右侧的搜索按钮，待搜索结果返回后，选择对应用户并点击「提交」按钮，即可完成添加操作。
+#### 1. 上传游戏包体
 
-![](/img/pc-quickstart/submit_tester.png)
+前往开发者中心 >> 商店 >> PC 包体管理 >> 包体管理，点击「上传包体」，选择包体文件，并填写启动项配置。
 
-### 3. 下载 TapTap PC 端并登录
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/Oj1a1o1guoJCPNw9Fd8Nw9KUrunGIO1M/upload_package.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
 
-下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的自测用户账号，即可在本地启动游戏，开始测试相关业务功能。
+:::tip
+如果您的游戏有依赖库，请同时将依赖库的安装文件放置于游戏目录内一并上传，并在 PC 包体管理 >> 基础配置选择对应的库及库的启动项配置，TapTap 将在用户点击下载安装游戏时，帮助游戏完成依赖库的安装。
+:::
+
+#### 2. 完成包体自测
+
+测试用户在 Windows 电脑本地下载 TapTap PC 版并登录测试账号后，点击「立即自测」或复制自测链接至浏览器。
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/JKYKdiaprtPWNKVs4HGaK3LGy94kYGjy/test.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
 
 :::tip
 注意：当发布游戏时，请务必删除游戏目录中的 `taptap_client_id.txt` 调试文本文件

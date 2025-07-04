@@ -127,12 +127,83 @@ else
 TapUELogin::Logout();
 ```
 
-## 开发调试设置
+## 开发调试方式
 
-当游戏尚未发布时，开发者可以在游戏可执行文件所在目录（通常为 `{游戏名}/Binaries/Win64/`）下创建一个名为 `taptap_client_id.txt` 的文本文件。该文件内容仅需填写当前应用的 `clientId`，即可在调试阶段**无需通过 TapTap 客户端启动游戏**，直接运行可执行文件进行调试。
+在游戏尚未发布期间，开发者可通过添加测试用户到白名单并下载 TapTap PC 端后，根据不同开发阶段选择对应测试方案进行测试。
+
+### 添加白名单
+
+前往 开发者中心 > 商店 > 版本发布 > 测试 > 内部测试 页面， 选择创建测试计划并添加测试用户白名单，示例视频如下：
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/uUndygS1VXnHBzVVxnucussxQEGGDk6u/add_tester.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+###  下载 TapTap PC 端
+
+下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的白名单账号
+
+### 本地测试方案
+
+该方案适用于开发阶段自测，无需传包至 TapTap。开发者可前往 TapTap 开发者中心 >>游戏服务 >>启动校验 页面点击 `配置文件`，如图所示：
+
+![](/img/pc-quickstart/download_debug_file.png)
+
+浏览器会下载一个名称为 `taptap_client_id.txt` 的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下，即可在本地启动游戏，开始测试相关业务功能。
+
+
+### 传包测试方案
+
+该方案适用于上架前自测，可传包至 TapTap 平台后下载游戏测试
+
+#### 1. 上传游戏包体
+
+前往开发者中心 >> 商店 >> PC 包体管理 >> 包体管理，点击「上传包体」，选择包体文件，并填写启动项配置。
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/Oj1a1o1guoJCPNw9Fd8Nw9KUrunGIO1M/upload_package.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
 
 :::tip
-注意：当发布游戏时，请务必删除游戏内 `taptap_client_id.txt` 文本文件
+如果您的游戏有依赖库，请同时将依赖库的安装文件放置于游戏目录内一并上传，并在 PC 包体管理 >> 基础配置选择对应的库及库的启动项配置，TapTap 将在用户点击下载安装游戏时，帮助游戏完成依赖库的安装。
+:::
+
+#### 2. 完成包体自测
+
+测试用户在 Windows 电脑本地下载 TapTap PC 版并登录测试账号后，点击「立即自测」或复制自测链接至浏览器。
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/JKYKdiaprtPWNKVs4HGaK3LGy94kYGjy/test.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+:::tip
+注意：当发布游戏时，请务必删除游戏目录中的 `taptap_client_id.txt` 调试文本文件
 :::
 
 [//]: # (<Languages/>)
