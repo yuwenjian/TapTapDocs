@@ -148,6 +148,10 @@ TapPaymentResult result = tapTapIAP.launchBillingFlow(activity,
 
 ### **购买流程中订单状态监听**
 
+:::tip
+订单超过 30 分钟未支付，订单状态会设置为「超时关闭」，该情况无回调通知。
+:::
+
 在购买流程中, `TapTapIAP` 会调用 `onPurchasesUpdated()`，以将购买的订单状态变更实时传给实现 PurchasesUpdatedListener 接口的监听器。您可以在初始化时使用 `setListener()` 方法指定监听器。您必须实现 `onPurchasesUpdated()` 来处理可能的响应代码。以下提供了一个 `onPurchasesUpdated()` 示例 :
 
 ```java
