@@ -200,14 +200,14 @@ String clientToken = "";
 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
 boolean enableLog = BuildConfig.DEBUG;
 // 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-int screenOrientation = ScreenOrientation.LANDSCAPE
-
+int screenOrientation = ScreenOrientation.LANDSCAPE;
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
         clientId, // 游戏 Client ID
         clientToken, // 游戏 Client Token
-        screenOrientation, // 屏幕方向
         TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
 );
+// 设置屏幕方向
+tapSdkOptions.setScreenOrientation(screenOrientation);
 tapSdkOptions.setEnableLog(enableLog);
 // 初始化 TapSDK
 TapTapSdk.init(context, tapSdkOptions);
@@ -540,14 +540,14 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 val leaderboardId = "your_leaderboard_id"
 val collection = "public"
 TapTapLeaderboard.openLeaderboard(
-    activity = this,
+    activity = this, // Activity
     leaderboardId = leaderboardId,
     collection = collection
 )
 
 // 打开好友榜
 TapTapLeaderboard.openLeaderboard(
-    activity = this,
+    activity = this, // Activity
     leaderboardId = "your_leaderboard_id",
     collection = "friends"
 )
@@ -584,7 +584,11 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard;
 // openId unionId二选一即可
 String openId = "user_open_id";
 String unionId = "";
-TapTapLeaderboard.showTapUserProfile(openId, unionId);
+TapTapLeaderboard.showTapUserProfile(
+    this, // Activity
+    openId, 
+    unionId
+);
 ```
 
 </>
@@ -597,7 +601,11 @@ import com.taptap.sdk.leaderboard.androidx.TapLeaderboard
 // openId unionId二选一即可
 val openId = "user_open_id"
 val unionId = ""
-TapTapLeaderboard.showTapUserProfile(openId = openId, unionId = unionId)
+TapTapLeaderboard.showTapUserProfile(
+    activity = this, // Activity
+    openId = openId, 
+    unionId = unionId
+)
 ```
 
 </>
@@ -896,9 +904,8 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
         @Override
         public void onSuccess(UserScoreResponse data) {
             // 获取成功
-            Score score = data.getScore();
-            Integer rank = data.getRank();
-            Log.d("Leaderboard", "用户分数: " + score + ", 排名: " + rank);
+            Score score = data.getCurrentUserScore();
+            Log.d("Leaderboard", "用户分数: " + score);
         }
 
         @Override
@@ -927,9 +934,8 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
     callback = object : TapTapLeaderboardResponseCallback<UserScoreResponse> {
         override fun onSuccess(data: UserScoreResponse) {
             // 获取成功
-            val score = data.score
-            val rank = data.rank
-            Log.d("Leaderboard", "用户分数: $score, 排名: $rank")
+            val score = data.currentUserScore
+            Log.d("Leaderboard", "用户分数: $score")
         }
 
         override fun onFailure(code: Int, message: String) {
@@ -956,34 +962,34 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
 using TapSDK.Leaderboard
 
 // 获取用户相近分数
-string leaderboardId = "your_leaderboard_id";
+        string leaderboardId = "your_leaderboard_id";
 string leaderboardCollection = "friends"; // 好友榜
 string periodToken = "weekly"; // 时间周期标识
 int? maxCount = 10; // 最大返回数量
-
+        
 var callback = new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>
-{
-    OnSuccessAction = (result) =>
-    {
+        {
+            OnSuccessAction = (result) =>
+            {
         // 获取成功
         if (result.scores != null)
-        {
+                {
             // 处理相近用户分数数据
-        }
-    },
-    OnFailureAction = (code, message) =>
-    {
+                }
+            },
+            OnFailureAction = (code, message) =>
+            {
         // 获取失败
-    }
-};
+            }
+        };
 
 TapTapLeaderboard.LoadPlayerCenteredScores(
-    leaderboardId,
-    leaderboardCollection,
+            leaderboardId,
+            leaderboardCollection,
     periodToken,
     maxCount,
-    callback
-);
+            callback
+        );
 ```
 
 </>
@@ -1077,13 +1083,13 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 using TapSDK.Leaderboard
 
 var callback = new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>
-{
+        {
     OnSuccessAction = (data) =>
-    {
+            {
         // 处理成功结果
-    },
-    OnFailureAction = (code, message) =>
-    {
+            },
+            OnFailureAction = (code, message) =>
+            {
         // 根据错误码处理不同的错误情况
         switch (code)
         {
@@ -1109,17 +1115,17 @@ var callback = new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>
                 // 其他错误
                 break;
         }
-    }
-};
+            }
+        };
 
 // 示例：获取排行榜数据
 TapTapLeaderboard.LoadLeaderboardScores(
     "your_leaderboard_id",
-    "public",
+            "public",
     null,
     null,
-    callback
-);
+            callback
+        );
 ```
 
 </>
