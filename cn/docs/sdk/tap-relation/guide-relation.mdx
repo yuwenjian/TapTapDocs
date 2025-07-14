@@ -204,14 +204,14 @@ String clientToken = "";
 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
 boolean enableLog = BuildConfig.DEBUG;
 // 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-int screenOrientation = ScreenOrientation.PORTRAIT
-
+int screenOrientation = ScreenOrientation.LANDSCAPE;
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
         clientId, // 游戏 Client ID
         clientToken, // 游戏 Client Token
-        screenOrientation, // 屏幕方向
         TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
 );
+// 设置屏幕方向
+tapSdkOptions.setScreenOrientation(screenOrientation);
 tapSdkOptions.setEnableLog(enableLog);
 // 初始化 TapSDK
 TapTapSdk.init(context, tapSdkOptions);
@@ -236,7 +236,7 @@ val clientToken = "";
 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
 val enableLog = BuildConfig.DEBUG;
 // 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-val screenOrientation = ScreenOrientation.PORTRAIT
+val screenOrientation = ScreenOrientation.LANDSCAPE
 
 TapTapSdk.init(
     context = context,
