@@ -1,0 +1,279 @@
+---
+title: TapTap PC 端集成
+sidebar_label: TapTap PC 端集成
+sidebar_position: 5
+---
+
+import MultiLang from "/src/docComponents/MultiLang";
+import CodeBlock from "@theme/CodeBlock";
+import v3SDKVersions from '/src/docComponents/v3SDKVersions';
+import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
+
+本文介绍如何快速通过 TapSDK 接入 TapTap PC 端。
+
+## 环境要求
+
+<MultiLang kind="pc_platform">
+
+<>
+- Unity 2019.4 或更高版本
+</>
+
+<>
+- UE 4.26 及以上版本
+</>
+
+</MultiLang>
+
+## 项目配置
+
+<MultiLang kind="pc_platform">
+
+<>
+
+<UnitySDKInstallation 
+npmDeps={[
+    "com.taptap.tds.bootstrap",
+    "com.taptap.tds.login",
+    "com.taptap.tds.common",
+]} 
+githubDeps={[
+    {package: "com.taptap.tds.login", url: `https://github.com/TapTap/TapLogin-Unity.git#${v3SDKVersions.taptap.unity}`},
+    {package: "com.taptap.tds.common", url: `https://github.com/TapTap/TapCommon-Unity.git#${v3SDKVersions.taptap.unity}`},
+    {package: "com.taptap.tds.bootstrap", url: `https://github.com/TapTap/TapBootstrap-Unity.git#${v3SDKVersions.taptap.unity}`},
+    {package: "com.leancloud.realtime", url: `https://github.com/leancloud/csharp-sdk-upm.git#realtime-${v3SDKVersions.leancloud.csharp}`},
+    {package: "com.leancloud.storage", url: `https://github.com/leancloud/csharp-sdk-upm.git#storage-${v3SDKVersions.leancloud.csharp}`},
+]}
+unitypackageModules={[
+    {name: "TapTap_Bootstrap.unitypackage", desc: "TapSDK 启动器，必选"},
+    {name: "TapTap_Common.unitypackage", desc: "TapSDK 基础库，必选"},
+    {name: "TapTap_Login.unitypackage", desc: "TapTap 登录，必选"},
+]}/>
+
+</>
+
+<>
+
+* 下载 [TapSDK UE4](/v3/tap-download)，TapSDK-UE4-xxx.zip 解压后将 `TapBootstrap`、`TapCommon`、`TapLogin` 文件夹 Copy 到项目的 `Plugins` 目录中
+* 重启 Unreal Editor
+* 打开 编辑 > 插件 > 项目 > TapTap，开启 `TapBootstrap` 和 `TapLogin` 模块
+
+#### 添加依赖
+
+在 Project.Build.cs 中添加所需模块:
+
+```cs
+PublicDependencyModuleNames.AddRange(new string[] { "Core",
+	"CoreUObject",
+	"Engine",
+	"Json",
+	"InputCore",
+	"JsonUtilities",
+	"SlateCore",
+	"TapCommon",
+	"TapBootstrap",
+	"TapLogin"
+});
+if (Target.Platform == UnrealTargetPlatform.IOS || Target.Platform == UnrealTargetPlatform.Android)
+{
+    PublicDependencyModuleNames.AddRange(
+        new string[]
+        {
+            // 推送接入
+            // "LeanCloudPush",
+            
+            "LeanCloudMobile"
+        }
+    );
+}
+else
+{
+    PublicDependencyModuleNames.AddRange(
+        new string[]
+        {
+            "LeanCloud"
+        }
+    );
+}
+```
+</>
+
+</MultiLang>
+
+
+## 初始化
+
+<MultiLang kind="pc_platform">
+
+<>
+
+```cs
+using TapTap.Bootstrap; // 命名空间
+using TapTap.Common; // 命名空间
+
+var config =  new TapConfig.Builder()
+    .ClientID("your_client_id") // 必须，开发者中心对应 Client ID
+    .ClientToken("your_client_token") // 必须，开发者中心对应 Client Token
+    .RegionType(RegionType.CN) // 仅支持 CN 中国大陆
+    .ClientPublicKey("游戏在 Tap PC 客户端配置的公钥") // 必须，开发者中心对应的 Client Public Key
+    .ConfigBuilder();
+TapBootstrap.Init(config);
+```
+
+</>
+
+<>
+
+```cpp
+#include "TapUECommon.h"
+#include "TapBootstrap.h"
+
+FTUConfig Config;
+Config.ClientID = "your_client_id"; // 必须，开发者中心对应 Client ID
+Config.ClientToken = "your_client_token"; // 必须，开发者中心对应 Client Token
+Config.RegionType = ERegionType::CN; // 仅支持 ERegionType::CN：中国大陆
+Config.ClientPublicKey = "your_client_public_key"; // 必须，开发者中心对应的 Client Public Key
+FTapBootstrap::Init(Config);
+```
+
+</>
+
+</MultiLang>
+
+初始化时**必须填入** `client_id`、`client_token` 和 `client_public_key` 信息，可在 **开发者中心 > 你的游戏 > 游戏服务 > 应用配置** 查看。
+
+
+## 启动校验
+
+为了保证游戏能够通过 TapTap PC 端获取必要的应用和授权信息，开发者在调用初始化接口后，必须调用该接口来完成前置启动校验，当返回值为 true 时，游戏可进行后续登录等其他业务流程，当返回结果为 false 时，SDK 会通过弹窗的形式引导用户重新通过 TapTap PC 端启动游戏或下载 TapTap PC 端，游戏需停止进行后续业务流程 。
+
+由于校验过程属于异步操作，所以调用该接口前建议游戏先显示加载（Loading）弹窗， 当 SDK 返回结果后，再关闭该弹窗。调用示例如下：
+
+
+<MultiLang kind="pc_platform">
+
+```cs
+using TapTap.Common; 
+
+bool isSuccess = await TapCommon.IsLaunchedFromTapTapPC();
+if (isSuccess){
+    Debug.Log(" Tap PC 客户端校验通过");
+    // TODO: 进行后续登录状态判断来确定是否展示登录 UI 
+}else {
+    Debug.Log(" Tap PC 客户端校验未通过");
+    return; // 游戏停止后续流程
+}
+```
+
+```cpp
+#include "TapUECommon.h"
+
+TapUECommon::IsLaunchedFromTapTapPC([](const bool value) {
+    if (value)
+    {
+        UE_LOG(LogTap,Log, TEXT("Tap PC Client 校验通过"));
+        // TODO: 进行后续登录状态判断来确定是否展示登录 UI 
+    }else
+    {
+        UE_LOG(LogTap,Log, TEXT("Tap PC Client 校验未通过"));
+        return;// 游戏停止后续流程
+    }
+});
+```
+
+</MultiLang>
+
+## 登录及获取用户信息
+
+接入 TapTap PC 端的游戏在登录流程上与未接入的游戏存在显著差异，游戏接入后，在用户登录时，SDK 会基于当前 TapTap PC 端已登录的账号信息自动完成静默登录，无需用户进行额外操作，从而显著提升登录体验。
+
+由于该流程为异步操作，建议开发者在发起登录前显示加载（Loading）弹窗，并在登录流程完成后关闭该弹窗，以提升用户体验。具体接入方式请参考 [TapTap 登录开发指南](/v3/sdk/taptap-login/guide/tap-login/)。
+
+## 合规认证
+
+通过 TapTap PC 端完成登录后，SDK 将会通过 TapTap PC 端获取用户的实名信息并进行后续合规认证检查，避免了用户额外授权。
+
+具体接入方式请参考 [合规认证开发指南](/v3/sdk/anti-addiction/guide/)。
+
+## 开发调试方式
+
+在游戏尚未发布期间，开发者可通过添加测试用户到白名单并下载 TapTap PC 端后，根据不同开发阶段选择对应测试方案进行测试。
+
+### 添加白名单
+
+前往 开发者中心 > 商店 > 版本发布 > 测试 > 内部测试 页面， 选择创建测试计划并添加测试用户白名单，示例视频如下：
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/NR8Tyrh7JhcvUVHxgNjvfJSv78xYuVEG/fasongceshizige.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+###  下载 TapTap PC 端
+
+下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的白名单账号
+
+### 本地测试方案
+
+该方案适用于开发阶段自测，无需传包至 TapTap。开发者可前往 TapTap 开发者中心 >>游戏服务 >>启动校验 页面点击 `配置文件`，如图所示：
+
+![](/img/pc-quickstart/download_debug_file.png)
+
+浏览器会下载一个名称为 `taptap_client_id.txt` 的文本文件，开发者需将该文件移动到游戏可执行文件所在目录下，即可在本地启动游戏，开始测试相关业务功能。
+
+
+### 传包测试方案
+
+该方案适用于上架前自测，可传包至 TapTap 平台后下载游戏测试
+
+#### 1. 上传游戏包体
+
+前往开发者中心 >> 商店 >> PC 包体管理 >> 包体管理，点击「上传包体」，选择包体文件，并填写启动项配置。
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/Oj1a1o1guoJCPNw9Fd8Nw9KUrunGIO1M/upload_package.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+:::tip
+如果您的游戏有依赖库，请同时将依赖库的安装文件放置于游戏目录内一并上传，并在 PC 包体管理 >> 基础配置选择对应的库及库的启动项配置，TapTap 将在用户点击下载安装游戏时，帮助游戏完成依赖库的安装。
+:::
+
+#### 2. 完成包体自测
+
+测试用户在 Windows 电脑本地下载 TapTap PC 版并登录测试账号后，点击「立即自测」或复制自测链接至浏览器。
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/y82mWx7FtMailiOwOtKQ0o9IUEbnbvy3/dianjizice.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+:::tip
+注意：当发布游戏时，请务必删除游戏目录中的 `taptap_client_id.txt` 调试文本文件
+:::
+
+[//]: # (<Languages/>)
+
+

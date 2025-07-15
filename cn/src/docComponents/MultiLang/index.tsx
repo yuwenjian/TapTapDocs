@@ -168,6 +168,12 @@ const CONFIGS: {
         { label: "Android Kotlin", value: "android_kotlin" },
         ]
   },
+  pc_platform:{
+    tds: [
+        { label: "Unity", value: "unity" },
+        { label: "UE4", value: "ue4" },
+        ]
+  }
 };
 
 const MultiLang = ({ children, kind = "default" }) => {
