@@ -827,6 +827,19 @@ TapUELogin::Logout();
 
 ## Unity PC 登录配置
 
+由于接入了 TapTap PC 端的游戏与未接入游戏在登录交互流程上存在明显差异，请开发者根据游戏的接入方式，选择对应的登录处理流程。
+
+### TapTap PC 端登录
+
+:::tip
+接入 TapTap PC 端时， **初始化参数需要额外配置且需要添加启动校验**，具体参考 [TapTap PC 端集成](/v3/sdk/start/pc-quickstart/) 文档
+:::
+
+在使用 TapTap PC 端登录时，SDK 将以静默方式进行登录流程，不会弹出 UI 窗口。由于该流程为异步操作，建议开发者在发起登录前显示加载（Loading）弹窗，并在登录流程完成后关闭该弹窗，以提升用户体验。
+
+
+### 普通 PC 登录
+
 Unity SDK 自 3.5.2 起支持在 Windows、macOS 下让玩家扫码或跳转网页浏览器完成 TapTap 登录。
 
 SDK **默认支持扫码登录**，跳转浏览器登录需要[额外配置](/v3/sdk/taptap-login/guide/start/#unity-pc-登录配置)。
