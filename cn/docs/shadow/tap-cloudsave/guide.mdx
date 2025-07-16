@@ -1,0 +1,790 @@
+---
+title: 云存档开发指南
+sidebar_label: 云存档开发指南
+sidebar_position: 3
+---
+
+import MultiLang from '/src/docComponents/MultiLang';
+import CodeBlock from '@theme/CodeBlock';
+import UnitySDKInstallation from "../../sdk/_partials/unity-sdk-installation.mdx";
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+
+本文介绍如何在游戏中加入云存档功能。
+
+## 权限说明
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
+</>
+
+<>
+
+该模块需要如下权限：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
+</>
+
+</MultiLang>
+
+## 集成前准备
+
+参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启云存档服务。
+
+## SDK 获取
+
+由于 TapSDK V4 依赖于 TapTapCore 核心库以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapCloudSave`、`TapTapLogin` 模块：
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+<UnitySDKInstallation
+npmDeps={[
+"com.taptap.sdk.core",
+"com.taptap.sdk.login",
+"com.taptap.sdk.cloudsave",
+]}
+githubDeps={[
+{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.shadow}`},
+{package: "com.taptap.sdk.login", url: `https://github.com/taptap/TapSDKLogin-Unity.git#${v4SDKVersions.taptap.shadow}`},
+{package: "com.taptap.sdk.cloudsave", url: `https://github.com/taptap/TapSDKCloudSave-Unity.git#${v4SDKVersions.taptap.shadow}`}
+]}
+unitypackageModules={[
+{name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
+{name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
+{name: "TapSDK_CloudSave.unitypackage", desc: "TapTapSDK 云存档模块，必选"},
+]}/>
+
+</>
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects { 
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-cloudsave:${v4SDKVersions.taptap.android}'
+}`
+}</CodeBlock>
+
+</>
+
+<>
+1. 项目根目录的 build.gradle 添加仓库地址：
+
+```groovy
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+2. app module 的 build.gradle 添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-cloudsave:${v4SDKVersions.taptap.android}'
+}`
+}</CodeBlock>
+
+</>
+
+</MultiLang>
+
+## SDK 初始化
+
+详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```cs
+using TapSDK.Core;
+using TapSDK.CloudSave;
+
+// 核心配置 详细参数见 [TapTapSDK]
+TapTapSdkOptions coreOptions = new TapTapSdkOptions();
+// TapSDK 初始化
+TapTapSDK.Init(coreOptions, otherOptions);
+```
+
+</>
+
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```java
+import com.taptap.sdk.core.TapTapRegion;
+import com.taptap.sdk.core.TapTapSdk;
+import com.taptap.sdk.core.TapTapSdkOptions;
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+String clientId = "";
+// 开发者中心对应 Client Token
+String clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+boolean enableLog = BuildConfig.DEBUG;
+
+TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+        clientId, // 游戏 Client ID
+        clientToken, // 游戏 Client Token
+        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+);
+tapSdkOptions.setEnableLog(enableLog);
+// 初始化 TapSDK
+TapTapSdk.init(context, tapSdkOptions);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapSdk
+import com.taptap.sdk.core.TapTapSdkOptions
+import com.taptap.sdk.core.TapTapLanguage
+import com.taptap.sdk.core.TapTapRegion
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+val clientId = "";
+// 开发者中心对应 Client Token
+val clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+val enableLog = BuildConfig.DEBUG;
+
+TapTapSdk.init(
+    context = context,
+    sdkOptions = TapTapSdkOptions(
+        clientId = clientId,
+        clientToken = clientToken,
+        region = TapTapRegion.CN,
+        preferredLanguage = TapTapLanguage.ZH_HANS,
+        enableLog = false
+    )
+)
+```
+</>
+
+</MultiLang>
+
+## 注册/注销统一状态码监听回调
+
+统一状态回调，不同 code 代表不同的状态。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+TapCloudSaveCallback callback = new TapCloudSaveCallback();
+TapTapCloudSave.RegisterCloudSaveCallback(callback);
+
+class TapCloudSaveCallback : ITapCloudSaveCallback
+{
+    public TapCloudSaveCallback(){}
+
+    public void OnResult(int resultCode)
+    {
+        // 处理状态码
+        // 300001：需要登录
+        // 300002：初始化失败 需要重新初始化
+    }
+}
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveCallback;
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+
+TapCloudSaveCallback callback = new TapCloudSaveCallback(){
+
+    @Override
+    public void onResult(int resultCode) {
+        // 处理云存档的状态码
+        // 300001：需要登录
+        // 300002：初始化失败 需重新初始化
+    }
+};
+
+TapTapCloudSave.registerCloudSaveCallback(callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveCallback
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+
+private val cloudSaveCallback = object : TapCloudSaveCallback {
+    override fun onResult(resultCode: Int) {
+        // 处理云存档的状态码
+        // 300001：需要登录
+        // 300002：初始化失败 需重新初始化
+    }
+}
+
+TapTapCloudSave.registerCloudSaveCallback(cloudSaveCallback)
+```
+
+</>
+
+</MultiLang>
+
+## 创建存档
+
+创建游戏存档并上传云端。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+// 存档元信息（JSON格式字符串）
+string metadata = "{\"name\":\"存档名称\",\"summary\":\"存档描述\",\"extra\":\"额外信息\",\"playtime\":0}";
+
+// 存档文件路径
+string archiveFilePath = "path/to/archive/file";
+// 存档封面路径（可选）
+string archiveCoverPath = "path/to/cover/image";
+
+// 请求回调
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapTapCloudSave.CreateArchive(metadata, archiveFilePath, archiveCoverPath, callback);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback;
+import com.taptap.sdk.cloudsave.internal.model.ArchiveMetadata;
+import com.taptap.sdk.cloudsave.internal.model.ArchiveData;
+
+// 存档元信息
+ArchiveMetadata metadata = new ArchiveMetadata.Builder()
+        .setName("存档名称")
+        .setSummary("存档描述")
+        .setExtra("额外信息")
+        .setPlaytime(0)
+        .build();
+
+// 存档文件路径
+String archiveFilePath = "path/to/archive/file";
+// 存档封面路径（可选）
+String archiveCoverPath = "path/to/cover/image";
+
+// 请求回调
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
+
+    @Override
+    public void onRequestError(int errorCode, @NonNull String errorMessage) {
+        // 处理请求错误
+    }
+
+    @Override
+    public void onArchiveCoverResult(@NonNull byte[] coverData) {
+        // 处理封面数据
+    }
+
+    @Override
+    public void onArchiveDataResult(@NonNull byte[] archiveData) {
+        // 处理存档数据
+    }
+
+    @Override
+    public void onArchiveListResult(@NonNull List<ArchiveData> archiveList) {
+        // 处理存档列表
+    }
+
+    @Override
+    public void onArchiveDeleted(@NonNull ArchiveData archive) {
+        // 处理存档删除
+    }
+
+    @Override
+    public void onArchiveUpdated(@NonNull ArchiveData archive) {
+        // 处理存档更新
+    }
+
+    @Override
+    public void onArchiveCreated(@NonNull ArchiveData archive) {
+        // 处理存档创建成功
+    }
+};
+
+TapTapCloudSave.createArchive(metadata, archiveFilePath, archiveCoverPath, callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback
+import com.taptap.sdk.cloudsave.internal.model.ArchiveMetadata
+import com.taptap.sdk.cloudsave.internal.model.ArchiveData
+
+// 存档元信息
+val metadata = ArchiveMetadata.Builder()
+    .setName("存档名称")
+    .setSummary("存档描述")
+    .setExtra("额外信息")
+    .setPlaytime(0)
+    .build()
+
+// 存档文件路径
+val archiveFilePath = "path/to/archive/file"
+// 存档封面路径（可选）
+val archiveCoverPath = "path/to/cover/image"
+
+// 请求回调
+val callback = object : TapCloudSaveRequestCallback() {
+    override fun onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
+
+    override fun onArchiveCoverResult(coverData: ByteArray) {
+        // 处理封面数据
+    }
+
+    override fun onArchiveDataResult(archiveData: ByteArray) {
+        // 处理存档数据
+    }
+
+    override fun onArchiveListResult(archiveList: List<ArchiveData>) {
+        // 处理存档列表
+    }
+
+    override fun onArchiveDeleted(archive: ArchiveData) {
+        // 处理存档删除
+    }
+
+    override fun onArchiveUpdated(archive: ArchiveData) {
+        // 处理存档更新
+    }
+
+    override fun onArchiveCreated(archive: ArchiveData) {
+        // 处理存档创建成功
+    }
+}
+
+TapTapCloudSave.createArchive(metadata, archiveFilePath, archiveCoverPath, callback)
+```
+
+</>
+
+</MultiLang>
+
+## 获取存档列表
+
+获取当前用户的存档列表。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapTapCloudSave.GetArchiveList(callback);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback;
+
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
+    @Override
+    public void onArchiveListResult(@NonNull List<ArchiveData> archiveList) {
+        // 处理存档列表
+    }
+};
+
+TapTapCloudSave.getArchiveList(callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback
+
+val callback = object : TapCloudSaveRequestCallback() {
+    override fun onArchiveListResult(archiveList: List<ArchiveData>) {
+        // 处理存档列表
+    }
+}
+
+TapTapCloudSave.getArchiveList(callback)
+```
+
+</>
+
+</MultiLang>
+
+## 下载存档
+
+下载指定的存档文件。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+// 存档UUID
+string archiveUuid = "archive_uuid";
+// 存档文件ID
+string archiveFileId = "archive_file_id";
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapTapCloudSave.GetArchiveData(archiveUuid, archiveFileId, callback);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback;
+
+// 存档UUID
+String archiveUuid = "archive_uuid";
+// 存档文件ID
+String archiveFileId = "archive_file_id";
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
+    @Override
+    public void onArchiveDataResult(@NonNull byte[] archiveData) {
+        // 处理下载的存档数据
+    }
+};
+
+TapTapCloudSave.getArchiveData(archiveUuid, archiveFileId, callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback
+
+// 存档UUID
+val archiveUuid = "archive_uuid"
+// 存档文件ID
+val archiveFileId = "archive_file_id"
+val callback = object : TapCloudSaveRequestCallback() {
+    override fun onArchiveDataResult(archiveData: ByteArray) {
+        // 处理下载的存档数据
+    }
+}
+
+TapTapCloudSave.getArchiveData(archiveUuid, archiveFileId, callback)
+```
+
+</>
+
+</MultiLang>
+
+## 更新存档
+
+更新指定的存档文件。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+// 存档UUID
+string archiveUuid = "archive_uuid";
+// 存档元信息（JSON格式字符串）
+string metadata = "{\"name\":\"更新后的存档名称\",\"summary\":\"更新后的存档描述\",\"extra\":\"额外信息\",\"playtime\":0}";
+// 新的存档文件路径
+string archiveFilePath = "path/to/new/archive/file";
+// 新的存档封面路径（可选）
+string archiveCoverPath = "path/to/new/cover/image";
+
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapTapCloudSave.UpdateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath, callback);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback;
+
+// 存档UUID
+String archiveUuid = "archive_uuid";
+// 存档元信息
+ArchiveMetadata metadata = new ArchiveMetadata.Builder()
+        .setName("更新后的存档名称")
+        .setSummary("更新后的存档描述")
+        .setExtra("额外信息")
+        .setPlaytime(0)
+        .build();
+// 新的存档文件路径
+String archiveFilePath = "path/to/new/archive/file";
+// 新的存档封面路径（可选）
+String archiveCoverPath = "path/to/new/cover/image";
+
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
+    @Override
+    public void onArchiveUpdated(@NonNull ArchiveData archive) {
+        // 处理存档更新成功
+    }
+};
+
+TapTapCloudSave.updateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath, callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback
+
+// 存档UUID
+val archiveUuid = "archive_uuid"
+// 存档元信息
+val metadata = ArchiveMetadata.Builder()
+    .setName("更新后的存档名称")
+    .setSummary("更新后的存档描述")
+    .setExtra("额外信息")
+    .setPlaytime(0)
+    .build()
+// 新的存档文件路径
+val archiveFilePath = "path/to/new/archive/file"
+// 新的存档封面路径（可选）
+val archiveCoverPath = "path/to/new/cover/image"
+
+val callback = object : TapCloudSaveRequestCallback() {
+    override fun onArchiveUpdated(archive: ArchiveData) {
+        // 处理存档更新成功
+    }
+}
+
+TapTapCloudSave.updateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath, callback)
+```
+
+</>
+
+</MultiLang>
+
+## 删除存档
+
+删除指定的存档文件。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+// 存档UUID
+string archiveUuid = "archive_uuid";
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapTapCloudSave.DeleteArchive(archiveUuid, callback);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback;
+
+// 存档UUID
+String archiveUuid = "archive_uuid";
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
+    @Override
+    public void onArchiveDeleted(@NonNull ArchiveData archive) {
+        // 处理存档删除成功
+    }
+};
+
+TapTapCloudSave.deleteArchive(archiveUuid, callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback
+
+// 存档UUID
+val archiveUuid = "archive_uuid"
+val callback = object : TapCloudSaveRequestCallback() {
+    override fun onArchiveDeleted(archive: ArchiveData) {
+        // 处理存档删除成功
+    }
+}
+
+TapTapCloudSave.deleteArchive(archiveUuid, callback)
+```
+
+</>
+
+</MultiLang>
+
+## 获取存档封面
+
+获取指定存档的封面图片。
+
+<MultiLang kind="unity_android_v4">
+
+<>
+
+```cs
+using TapSDK.CloudSave;
+
+// 存档UUID
+string archiveUuid = "archive_uuid";
+// 存档文件ID
+string archiveFileId = "archive_file_id";
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapTapCloudSave.GetArchiveCover(archiveUuid, archiveFileId, callback);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback;
+
+// 存档UUID
+String archiveUuid = "archive_uuid";
+// 存档文件ID
+String archiveFileId = "archive_file_id";
+TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
+    @Override
+    public void onArchiveCoverResult(@NonNull byte[] coverData) {
+        // 处理封面数据
+    }
+};
+
+TapTapCloudSave.getArchiveCover(archiveUuid, archiveFileId, callback);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.cloudsave.TapTapCloudSave
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveRequestCallback
+
+// 存档UUID
+val archiveUuid = "archive_uuid"
+// 存档文件ID
+val archiveFileId = "archive_file_id"
+val callback = object : TapCloudSaveRequestCallback() {
+    override fun onArchiveCoverResult(coverData: ByteArray) {
+        // 处理封面数据
+    }
+}
+
+TapTapCloudSave.getArchiveCover(archiveUuid, archiveFileId, callback)
+```
+
+</>
+
+</MultiLang>
+
+## 错误码说明
+
+| 错误码 | 说明 |
+| ------ | ---- |
+| 300001 | 需要登录 |
+| 300002 | 初始化失败，需要重新初始化 |
+
+## 国际化
+
+TapTapCloudSave 支持设置语言：目前只支持简体中文
+
+[//]: # (<Languages/>)
+
+
