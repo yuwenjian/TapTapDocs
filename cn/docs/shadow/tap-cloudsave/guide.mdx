@@ -291,6 +291,12 @@ TapTapCloudSave.registerCloudSaveCallback(cloudSaveCallback)
 
 创建游戏存档并上传云端。
 
+:::info
+存档名称仅支持【英文/数字/下划线/中划线】，不支持中文
+
+存档摘要 (summary) 以及额外信息 (extra) 无此限制
+:::
+
 <MultiLang kind="unity_android_v4">
 
 <>
@@ -301,9 +307,9 @@ using TapSDK.CloudSave;
 // 存档元信息（JSON格式字符串）
 string metadata = "{\"name\":\"存档名称\",\"summary\":\"存档描述\",\"extra\":\"额外信息\",\"playtime\":0}";
 
-// 存档文件路径
+// 存档文件路径（单个存档文件大小不超过10MB）
 string archiveFilePath = "path/to/archive/file";
-// 存档封面路径（可选）
+// 存档封面路径（可选，封面大小不超过512KB）
 string archiveCoverPath = "path/to/cover/image";
 
 // 请求回调
@@ -329,9 +335,9 @@ ArchiveMetadata metadata = new ArchiveMetadata.Builder()
         .setPlaytime(0)
         .build();
 
-// 存档文件路径
+// 存档文件路径（单个存档文件大小不超过10MB）
 String archiveFilePath = "path/to/archive/file";
-// 存档封面路径（可选）
+// 存档封面路径（可选，封面大小不超过512KB）
 String archiveCoverPath = "path/to/cover/image";
 
 // 请求回调
@@ -394,9 +400,9 @@ val metadata = ArchiveMetadata.Builder()
     .setPlaytime(0)
     .build()
 
-// 存档文件路径
+// 存档文件路径（单个存档文件大小不超过10MB）
 val archiveFilePath = "path/to/archive/file"
-// 存档封面路径（可选）
+// 存档封面路径（可选，封面大小不超过512KB）
 val archiveCoverPath = "path/to/cover/image"
 
 // 请求回调
@@ -561,6 +567,12 @@ TapTapCloudSave.getArchiveData(archiveUuid, archiveFileId, callback)
 
 更新指定的存档文件。
 
+:::info
+存档名称仅支持【英文/数字/下划线/中划线】，不支持中文
+
+存档摘要 (summary) 以及额外信息 (extra) 无此限制
+:::
+
 <MultiLang kind="unity_android_v4">
 
 <>
@@ -572,9 +584,9 @@ using TapSDK.CloudSave;
 string archiveUuid = "archive_uuid";
 // 存档元信息（JSON格式字符串）
 string metadata = "{\"name\":\"更新后的存档名称\",\"summary\":\"更新后的存档描述\",\"extra\":\"额外信息\",\"playtime\":0}";
-// 新的存档文件路径
+// 新的存档文件路径（单个存档文件大小不超过10MB）
 string archiveFilePath = "path/to/new/archive/file";
-// 新的存档封面路径（可选）
+// 新的存档封面路径（可选，封面大小不超过512KB）
 string archiveCoverPath = "path/to/new/cover/image";
 
 TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
@@ -598,9 +610,9 @@ ArchiveMetadata metadata = new ArchiveMetadata.Builder()
         .setExtra("额外信息")
         .setPlaytime(0)
         .build();
-// 新的存档文件路径
+// 新的存档文件路径（单个存档文件大小不超过10MB）
 String archiveFilePath = "path/to/new/archive/file";
-// 新的存档封面路径（可选）
+// 新的存档封面路径（可选，封面大小不超过512KB）
 String archiveCoverPath = "path/to/new/cover/image";
 
 TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
@@ -630,9 +642,9 @@ val metadata = ArchiveMetadata.Builder()
     .setExtra("额外信息")
     .setPlaytime(0)
     .build()
-// 新的存档文件路径
+// 新的存档文件路径（单个存档文件大小不超过10MB）
 val archiveFilePath = "path/to/new/archive/file"
-// 新的存档封面路径（可选）
+// 新的存档封面路径（可选，封面大小不超过512KB）
 val archiveCoverPath = "path/to/new/cover/image"
 
 val callback = object : TapCloudSaveRequestCallback() {
