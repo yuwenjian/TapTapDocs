@@ -390,13 +390,13 @@ appid：游戏在 TapTap 商店的唯一身份标识。
 
 <Conditional region="cn">
 
-- 适用于中国大陆：`https://l.taptap.cn/5d1NGyET?subc1=AppID`
-- 适用于其他国家或地区：`https://l.taptap.io/GNYwFaZr?subc1=AppID`
+- 适用于中国大陆：`https://tap.cn/5d1NGyET?subc1=AppID`
+- 适用于其他国家或地区：`https://tap.io/GNYwFaZr?subc1=AppID`
 
 </Conditional>
 <Conditional region="global">
 
-- `https://l.taptap.io/GNYwFaZr?subc1=AppID`
+- `https://tap.io/GNYwFaZr?subc1=AppID`
 
 </Conditional>
 
@@ -447,7 +447,7 @@ public class TapGameUtil {
 
   public static final String CLIENT_URI_TAPTAP = "taptap://taptap.cn";
 
-  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP = "https://l.taptap.cn/5d1NGyET";
+  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP = "https://tap.cn/5d1NGyET";
 
   // 这里更新的时候不检查 Tap 客户端，一是因为特定 schema 没被应用注册的话大概率是直接返回 error 的，在这里被 try catch 后返回 false 可以近似等于客户端不存在
   // 二是因为 Android 11 开始检查客户端需要游戏做特殊配置，这个配置无法在 SDK 内做好，因为和编译工具版本强绑定，无法做前后版本兼容。
@@ -573,7 +573,7 @@ public class TapGameUtil {
 
   public static final String CLIENT_URI_TAPTAP_GLOBAL = "tapglobal://taptap.tw";
 
-  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP_GLOBAL = "https://l.taptap.io/GNYwFaZr";
+  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP_GLOBAL = "https://tap.io/GNYwFaZr";
 
   // 这里更新的时候不检查 Tap 客户端，一是因为特定 schema 没被应用注册的话大概率是直接返回 error 的，在这里被 try catch 后返回 false 可以近似等于客户端不存在
   // 二是因为 Android 11 开始检查客户端需要游戏做特殊配置，这个配置无法在 SDK 内做好，因为和编译工具版本强绑定，无法做前后版本兼容。
