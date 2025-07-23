@@ -375,13 +375,13 @@ URL for devices without TapTap:
 
 <Conditional region="cn">
 
-- For Mainland China: `https://l.taptap.cn/5d1NGyET?subc1=AppID`
-- For other countries/regions: `https://l.taptap.io/GNYwFaZr?subc1=AppID`
+- For Mainland China: `https://tap.cn/5d1NGyET?subc1=AppID`
+- For other countries/regions: `https://tap.io/GNYwFaZr?subc1=AppID`
 
 </Conditional>
 <Conditional region="global">
 
-- `https://l.taptap.io/GNYwFaZr?subc1=AppID`
+- `https://tap.io/GNYwFaZr?subc1=AppID`
 
 </Conditional>
 
@@ -432,7 +432,7 @@ public class TapGameUtil {
 
   public static final String CLIENT_URI_TAPTAP = "taptap://taptap.cn";
 
-  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP = "https://l.taptap.cn/5d1NGyET";
+  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP = "https://tap.cn/5d1NGyET";
 
   public static boolean updateGameAndFailToWebInTapTap(Activity activity, String appId) {
     return updateGameInTapTap(activity, appId) || openWebDownloadUrlOfTapTap(activity, appId);
@@ -556,7 +556,7 @@ public class TapGameUtil {
 
   public static final String CLIENT_URI_TAPTAP_GLOBAL = "tapglobal://taptap.tw";
 
-  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP_GLOBAL = "https://l.taptap.io/GNYwFaZr";
+  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP_GLOBAL = "https://tap.io/GNYwFaZr";
 
   public static boolean updateGameAndFailToWebInTapGlobal(Activity activity, String appId) {
     return updateGameInTapGlobal(activity, appId) || openWebDownloadUrlOfTapGlobal(activity, appId);
