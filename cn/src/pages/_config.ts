@@ -62,7 +62,7 @@ export const getEntries = (brand: string, region: string): Entry[] => {
           links: [
             {
               label: "查看更多",
-              href: "https://developer.taptap.cn/minigameapidoc/快速入门/小游戏文档指引.html",
+              href: "https://developer.taptap.cn/minigameapidoc/quick-start/document-guide/",
               noblank: true,
             },
           ],
