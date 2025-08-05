@@ -2,7 +2,7 @@ const taptapUnity = "4.7.1"
 const taptapIos = "4.7.1"
 const taptapAndroid = "4.7.0"
 const taptapUnreal = "3.29.2"
-const taptapShadow = "4.8.0-beta.1"
+const taptapShadow = "4.8.1-beta.1"
 
 const v4SDKVersions = {
     taptap: {

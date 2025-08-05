@@ -13,7 +13,7 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 ## 权限说明
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -48,6 +48,12 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
+
+</>
+
+<>
+
+iOS 云存档模块不需要特殊权限配置。
 
 </>
 
@@ -61,7 +67,7 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 由于 TapSDK V4 依赖于 TapTapCore 核心库以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapCloudSave`、`TapTapLogin` 模块：
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -100,9 +106,9 @@ allprojects {
 
 <CodeBlock language="groovy">{
 `dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-cloudsave:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.shadow}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.shadow}'
+    implementation 'com.taptap.sdk:tap-cloudsave:${v4SDKVersions.taptap.shadow}'
 }`
 }</CodeBlock>
 
@@ -124,11 +130,37 @@ allprojects {
 
 <CodeBlock language="groovy">{
 `dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-cloudsave:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.shadow}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.shadow}'
+    implementation 'com.taptap.sdk:tap-cloudsave:${v4SDKVersions.taptap.shadow}'
 }`
 }</CodeBlock>
+
+</>
+
+<>
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapCloudSaveSDK', '~> ${v4SDKVersions.taptap.shadow }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+3. 将工程 Pods 目录下 `TapTapCloudSaveSDK/Frameworks/TapTapCloudSaveResource.bundle` 和 `TapTapLoginSDK/Frameworks/TapTapLoginResource.bundle`
+   等资源文件导入工程中
+
+**本地文件依赖**
+
+云存档模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapCloudSaveSDK ` 云存档依赖库
+- `TapTapCloudSaveResource.bundle` 云存档资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
 
 </>
 
@@ -138,7 +170,7 @@ allprojects {
 
 详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -214,13 +246,49 @@ TapTapSdk.init(
 ```
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+import TapTapCoreSDK
+
+// 核心配置
+let coreOptions = TapTapSdkOptions()
+// TODO: coreOptions 配置
+
+// 其他模块配置项
+let otherOptions = []
+
+// TapSDK 初始化
+TapTapSDK.initWith(coreOptions, otherOptions: otherOptions)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapSDK.h"
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+// 核心配置项
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+// TODO: 应用信息配置
+
+// 其他模块配置项
+NSArray *otherOptions = @[];
+
+// TapSDK 初始化
+[TapTapSDK initWithOptions:options otherOptions:otherOptions];
+```
+</>
+
 </MultiLang>
 
 ## 注册/注销统一状态码监听回调
 
 统一状态回调，不同 code 代表不同的状态。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -285,6 +353,55 @@ TapTapCloudSave.registerCloudSaveCallback(cloudSaveCallback)
 
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+class CloudSaveCallbackImpl: NSObject, TapTapCloudSaveCallback {
+    override init() {}
+    
+    func onResult(_ resultCode: Int) {
+        // 处理云存档的状态码
+        // 300001：需要登录
+        // 300002：初始化失败 需重新初始化
+    }
+}
+
+let callback = CloudSaveCallbackImpl()
+TapTapCloudSave.registerCloudSaveCallback(callback)
+
+// 不需要接收回调时调用接口移除之前设置的回调对象
+TapTapCloudSave.unregisterCloudSaveCallback(callback)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+@interface GameMainController () <TapTapCloudSaveCallback>
+
+@end
+@implementation GameMainController
+
+- (void)handleCloudSaveCallback {
+    //注册回调
+    [TapTapCloudSave registerCloudSaveCallbackWithCallback:self];
+    
+    // 不需要接收回调时调用接口移除之前设置的回调对象
+    [TapTapCloudSave unregisterCloudSaveCallbackWithCallback:self];
+}
+
+- (void)onResultWithResultCode:(NSInteger)resultCode {
+    // 处理云存档的状态码
+    // 300001：需要登录
+    // 300002：初始化失败 需重新初始化
+}
+```
+</>
+
 </MultiLang>
 
 ## 创建存档
@@ -297,7 +414,7 @@ TapTapCloudSave.registerCloudSaveCallback(cloudSaveCallback)
 存档摘要 (summary) 以及额外信息 (extra) 无此限制
 :::
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -441,13 +558,97 @@ TapTapCloudSave.createArchive(metadata, archiveFilePath, archiveCoverPath, callb
 
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+// 存档元信息
+let metadata = ArchiveMetadata(
+    name: "存档名称",
+    summary: "存档描述",
+    extra: "额外信息",
+    playtime: 0
+)
+
+// 存档文件路径（单个存档文件大小不超过10MB）
+let archiveFilePath = "path/to/archive/file"
+// 存档封面路径（可选，封面大小不超过512KB）
+let archiveCoverPath = "path/to/cover/image"
+
+// 请求回调
+let callback = object : TapTapCloudSaveRequestCallback {
+    func onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
+    
+    func onArchiveCreated(archive: ArchiveData) {
+        // 处理存档创建成功
+    }
+    
+    func onArchiveUpdated(archive: ArchiveData) {
+        // 处理存档更新
+    }
+    
+    func onArchiveDeleted(archive: ArchiveData) {
+        // 处理存档删除
+    }
+    
+    func onArchiveListResult(archives: [ArchiveData]) {
+        // 处理存档列表
+    }
+    
+    func onArchiveDataResult(archiveUUID: String, archiveFileID: String, data: Data) {
+        // 处理存档数据
+    }
+    
+    func onArchiveCoverResult(archiveUUID: String, archiveFileID: String, coverData: Data) {
+        // 处理封面数据
+    }
+}
+
+TapTapCloudSave.createArchive(
+    archiveMetadata: metadata,
+    archiveFilePath: archiveFilePath,
+    archiveCoverPath: archiveCoverPath,
+    callback: callback
+)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+// 存档元信息
+ArchiveMetadata *metadata = [[ArchiveMetadata alloc] initWithName:@"存档名称"
+                                                          summary:@"存档描述"
+                                                            extra:@"额外信息"
+                                                          playtime:0];
+
+// 存档文件路径（单个存档文件大小不超过10MB）
+NSString *archiveFilePath = @"path/to/archive/file";
+// 存档封面路径（可选，封面大小不超过512KB）
+NSString *archiveCoverPath = @"path/to/cover/image";
+
+// 请求回调
+id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
+
+[TapTapCloudSave createArchiveWithArchiveMetadata:metadata
+                                   archiveFilePath:archiveFilePath
+                                  archiveCoverPath:archiveCoverPath
+                                         callback:callback];
+```
+</>
+
 </MultiLang>
 
 ## 获取存档列表
 
 获取当前用户的存档列表。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -495,13 +696,39 @@ TapTapCloudSave.getArchiveList(callback)
 
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+let callback = object : TapTapCloudSaveRequestCallback {
+    func onArchiveListResult(archives: [ArchiveData]) {
+        // 处理存档列表
+    }
+}
+
+TapTapCloudSave.getArchiveList(callback: callback)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
+
+[TapTapCloudSave getArchiveListWithCallback:callback];
+```
+</>
+
 </MultiLang>
 
 ## 下载存档
 
 下载指定的存档文件。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -561,6 +788,48 @@ TapTapCloudSave.getArchiveData(archiveUuid, archiveFileId, callback)
 
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+// 存档UUID
+let archiveUuid = "archive_uuid"
+// 存档文件ID
+let archiveFileId = "archive_file_id"
+
+let callback = object : TapTapCloudSaveRequestCallback {
+    func onArchiveDataResult(archiveUUID: String, archiveFileID: String, data: Data) {
+        // 处理下载的存档数据
+    }
+}
+
+TapTapCloudSave.getArchiveData(
+    archiveUUID: archiveUuid,
+    archiveFileID: archiveFileId,
+    callback: callback
+)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+// 存档UUID
+NSString *archiveUuid = @"archive_uuid";
+// 存档文件ID
+NSString *archiveFileId = @"archive_file_id";
+
+id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
+
+[TapTapCloudSave getArchiveDataWithArchiveUUID:archiveUuid
+                                 archiveFileID:archiveFileId
+                                      callback:callback];
+```
+</>
+
 </MultiLang>
 
 ## 更新存档
@@ -573,7 +842,7 @@ TapTapCloudSave.getArchiveData(archiveUuid, archiveFileId, callback)
 存档摘要 (summary) 以及额外信息 (extra) 无此限制
 :::
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -658,13 +927,75 @@ TapTapCloudSave.updateArchive(archiveUuid, metadata, archiveFilePath, archiveCov
 
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+// 存档UUID
+let archiveUuid = "archive_uuid"
+// 存档元信息
+let metadata = ArchiveMetadata(
+    name: "更新后的存档名称",
+    summary: "更新后的存档描述",
+    extra: "额外信息",
+    playtime: 0
+)
+// 新的存档文件路径（单个存档文件大小不超过10MB）
+let archiveFilePath = "path/to/new/archive/file"
+// 新的存档封面路径（可选，封面大小不超过512KB）
+let archiveCoverPath = "path/to/new/cover/image"
+
+let callback = object : TapTapCloudSaveRequestCallback {
+    func onArchiveUpdated(archive: ArchiveData) {
+        // 处理存档更新成功
+    }
+}
+
+TapTapCloudSave.updateArchive(
+    archiveUUID: archiveUuid,
+    archiveMetadata: metadata,
+    archiveFilePath: archiveFilePath,
+    archiveCoverPath: archiveCoverPath,
+    callback: callback
+)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+// 存档UUID
+NSString *archiveUuid = @"archive_uuid";
+// 存档元信息
+ArchiveMetadata *metadata = [[ArchiveMetadata alloc] initWithName:@"更新后的存档名称"
+                                                          summary:@"更新后的存档描述"
+                                                            extra:@"额外信息"
+                                                          playtime:0];
+// 新的存档文件路径（单个存档文件大小不超过10MB）
+NSString *archiveFilePath = @"path/to/new/archive/file";
+// 新的存档封面路径（可选，封面大小不超过512KB）
+NSString *archiveCoverPath = @"path/to/new/cover/image";
+
+id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
+
+[TapTapCloudSave updateArchiveWithArchiveUUID:archiveUuid
+                               archiveMetadata:metadata
+                                archiveFilePath:archiveFilePath
+                               archiveCoverPath:archiveCoverPath
+                                      callback:callback];
+```
+</>
+
 </MultiLang>
 
 ## 删除存档
 
 删除指定的存档文件。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -718,13 +1049,46 @@ TapTapCloudSave.deleteArchive(archiveUuid, callback)
 
 </>
 
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+// 存档UUID
+let archiveUuid = "archive_uuid"
+
+let callback = object : TapTapCloudSaveRequestCallback {
+    func onArchiveDeleted(archive: ArchiveData) {
+        // 处理存档删除成功
+    }
+}
+
+TapTapCloudSave.deleteArchive(archiveUUID: archiveUuid, callback: callback)
+```
+
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+// 存档UUID
+NSString *archiveUuid = @"archive_uuid";
+
+id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
+
+[TapTapCloudSave deleteArchiveWithArchiveUUID:archiveUuid callback:callback];
+```
+</>
+
 </MultiLang>
 
 ## 获取存档封面
 
 获取指定存档的封面图片。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -782,6 +1146,49 @@ val callback = object : TapCloudSaveRequestCallback() {
 TapTapCloudSave.getArchiveCover(archiveUuid, archiveFileId, callback)
 ```
 
+</>
+
+<>
+
+```swift
+import TapTapCloudSaveSDK
+
+// 存档UUID
+let archiveUuid = "archive_uuid"
+// 存档文件ID
+let archiveFileId = "archive_file_id"
+
+let callback = object : TapTapCloudSaveRequestCallback {
+    func onArchiveCoverResult(archiveUUID: String, archiveFileID: String, coverData: Data) {
+        // 处理封面数据
+    }
+}
+
+TapTapCloudSave.getArchiveCover(
+    archiveUUID: archiveUuid,
+    archiveFileID: archiveFileId,
+    callback: callback
+)
+```
+
+</>
+
+<>
+
+```objc
+#import "TapTapCloudSaveSDK/TapTapCloudSaveSDK-Swift.h"
+
+// 存档UUID
+NSString *archiveUuid = @"archive_uuid";
+// 存档文件ID
+NSString *archiveFileId = @"archive_file_id";
+
+id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
+
+[TapTapCloudSave getArchiveCoverWithArchiveUUID:archiveUuid
+                                 archiveFileID:archiveFileId
+                                      callback:callback];
+```
 </>
 
 </MultiLang>
