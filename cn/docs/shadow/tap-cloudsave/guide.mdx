@@ -304,9 +304,13 @@ TapTapCloudSave.registerCloudSaveCallback(cloudSaveCallback)
 ```cs
 using TapSDK.CloudSave;
 
-// 存档元信息（JSON格式字符串）
-string metadata = "{\"name\":\"存档名称\",\"summary\":\"存档描述\",\"extra\":\"额外信息\",\"playtime\":0}";
-
+// 存档元信息
+ArchiveMetadata metadata = new ArchiveMetadata(
+    archiveName: "存档名称",
+    archiveSummary: "存档描述",
+    archiveExtra: "额外信息",
+    archivePlaytime: 0  // 创建时间
+);
 // 存档文件路径（单个存档文件大小不超过10MB）
 string archiveFilePath = "path/to/archive/file";
 // 存档封面路径（可选，封面大小不超过512KB）
@@ -582,8 +586,13 @@ using TapSDK.CloudSave;
 
 // 存档UUID
 string archiveUuid = "archive_uuid";
-// 存档元信息（JSON格式字符串）
-string metadata = "{\"name\":\"更新后的存档名称\",\"summary\":\"更新后的存档描述\",\"extra\":\"额外信息\",\"playtime\":0}";
+// 存档元信息
+ArchiveMetadata metadata = new ArchiveMetadata(
+    archiveName: "更新后的存档名称",
+    archiveSummary: "更新后的存档描述",
+    archiveExtra: "额外信息",
+    archivePlaytime: 0  // 创建时间
+);
 // 新的存档文件路径（单个存档文件大小不超过10MB）
 string archiveFilePath = "path/to/new/archive/file";
 // 新的存档封面路径（可选，封面大小不超过512KB）
