@@ -361,14 +361,13 @@ String clientId = "";
 // 开发者中心对应 Client Token
 String clientToken = "";
 
-TapTapEventOptions eventOptions = new TapTapEventOptions(
-    "channel",
-    true,
-    false,
-    new JSONObject(),
-    false,
-    true
-);
+TapTapEventOptions eventOptions = TapTapEventOptions.builder()
+    .channel("channel")
+    .autoIAPEventEnabled(false)
+    .overrideBuiltInParameters(false)
+    .properties(new JSONObject())
+    .disableAutoLogDeviceLogin(false)
+    .build();
 
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
         clientId, // 游戏 Client ID
@@ -378,8 +377,6 @@ TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
 
 // 是否禁用 OAID 反射, 默认 true
 tapSdkOptions.setDisableReflectionOAID(true);
-// 是否即用禁用自动上报设备登录事件, 默认 false
-tapSdkOptions.setDisableAutoLogDeviceLogin(false);
 
 // 初始化 TapSDK
 TapTapSdk.init(context, tapSdkOptions, eventOptions);
@@ -397,13 +394,13 @@ import com.taptap.sdk.core.TapTapSdkOptions
 import com.taptap.sdk.core.TapTapRegion
 import com.taptap.sdk.core.TapTapLanguage
 
-val eventOptions = TapTapEventOptions(
-    channel = "channel",
-    autoIAPEventEnabled = true,
-    overrideBuiltInParameters = true,
-    properties = JSONObject(),
-    disableAutoLogDeviceLogin = false
-)
+val eventOptions = TapTapEventOptions.builder()
+    .channel("channel")
+    .autoIAPEventEnabled(false)
+    .overrideBuiltInParameters(false)
+    .properties(new JSONObject())
+    .disableAutoLogDeviceLogin(false)
+    .build()
 
 TapTapSdk.init(
    context = context,
@@ -414,9 +411,7 @@ TapTapSdk.init(
          preferredLanguage = TapTapLanguage.ZH_HANS,
          enableLog = false,
          // 是否禁用 OAID 反射, 默认 true
-         disableReflectionOAID = true,
-         // 是否即用禁用自动上报设备登录事件, 默认 false
-         disableAutoLogDeviceLogin = false
+         disableReflectionOAID = true
    ),
    eventOptions
 )
