@@ -438,7 +438,7 @@ string archiveFilePath = "path/to/archive/file";
 string archiveCoverPath = "path/to/cover/image";
 
 // 请求回调
-TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter(){};
 TapTapCloudSave.CreateArchive(metadata, archiveFilePath, archiveCoverPath, callback);
 ```
 
@@ -471,31 +471,6 @@ TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
     @Override
     public void onRequestError(int errorCode, @NonNull String errorMessage) {
         // 处理请求错误
-    }
-
-    @Override
-    public void onArchiveCoverResult(@NonNull byte[] coverData) {
-        // 处理封面数据
-    }
-
-    @Override
-    public void onArchiveDataResult(@NonNull byte[] archiveData) {
-        // 处理存档数据
-    }
-
-    @Override
-    public void onArchiveListResult(@NonNull List<ArchiveData> archiveList) {
-        // 处理存档列表
-    }
-
-    @Override
-    public void onArchiveDeleted(@NonNull ArchiveData archive) {
-        // 处理存档删除
-    }
-
-    @Override
-    public void onArchiveUpdated(@NonNull ArchiveData archive) {
-        // 处理存档更新
     }
 
     @Override
@@ -536,26 +511,6 @@ val callback = object : TapCloudSaveRequestCallback() {
         // 处理请求错误
     }
 
-    override fun onArchiveCoverResult(coverData: ByteArray) {
-        // 处理封面数据
-    }
-
-    override fun onArchiveDataResult(archiveData: ByteArray) {
-        // 处理存档数据
-    }
-
-    override fun onArchiveListResult(archiveList: List<ArchiveData>) {
-        // 处理存档列表
-    }
-
-    override fun onArchiveDeleted(archive: ArchiveData) {
-        // 处理存档删除
-    }
-
-    override fun onArchiveUpdated(archive: ArchiveData) {
-        // 处理存档更新
-    }
-
     override fun onArchiveCreated(archive: ArchiveData) {
         // 处理存档创建成功
     }
@@ -585,36 +540,16 @@ let archiveFilePath = "path/to/archive/file"
 let archiveCoverPath = "path/to/cover/image"
 
 // 请求回调
-let callback = object : TapTapCloudSaveRequestCallback {
+class CloudSaveRequestCallback: NSObject, TapTapCloudSaveRequestCallback {
     func onRequestError(errorCode: Int, errorMessage: String) {
         // 处理请求错误
     }
-    
     func onArchiveCreated(archive: ArchiveData) {
         // 处理存档创建成功
     }
-    
-    func onArchiveUpdated(archive: ArchiveData) {
-        // 处理存档更新
-    }
-    
-    func onArchiveDeleted(archive: ArchiveData) {
-        // 处理存档删除
-    }
-    
-    func onArchiveListResult(archives: [ArchiveData]) {
-        // 处理存档列表
-    }
-    
-    func onArchiveDataResult(archiveUUID: String, archiveFileID: String, data: Data) {
-        // 处理存档数据
-    }
-    
-    func onArchiveCoverResult(archiveUUID: String, archiveFileID: String, coverData: Data) {
-        // 处理封面数据
-    }
 }
 
+let callback = CloudSaveRequestCallback()
 TapTapCloudSave.createArchive(
     archiveMetadata: metadata,
     archiveFilePath: archiveFilePath,
@@ -663,7 +598,7 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 ```cs
 using TapSDK.CloudSave;
 
-TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
 TapTapCloudSave.GetArchiveList(callback);
 ```
 
@@ -679,6 +614,11 @@ TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
     @Override
     public void onArchiveListResult(@NonNull List<ArchiveData> archiveList) {
         // 处理存档列表
+    }
+
+    @Override
+    public void onRequestError(int errorCode, @NotNull String errorMessage) {
+        // 处理请求错误
     }
 };
 
@@ -697,6 +637,10 @@ val callback = object : TapCloudSaveRequestCallback() {
     override fun onArchiveListResult(archiveList: List<ArchiveData>) {
         // 处理存档列表
     }
+
+    override fun onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
 TapTapCloudSave.getArchiveList(callback)
@@ -709,14 +653,19 @@ TapTapCloudSave.getArchiveList(callback)
 ```swift
 import TapTapCloudSaveSDK
 
-let callback = object : TapTapCloudSaveRequestCallback {
+class CloudSaveRequestCallback: NSObject, TapTapCloudSaveRequestCallback {
     func onArchiveListResult(archives: [ArchiveData]) {
         // 处理存档列表
     }
+    func onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
+let callback = CloudSaveRequestCallback()
 TapTapCloudSave.getArchiveList(callback: callback)
 ```
+
 </>
 
 <>
@@ -747,7 +696,7 @@ using TapSDK.CloudSave;
 string archiveUuid = "archive_uuid";
 // 存档文件ID
 string archiveFileId = "archive_file_id";
-TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
 TapTapCloudSave.GetArchiveData(archiveUuid, archiveFileId, callback);
 ```
 
@@ -767,6 +716,11 @@ TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
     @Override
     public void onArchiveDataResult(@NonNull byte[] archiveData) {
         // 处理下载的存档数据
+    }
+
+    @Override
+    public void onRequestError(int errorCode, @NotNull String errorMessage) {
+        // 处理请求错误
     }
 };
 
@@ -789,6 +743,10 @@ val callback = object : TapCloudSaveRequestCallback() {
     override fun onArchiveDataResult(archiveData: ByteArray) {
         // 处理下载的存档数据
     }
+
+    override fun onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
 TapTapCloudSave.getArchiveData(archiveUuid, archiveFileId, callback)
@@ -806,18 +764,23 @@ let archiveUuid = "archive_uuid"
 // 存档文件ID
 let archiveFileId = "archive_file_id"
 
-let callback = object : TapTapCloudSaveRequestCallback {
+class CloudSaveRequestCallback: NSObject, TapTapCloudSaveRequestCallback {
     func onArchiveDataResult(archiveUUID: String, archiveFileID: String, data: Data) {
         // 处理下载的存档数据
     }
+    func onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
+let callback = CloudSaveRequestCallback()
 TapTapCloudSave.getArchiveData(
     archiveUUID: archiveUuid,
     archiveFileID: archiveFileId,
     callback: callback
 )
 ```
+
 </>
 
 <>
@@ -871,7 +834,7 @@ string archiveFilePath = "path/to/new/archive/file";
 // 新的存档封面路径（可选，封面大小不超过512KB）
 string archiveCoverPath = "path/to/new/cover/image";
 
-TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
 TapTapCloudSave.UpdateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath, callback);
 ```
 
@@ -901,6 +864,11 @@ TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
     @Override
     public void onArchiveUpdated(@NonNull ArchiveData archive) {
         // 处理存档更新成功
+    }
+
+    @Override
+    public void onRequestError(int errorCode, @NotNull String errorMessage) {
+        // 处理请求错误
     }
 };
 
@@ -933,6 +901,10 @@ val callback = object : TapCloudSaveRequestCallback() {
     override fun onArchiveUpdated(archive: ArchiveData) {
         // 处理存档更新成功
     }
+
+    override fun onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
 TapTapCloudSave.updateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath, callback)
@@ -959,12 +931,16 @@ let archiveFilePath = "path/to/new/archive/file"
 // 新的存档封面路径（可选，封面大小不超过512KB）
 let archiveCoverPath = "path/to/new/cover/image"
 
-let callback = object : TapTapCloudSaveRequestCallback {
+class CloudSaveRequestCallback: NSObject, TapTapCloudSaveRequestCallback {
     func onArchiveUpdated(archive: ArchiveData) {
         // 处理存档更新成功
     }
+    func onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
+let callback = CloudSaveRequestCallback()
 TapTapCloudSave.updateArchive(
     archiveUUID: archiveUuid,
     archiveMetadata: metadata,
@@ -973,6 +949,7 @@ TapTapCloudSave.updateArchive(
     callback: callback
 )
 ```
+
 </>
 
 <>
@@ -1017,7 +994,7 @@ using TapSDK.CloudSave;
 
 // 存档UUID
 string archiveUuid = "archive_uuid";
-TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
 TapTapCloudSave.DeleteArchive(archiveUuid, callback);
 ```
 
@@ -1035,6 +1012,11 @@ TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
     @Override
     public void onArchiveDeleted(@NonNull ArchiveData archive) {
         // 处理存档删除成功
+    }
+
+    @Override
+    public void onRequestError(int errorCode, @NotNull String errorMessage) {
+        // 处理请求错误
     }
 };
 
@@ -1055,6 +1037,10 @@ val callback = object : TapCloudSaveRequestCallback() {
     override fun onArchiveDeleted(archive: ArchiveData) {
         // 处理存档删除成功
     }
+
+    override fun onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
 TapTapCloudSave.deleteArchive(archiveUuid, callback)
@@ -1070,12 +1056,16 @@ import TapTapCloudSaveSDK
 // 存档UUID
 let archiveUuid = "archive_uuid"
 
-let callback = object : TapTapCloudSaveRequestCallback {
+class CloudSaveRequestCallback: NSObject, TapTapCloudSaveRequestCallback {
     func onArchiveDeleted(archive: ArchiveData) {
         // 处理存档删除成功
     }
+    func onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
+let callback = CloudSaveRequestCallback()
 TapTapCloudSave.deleteArchive(archiveUUID: archiveUuid, callback: callback)
 ```
 
@@ -1112,7 +1102,7 @@ using TapSDK.CloudSave;
 string archiveUuid = "archive_uuid";
 // 存档文件ID
 string archiveFileId = "archive_file_id";
-TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback();
+TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
 TapTapCloudSave.GetArchiveCover(archiveUuid, archiveFileId, callback);
 ```
 
@@ -1132,6 +1122,11 @@ TapCloudSaveRequestCallback callback = new TapCloudSaveRequestCallback() {
     @Override
     public void onArchiveCoverResult(@NonNull byte[] coverData) {
         // 处理封面数据
+    }
+
+    @Override
+    public void onRequestError(int errorCode, @NotNull String errorMessage) {
+        // 处理请求错误
     }
 };
 
@@ -1154,6 +1149,10 @@ val callback = object : TapCloudSaveRequestCallback() {
     override fun onArchiveCoverResult(coverData: ByteArray) {
         // 处理封面数据
     }
+
+    override fun onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
 TapTapCloudSave.getArchiveCover(archiveUuid, archiveFileId, callback)
@@ -1171,12 +1170,16 @@ let archiveUuid = "archive_uuid"
 // 存档文件ID
 let archiveFileId = "archive_file_id"
 
-let callback = object : TapTapCloudSaveRequestCallback {
+class CloudSaveRequestCallback: NSObject, TapTapCloudSaveRequestCallback {
     func onArchiveCoverResult(archiveUUID: String, archiveFileID: String, coverData: Data) {
         // 处理封面数据
     }
+    func onRequestError(errorCode: Int, errorMessage: String) {
+        // 处理请求错误
+    }
 }
 
+let callback = CloudSaveRequestCallback()
 TapTapCloudSave.getArchiveCover(
     archiveUUID: archiveUuid,
     archiveFileID: archiveFileId,
@@ -1206,12 +1209,29 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 
 </MultiLang>
 
-## 错误码说明
+## 结果码说明
 
-| 错误码 | 说明 |
+| 结果码 | 说明 |
 | ------ | ---- |
 | 300001 | 需要登录 |
 | 300002 | 初始化失败，需要重新初始化 |
+
+## 请求错误码
+
+用于 `onRequestError(errorCode, errorMessage)` 回调中的 `errorCode`。
+
+| 错误码 | 说明 |
+| ------ | ---- |
+| 400000 | 非法的存档文件/封面大小 |
+| 400001 | 存档上传频率超限 |
+| 400002 | 指定的存档不存在 |
+| 400003 | 单个应用下存档数量超限 |
+| 400004 | 单个应用下使用存储空间超限 |
+| 400005 | 总使用存储空间超限 |
+| 400006 | 非法的操作令牌，通常是由于网络卡顿，创建/更新存档耗时过长导致 |
+| 400007 | 不允许并发调用 |
+| 400008 | 找不到可用的 OSS 供应商 |
+| 400009 | 存档名称不合法 |
 
 ## 国际化
 
