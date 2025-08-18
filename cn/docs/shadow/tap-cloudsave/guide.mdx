@@ -416,6 +416,8 @@ TapTapCloudSave.unregisterCloudSaveCallback(callback)
 存档名称仅支持【英文/数字/下划线/中划线】，不支持中文
 
 存档摘要 (summary) 以及额外信息 (extra) 无此限制
+
+一分钟内仅可调用一次（与更新存档共享冷却时间）
 :::
 
 <MultiLang kind="unity_android_ios_v4">
@@ -423,23 +425,31 @@ TapTapCloudSave.unregisterCloudSaveCallback(callback)
 <>
 
 ```cs
+using System.Threading.Tasks;
+using TapSDK.Core;
 using TapSDK.CloudSave;
 
 // 存档元信息
-ArchiveMetadata metadata = new ArchiveMetadata(
-    archiveName: "存档名称",
-    archiveSummary: "存档描述",
-    archiveExtra: "额外信息",
-    archivePlaytime: 0  // 创建时间
-);
-// 存档文件路径（单个存档文件大小不超过10MB）
-string archiveFilePath = "path/to/archive/file";
-// 存档封面路径（可选，封面大小不超过512KB）
-string archiveCoverPath = "path/to/cover/image";
+    ArchiveMetadata metadata = new ArchiveMetadata(
+        archiveName: "存档名称",
+        archiveSummary: "存档描述",
+        archiveExtra: "额外信息",
+        archivePlaytime: 0  // 创建时间
+    );
+    // 存档文件路径（单个存档文件大小不超过10MB）
+    string archiveFilePath = "path/to/archive/file";
+    // 存档封面路径（可选，封面大小不超过512KB）
+    string archiveCoverPath = "path/to/cover/image";
 
-// 请求回调
-TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter(){};
-TapTapCloudSave.CreateArchive(metadata, archiveFilePath, archiveCoverPath, callback);
+    try
+    {
+        ArchiveData archive = await TapTapCloudSave.CreateArchive(metadata, archiveFilePath, archiveCoverPath);
+        // 处理存档创建成功
+    }
+    catch (TapException ex)
+    {
+        // 处理错误，可使用 ex.Code 与 ex.Message
+    }
 ```
 
 </>
@@ -596,10 +606,20 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 <>
 
 ```cs
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TapSDK.Core;
 using TapSDK.CloudSave;
 
-TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
-TapTapCloudSave.GetArchiveList(callback);
+try
+    {
+        List<ArchiveData> archives = await TapTapCloudSave.GetArchiveList();
+        // 处理存档列表
+    }
+    catch (TapException ex)
+    {
+        // 处理错误，可使用 ex.Code 与 ex.Message
+    }
 ```
 
 </>
@@ -690,14 +710,24 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 <>
 
 ```cs
+using System.Threading.Tasks;
+using TapSDK.Core;
 using TapSDK.CloudSave;
 
 // 存档UUID
 string archiveUuid = "archive_uuid";
 // 存档文件ID
 string archiveFileId = "archive_file_id";
-TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
-TapTapCloudSave.GetArchiveData(archiveUuid, archiveFileId, callback);
+
+try
+    {
+        byte[] data = await TapTapCloudSave.GetArchiveData(archiveUuid, archiveFileId);
+        // 处理下载的存档数据
+    }
+    catch (TapException ex)
+    {
+        // 处理错误，可使用 ex.Code 与 ex.Message
+    }
 ```
 
 </>
@@ -811,6 +841,8 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 存档名称仅支持【英文/数字/下划线/中划线】，不支持中文
 
 存档摘要 (summary) 以及额外信息 (extra) 无此限制
+
+一分钟内仅可调用一次（与创建存档共享冷却时间）
 :::
 
 <MultiLang kind="unity_android_ios_v4">
@@ -818,6 +850,8 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 <>
 
 ```cs
+using System.Threading.Tasks;
+using TapSDK.Core;
 using TapSDK.CloudSave;
 
 // 存档UUID
@@ -833,9 +867,18 @@ ArchiveMetadata metadata = new ArchiveMetadata(
 string archiveFilePath = "path/to/new/archive/file";
 // 新的存档封面路径（可选，封面大小不超过512KB）
 string archiveCoverPath = "path/to/new/cover/image";
+using System.Threading.Tasks;
+using TapSDK.Core;
 
-TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
-TapTapCloudSave.UpdateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath, callback);
+try
+    {
+        ArchiveData updated = await TapTapCloudSave.UpdateArchive(archiveUuid, metadata, archiveFilePath, archiveCoverPath);
+        // 处理存档更新成功
+    }
+    catch (TapException ex)
+    {
+        // 处理错误，可使用 ex.Code 与 ex.Message
+    }
 ```
 
 </>
@@ -990,12 +1033,22 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 <>
 
 ```cs
+using System.Threading.Tasks;
+using TapSDK.Core;
 using TapSDK.CloudSave;
 
 // 存档UUID
 string archiveUuid = "archive_uuid";
-TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
-TapTapCloudSave.DeleteArchive(archiveUuid, callback);
+
+try
+    {
+        ArchiveData deleted = await TapTapCloudSave.DeleteArchive(archiveUuid);
+        // 处理存档删除成功
+    }
+    catch (TapException ex)
+    {
+        // 处理错误，可使用 ex.Code 与 ex.Message
+    }
 ```
 
 </>
@@ -1096,14 +1149,24 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 <>
 
 ```cs
+using System.Threading.Tasks;
+using TapSDK.Core;
 using TapSDK.CloudSave;
 
 // 存档UUID
 string archiveUuid = "archive_uuid";
 // 存档文件ID
 string archiveFileId = "archive_file_id";
-TapCloudSaveRequestCallbackAdapter callback = new TapCloudSaveRequestCallbackAdapter();
-TapTapCloudSave.GetArchiveCover(archiveUuid, archiveFileId, callback);
+
+try
+    {
+        byte[] cover = await TapTapCloudSave.GetArchiveCover(archiveUuid, archiveFileId);
+        // 处理封面数据
+    }
+    catch (TapException ex)
+    {
+        // 处理错误，可使用 ex.Code 与 ex.Message
+    }
 ```
 
 </>
