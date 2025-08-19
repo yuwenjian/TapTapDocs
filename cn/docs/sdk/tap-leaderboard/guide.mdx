@@ -92,14 +92,14 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 <UnitySDKInstallation
 npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.login",
-"com.taptap.sdk.leaderboard",
+"com.taptap.tapsdk.unity.core",
+"com.taptap.tapsdk.unity.login",
+"com.taptap.tapsdk.unity.leaderboard",
 ]}
 githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.login", url: `https://github.com/taptap/TapSDKLogin-Unity.git#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.leaderboard", url: `https://github.com/taptap/TapSDKLeaderboard-Unity.git#${v4SDKVersions.taptap.unity}`}
+{package: "com.taptap.tapsdk.unity.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.tapsdk.unity.login", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.tapsdk.unity.leaderboard", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Leaderboard#${v4SDKVersions.taptap.unity}`}
 ]}
 unitypackageModules={[
 {name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
