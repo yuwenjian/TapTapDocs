@@ -76,14 +76,14 @@ import Languages from "../_partials/languages.mdx";
 
 <UnitySDKInstallation
 npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.achievement",
-"com.taptap.sdk.login"
+"com.taptap.tapsdk.unity.core",
+"com.taptap.tapsdk.unity.achievement",
+"com.taptap.tapsdk.unity.login"
 ]}
 githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/TapSDKCore-Unity.git#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.login", url: `https://github.com/taptap/TapSDKLogin-Unity.git#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.achievement", url: `https://github.com/taptap/TapSDKAchievement-Unity.git#${v4SDKVersions.taptap.unity}`}
+{package: "com.taptap.tapsdk.unity.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.tapsdk.unity.login", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}`},
+{package: "com.taptap.tapsdk.unity.achievement", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Achievement#${v4SDKVersions.taptap.unity}`}
 ]}
 unitypackageModules={[
 {name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
