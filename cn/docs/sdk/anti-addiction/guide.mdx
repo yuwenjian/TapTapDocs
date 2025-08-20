@@ -224,8 +224,8 @@ TapTapSdkOptions coreOptions = new TapTapSdkOptions();
 // 合规认证配置
 TapTapComplianceOption complianceOption = new TapTapComplianceOption
 {
-    showSwitchAccount = true,
-    useAgeRange = false
+    showSwitchAccount = true,  // 是否显示切换账号按钮
+    useAgeRange = false  // 游戏是否需要获取真实年龄段信息
 };
 // 其他模块配置项
 TapTapSdkBaseOptions[] otherOptions = new TapTapSdkBaseOptions[]
@@ -264,8 +264,8 @@ tapSdkOptions.setEnableLog(enableLog);
 
 // 可选配置 合规模块
 TapTapComplianceOptions tapComplianceOptions = new TapTapComplianceOptions(
-        true, // 是否显示切换账号按钮，默认为 false
-        true // 游戏是否需要获取真实年龄段信息，默认为 true
+        true, // 是否显示切换账号按钮
+        false // 游戏是否需要获取真实年龄段信息
 );
 // 初始化 TapSDK
 TapTapSdk.init(context, tapSdkOptions, tapComplianceOptions);
@@ -294,10 +294,8 @@ TapTapSdk.init(
     ),
     options = arrayOf(
         TapTapComplianceOptions(
-            //
-            showSwitchAccount = true,
-            //
-            useAgeRange = false,
+            showSwitchAccount = true, // 是否显示切换账号按钮
+            useAgeRange = false, // 游戏是否需要获取真实年龄段信息
         )
     )
 )
@@ -316,8 +314,10 @@ let coreOptions = TapTapSdkOptions()
 
 // 合规认证配置
 let complianceOptions = TapTapComplianceOptions()
-complianceOptions.useAgeRange = false
-complianceOptions.showSwitchAccount = true
+
+complianceOptions.showSwitchAccount = true // 是否显示切换账号按钮
+complianceOptions.useAgeRange = false // 游戏是否需要获取真实年龄段信息 
+
 
 // 其他模块配置项
 let otherOptions = [complianceOptions]
@@ -336,8 +336,9 @@ TapTapSdkOptions *coreOptions = [[TapTapSdkOptions alloc] init];
 
 /// 合规认证配置
 TapTapComplianceOptions *complianceOptions = [[TapTapComplianceOptions alloc] init];
-complianceOptions.useAgeRange = NO; // 是否使用年龄段信息
-complianceOptions.showSwitchAccount = YES; // 是否显示切换账号
+
+complianceOptions.showSwitchAccount = YES; // 是否显示切换账号按钮
+complianceOptions.useAgeRange = NO; // 游戏是否需要获取真实年龄段信息   
 
 // 其他模块配置项
 NSArray *otherOptions = @[complianceOptions];
