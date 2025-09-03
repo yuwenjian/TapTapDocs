@@ -17,12 +17,14 @@ sidebar_position: 1
 ## 接入流程
 - 小游戏接入
     - 参照[小游戏云存档开发指南](https://developer.taptap.cn/minigameapidoc/dev/api/open-api/cloudsave/tap.getCloudSaveManager/)接入即可。
-- Android、iOS、PC 端 SDK 正在白名单测试中，即将推出
+- Android、iOS、PC端接入
+    - 云存档依赖于 TapTap 登录，因此请先完成 [TapTap登录接入](https://developer.taptap.cn/docs/sdk/taptap-login/guide/)
+    - 云存档功能参照[云存档开发指南](https://developer.taptap.cn/docs/sdk/tap-cloudsave/guide/)接入。
 
 您应注意云存档的相关限制，否则可能导致云存档失败：
-- 单个存档最大 10MB
-- 单个玩家账号在单个游戏的云存档，最多 100 个存档文件、100MB 总大小
-- 两次上传云存档间最小间隔 1 分钟
+- 单个存档最大10MB
+- 单个玩家账号在单个游戏的云存档，最多100个存档文件、100MB总大小
+- 两次上传云存档间最小间隔1分钟
 
 因此请通过「删除云存档」等方法，合理管理玩家云存档数量及大小。同时注意仅在关键节点进行云存档同步，避免超频调用导致上传失败。
 
