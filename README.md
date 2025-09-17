@@ -342,6 +342,21 @@ import CodeBlock from "@theme/CodeBlock";
 - `i18n/en/docusaurus-plugin-content-docs/current/sdk/taptap-login/features.mdx` 在其他 md 文件中跳转需写作 `[跳转标题](/sdk/taptap-login/features/)`
 - 标题跳转需要去除标点、将空格换成 `-` 并将大写字母改为小写，比如 `[<FaqLink>1. 如何进行游戏认领？</FaqLink>](/store/store-creategame#我的游戏已经被 TapTap 收录，可以进行游戏认领吗？)` 应写作 `[<FaqLink>1. 如何进行游戏认领？</FaqLink>](/store/store-creategame#我的游戏已经被-taptap-收录可以进行游戏认领吗)`
 
+###### 常见问题： 误添加 `/docs` 前缀
+
+1. **本地构建无法检测**：本地环境的 `baseUrl` 是 `/docs`，Docusaurus 不会为 `/docs/sdk` 添加重复前缀，所以在本地能正常构建，无法发现问题
+2. **预览环境构建失败**：预览环境的 `baseUrl` 是 `/preview-xxx`，此时 `/docs/sdk` 会被解析为 `/preview-xxx/docs/sdk`，导致链接失效、构建报错
+
+**正确做法**：
+- ✅ 正确：`[跳转标题](/sdk/taptap-login/features/)`
+- ❌ 错误：`[跳转标题](/docs/sdk/taptap-login/features/)`
+ **编写时**：始终使用不带 `/docs` 前缀的路径（如 `/sdk`、`/store`、`/design`）
+
+**为什么会出现这个问题**：
+- Docusaurus 会根据不同环境的 `baseUrl` 配置自动处理路径
+- 文档源文件虽然在 `docs` 目录下，但在链接中不需要包含这个目录名
+- 这是 Docusaurus 的设计，目的是让链接在不同部署环境下都能正常工作
+
 ##### 链接到外部网站
 
 - 要链接到 `https://docusaurus.io/`，在 md 文件中引用需写作 `[链接文本](https://docusaurus.io/)`
