@@ -791,8 +791,8 @@ import com.taptap.sdk.leaderboard.data.response.LeaderboardScoresResponse;
 
 TapTapLeaderboard.loadLeaderboardScores(
     "your_leaderboard_id", // 排行榜ID
-    null, // nextPage - 首次请求传null
     LeaderboardCollection.PUBLIC, // 总榜
+    null, // nextPage - 首次请求传null
     null, // periodToken - 时间周期标识
     new TapTapLeaderboardResponseCallback<LeaderboardScoresResponse>() {
         @Override
@@ -823,9 +823,8 @@ import com.taptap.sdk.leaderboard.data.response.LeaderboardScoresResponse
 
 TapTapLeaderboard.loadLeaderboardScores(
     leaderboardId = "your_leaderboard_id", // 排行榜ID
-    nextPage = null, // 首次请求传null
     leaderboardCollection = LeaderboardCollection.PUBLIC, // 总榜
-    periodToken = null, // 时间周期标识
+    nextPage = null, // 首次请求传null
     callback = object : TapTapLeaderboardResponseCallback<LeaderboardScoresResponse> {
         override fun onSuccess(data: LeaderboardScoresResponse) {
             // 获取成功
