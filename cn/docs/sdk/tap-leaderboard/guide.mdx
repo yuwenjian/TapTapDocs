@@ -14,7 +14,7 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 ## 权限说明
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -86,7 +86,7 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapLeaderboard` 、 `TapTapLogin` 模块：
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -157,13 +157,107 @@ allprojects {
 
 </>
 
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{
+`pod 'TapTapCoreSDK', '~> ${v4SDKVersions.taptap.ios}'
+pod 'TapTapLoginSDK', '~> ${v4SDKVersions.taptap.ios}'
+pod 'TapTapLeaderboardSDK', '~> ${v4SDKVersions.taptap.ios}'`
+}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+
+**本地文件依赖**
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `tapsdkcorecpp.xcframework` 基础库
+- `TapTapBasicToolsSDK.xcframework` 基础库
+- `TapTapCoreSDK.xcframework` 核心库
+- `TapTapGidSDK.xcframework` 基础库
+- `TapTapNetworkSDK.xcframework` 基础库
+- `TapTapLoginSDK.xcframework` 登录模块
+- `TapTapLeaderboardSDK.xcframework` 排行榜模块
+- `THEMISLite.xcframework` 基础库
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
+3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+**配置编译选项**
+
+- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 和 `-Wl -ld_classic`。
+
+- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
+
+- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
+
+</>
+
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{
+`pod 'TapTapCoreSDK', '~> ${v4SDKVersions.taptap.ios}'
+pod 'TapTapLoginSDK', '~> ${v4SDKVersions.taptap.ios}'
+pod 'TapTapLeaderboardSDK', '~> ${v4SDKVersions.taptap.ios}'`
+}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+
+**本地文件依赖**
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `tapsdkcorecpp.xcframework` 基础库
+- `TapTapBasicToolsSDK.xcframework` 基础库
+- `TapTapCoreSDK.xcframework` 核心库
+- `TapTapGidSDK.xcframework` 基础库
+- `TapTapNetworkSDK.xcframework` 基础库
+- `TapTapLoginSDK.xcframework` 登录模块
+- `TapTapLeaderboardSDK.xcframework` 排行榜模块
+- `THEMISLite.xcframework` 基础库
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
+3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+**配置编译选项**
+
+- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 和 `-Wl -ld_classic`。
+
+- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
+
+- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
+
+**Objective-C 头文件导入**
+
+如果使用 Objective-C 开发，需要在相应的 `.m` 文件中导入以下头文件：
+
+```objc
+#import <TapTapCoreSDK/TapTapSDK.h>
+#import <TapTapLoginSDK/TapTapLoginSDK-Swift.h>
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+```
+
+</>
+
 </MultiLang>
 
 ## SDK 初始化
 
 详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -248,13 +342,53 @@ TapTapSdk.init(
 
 </>
 
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```swift
+import TapTapCoreSDK
+
+let options = TapTapSdkOptions()
+options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
+options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
+options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
+options.enableLog = true // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapLanguageType.auto // 语言设置，默认跟随系统
+
+// 初始化 TapSDK
+TapTapSDK.initWith(options)
+```
+
+</>
+
+<>
+
+`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+```objc
+#import <TapTapCoreSDK/TapTapSDK.h>
+
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+options.clientId = @"your_client_id"; // 必须，开发者中心对应 Client ID
+options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
+options.region = TapTapRegionCN; // TapTapRegionCN：中国大陆，TapTapRegionOverseas：其他国家或地区
+options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapTapLanguageAuto; // 语言设置，默认跟随系统
+
+// 初始化 TapSDK
+[TapTapSDK initWith:options];
+```
+
+</>
+
 </MultiLang>
 
 ## 注册排行榜事件回调
 
 排行榜 SDK 提供事件回调接口，用于处理排行榜相关事件，如用户未登录等状态。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -341,35 +475,120 @@ TapTapLeaderboard.unregisterLeaderboardCallback(callback = callback)
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义排行榜回调类
+class LeaderboardCallbackHandler: NSObject, TapTapLeaderboardCallback {
+    func onLeaderboardResult(code: Int, message: String) {
+        // 处理排行榜事件
+        switch code {
+        case 500102:
+            // 用户未登录，需要引导用户登录
+            print("用户未登录，需要引导用户登录")
+            // showLoginDialog()
+        default:
+            print("Leaderboard callback: code=\(code), message=\(message)")
+        }
+    }
+}
+
+// 注册排行榜事件回调
+let callbackHandler = LeaderboardCallbackHandler()
+TapTapLeaderboard.registerLeaderboardCallback(callback: callbackHandler)
+
+// 取消注册回调
+TapTapLeaderboard.unregisterLeaderboardCallback(callback: callbackHandler)
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义排行榜回调处理类
+@interface LeaderboardCallbackHandler : NSObject <TapTapLeaderboardCallback>
+@end
+
+@implementation LeaderboardCallbackHandler
+
+- (void)onLeaderboardResultWithCode:(NSInteger)code message:(NSString *)message {
+    // 处理排行榜事件
+    switch (code) {
+        case 500102:
+            // 用户未登录，需要引导用户登录
+            NSLog(@"用户未登录，需要引导用户登录");
+            // [self showLoginDialog];
+            break;
+        default:
+            NSLog(@"Leaderboard callback: code=%ld, message=%@", (long)code, message);
+            break;
+    }
+}
+
+@end
+
+// 注册排行榜事件回调
+LeaderboardCallbackHandler *callbackHandler = [[LeaderboardCallbackHandler alloc] init];
+[TapTapLeaderboard registerLeaderboardCallbackWithCallback:callbackHandler];
+
+// 取消注册回调
+[TapTapLeaderboard unregisterLeaderboardCallbackWithCallback:callbackHandler];
+```
+
+</>
+
 </MultiLang>
 
 ## 设置分享功能
 
 设置分享回调后，排行榜H5页面会显示分享按钮，用户点击分享按钮后，排行榜截图会保存到本地，并触发分享成功回调。开发者可以根据自己的需要判断是否实现分享失败的回调方法。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-// 设置分享回调
-var shareCallback = new LeaderboardShareCallback
+// 设置分享回调（同步方法，建议在初始化时调用）
+public void SetupLeaderboardSharing()
 {
-    OnShareSuccessAction = (localPath) =>
+    var shareCallback = new TapTapLeaderboardShareCallback
     {
-        // 处理排行榜分享图片保存成功
-        // localPath 为本地图片路径，可用于分享到系统
-    },
-    OnShareFailedAction = (error) =>
-    {
-        // 处理分享失败（可选实现）
-        // 开发者可以根据需要选择是否实现此方法
-    }
-};
+        OnShareSuccessAction = (localPath) =>
+        {
+            // 处理排行榜分享图片保存成功
+            // localPath 为本地图片路径，可用于分享到系统
+            Debug.Log($"Share image saved to: {localPath}");
+            
+            // 可以在这里调用系统分享功能
+            ShareImageToSystem(localPath);
+        },
+        OnShareFailedAction = (error) =>
+        {
+            // 处理分享失败（可选实现）
+            // 开发者可以根据需要选择是否实现此方法
+            Debug.LogError($"Share failed: {error?.Message}");
+        }
+    };
 
-TapTapLeaderboard.SetShareCallback(shareCallback);
+    TapTapLeaderboard.SetShareCallback(shareCallback);
+    Debug.Log("Leaderboard share callback has been set");
+}
+
+// 分享图片到系统的示例方法
+private void ShareImageToSystem(string imagePath)
+{
+    // 这里可以实现具体的系统分享逻辑
+    // 例如使用Native Share插件或Unity的分享功能
+    Debug.Log($"Sharing image: {imagePath}");
+}
 ```
 
 </>
@@ -483,26 +702,149 @@ TapTapLeaderboard.setShareCallback(object : TapTapLeaderboardShareCallback {
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义分享回调类
+class ShareCallbackHandler: NSObject, TapTapLeaderboardShareCallback {
+    func onShareSuccess(localPath: String) {
+        // 处理排行榜分享图片保存成功
+        // localPath 为本地图片路径，可用于分享到系统
+        print("Share success: \(localPath)")
+        
+        // 可以在这里调用系统分享功能
+        shareImageToSystem(imagePath: localPath)
+    }
+    
+    func onShareFailed(error: Error) {
+        // 处理分享失败（可选实现）
+        // 开发者可以根据需要选择是否实现此方法
+        print("Share failed: \(error.localizedDescription)")
+    }
+    
+    // 分享图片到系统的示例方法
+    private func shareImageToSystem(imagePath: String) {
+        guard let image = UIImage(contentsOfFile: imagePath) else {
+            print("Failed to load image from path: \(imagePath)")
+            return
+        }
+        
+        DispatchQueue.main.async {
+            let activityViewController = UIActivityViewController(
+                activityItems: [image],
+                applicationActivities: nil
+            )
+            
+            // 获取当前视图控制器并展示分享界面
+            if let topController = UIApplication.shared.keyWindow?.rootViewController {
+                var presentedController = topController
+                while let controller = presentedController.presentedViewController {
+                    presentedController = controller
+                }
+                presentedController.present(activityViewController, animated: true)
+            }
+        }
+    }
+}
+
+// 设置分享回调
+let shareHandler = ShareCallbackHandler()
+TapTapLeaderboard.setShareCallback(callback: shareHandler)
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义分享回调处理类
+@interface ShareCallbackHandler : NSObject <TapTapLeaderboardShareCallback>
+@end
+
+@implementation ShareCallbackHandler
+
+- (void)onShareSuccessWithLocalPath:(NSString *)localPath {
+    // 处理排行榜分享图片保存成功
+    // localPath 为本地图片路径，可用于分享到系统
+    NSLog(@"Share success: %@", localPath);
+    
+    // 可以在这里调用系统分享功能
+    [self shareImageToSystemWithImagePath:localPath];
+}
+
+- (void)onShareFailedWithError:(NSError *)error {
+    // 处理分享失败（可选实现）
+    // 开发者可以根据需要选择是否实现此方法
+    NSLog(@"Share failed: %@", error.localizedDescription);
+}
+
+// 分享图片到系统的示例方法
+- (void)shareImageToSystemWithImagePath:(NSString *)imagePath {
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    if (!image) {
+        NSLog(@"Failed to load image from path: %@", imagePath);
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] 
+            initWithActivityItems:@[image] applicationActivities:nil];
+        
+        // 获取当前视图控制器并展示分享界面
+        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+        while (topController.presentedViewController) {
+            topController = topController.presentedViewController;
+        }
+        [topController presentViewController:activityViewController animated:YES completion:nil];
+    });
+}
+
+@end
+
+// 设置分享回调
+ShareCallbackHandler *shareHandler = [[ShareCallbackHandler alloc] init];
+[TapTapLeaderboard setShareCallbackWithCallback:shareHandler];
+```
+
+</>
+
 </MultiLang>
 
 ## 打开排行榜页面
 
 打开排行榜H5页面对话框，支持总榜和好友榜两种类型。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
 
-string leaderboardId = "your_leaderboard_id";
+// 打开排行榜页面（同步方法，无需async）
+public void OpenLeaderboardPanel()
+{
+    string leaderboardId = "your_leaderboard_id";
 
-// 打开总榜
-TapTapLeaderboard.OpenLeaderboard(leaderboardId, "public");
+    // 打开总榜
+    TapTapLeaderboard.OpenLeaderboard(leaderboardId, "public");
 
-// 打开好友榜
-TapTapLeaderboard.OpenLeaderboard(leaderboardId, "friends");
+    // 打开好友榜
+    TapTapLeaderboard.OpenLeaderboard(leaderboardId, "friends");
+}
+
+// 根据条件动态打开不同类型的排行榜
+public void OpenLeaderboardByType(bool isFriendsBoard)
+{
+    string leaderboardId = "your_leaderboard_id";
+    string collection = isFriendsBoard ? "friends" : "public";
+    
+    TapTapLeaderboard.OpenLeaderboard(leaderboardId, collection);
+}
 ```
 
 </>
@@ -555,23 +897,80 @@ TapTapLeaderboard.openLeaderboard(
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 打开总榜
+let leaderboardId = "your_leaderboard_id"
+TapTapLeaderboard.openLeaderboard(
+    leaderboardId: leaderboardId,
+    collection: TapTapLeaderboardCollection.public
+)
+
+// 打开好友榜
+TapTapLeaderboard.openLeaderboard(
+    leaderboardId: "your_leaderboard_id",
+    collection: TapTapLeaderboardCollection.friends
+)
+
+// 根据条件动态打开不同类型的排行榜
+func openLeaderboardByType(leaderboardId: String, isFriendsBoard: Bool) {
+    let collection = isFriendsBoard ? TapTapLeaderboardCollection.friends : TapTapLeaderboardCollection.public
+    TapTapLeaderboard.openLeaderboard(
+        leaderboardId: leaderboardId,
+        collection: collection
+    )
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 打开总榜
+NSString *leaderboardId = @"your_leaderboard_id";
+[TapTapLeaderboard openLeaderboardWithLeaderboardId:leaderboardId 
+                                          collection:[TapTapLeaderboardCollection public]];
+
+// 打开好友榜
+[TapTapLeaderboard openLeaderboardWithLeaderboardId:@"your_leaderboard_id" 
+                                          collection:[TapTapLeaderboardCollection friends]];
+
+// 根据条件动态打开不同类型的排行榜
+- (void)openLeaderboardByType:(NSString *)leaderboardId isFriendsBoard:(BOOL)isFriendsBoard {
+    TapTapLeaderboardCollection *collection = isFriendsBoard ? 
+        [TapTapLeaderboardCollection friends] : [TapTapLeaderboardCollection public];
+    [TapTapLeaderboard openLeaderboardWithLeaderboardId:leaderboardId collection:collection];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 打开用户个人资料
 
 展示指定用户的个人资料对话框，传入用户的openId。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
 using TapSDK.Leaderboard;
 
-// 打开用户个人资料
+// 打开用户个人资料（使用OpenID）
 string openId = "user_open_id"; // 用户的OpenID
-string unionId = ""; // 用户的UnionID
-TapTapLeaderboard.ShowTapUserProfile(openId, unionId);
+TapTapLeaderboard.ShowTapUserProfile(openId, null);
+
+// 或者使用UnionID
+string unionId = "user_union_id"; // 用户的UnionID
+TapTapLeaderboard.ShowTapUserProfile(string.Empty, unionId);
 ```
 
 </>
@@ -610,57 +1009,120 @@ TapTapLeaderboard.showTapUserProfile(
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 使用OpenID打开用户个人资料
+let openId = "user_open_id"
+TapTapLeaderboard.openUserProfile(openId: openId, unionId: "")
+
+// 使用UnionID打开用户个人资料
+let unionId = "user_union_id"
+TapTapLeaderboard.openUserProfile(openId: "", unionId: unionId)
+
+// openId 和 unionId 二选一即可
+func showUserProfile(openId: String? = nil, unionId: String? = nil) {
+    TapTapLeaderboard.openUserProfile(
+        openId: openId ?? "",
+        unionId: unionId ?? ""
+    )
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 使用OpenID打开用户个人资料
+NSString *openId = @"user_open_id";
+[TapTapLeaderboard openUserProfileWithOpenId:openId unionId:@""];
+
+// 使用UnionID打开用户个人资料
+NSString *unionId = @"user_union_id";
+[TapTapLeaderboard openUserProfileWithOpenId:@"" unionId:unionId];
+
+// openId 和 unionId 二选一即可
+- (void)showUserProfileWithOpenId:(NSString *)openId unionId:(NSString *)unionId {
+    [TapTapLeaderboard openUserProfileWithOpenId:openId ?: @"" unionId:unionId ?: @""];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 提交分数
 
 批量提交用户排行榜分数，一次最多提交5个分数。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
 using System.Collections.Generic;
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-// 单个分数提交
-var singleScore = new List<SubmitScoresRequest.ScoreItem>
+// 提交分数（异步方法，需要在async方法中调用）
+public async void SubmitPlayerScores()
 {
-    new SubmitScoresRequest.ScoreItem
+    // 单个分数提交
+    var singleScore = new List<SubmitScoresRequest.ScoreItem>
     {
-        LeaderboardId = "your_leaderboard_id",
-        Score = 1000
-    }
-};
+        new SubmitScoresRequest.ScoreItem
+        {
+            LeaderboardId = "your_leaderboard_id",
+            Score = 1000
+        }
+    };
 
-// 批量分数提交（最多5个）
-var multipleScores = new List<SubmitScoresRequest.ScoreItem>
-{
-    new SubmitScoresRequest.ScoreItem
+    // 提交分数（使用异步方式）
+    try
     {
-        LeaderboardId = "leaderboard_1",
-        Score = 1000
-    },
-    new SubmitScoresRequest.ScoreItem
-    {
-        LeaderboardId = "leaderboard_2", 
-        Score = 2000
-    }
-};
-
-// 提交分数并处理回调
-var callback = new TapTapLeaderboardResponseCallback<SubmitScoresResponse>
-{
-    OnSuccessAction = (result) => {
+        var result = await TapTapLeaderboard.SubmitScores(singleScore);
         // 提交成功
-    },
-    OnFailureAction = (code, message) => {
-        // 提交失败
+        Debug.Log($"Submit scores success: {result}");
     }
-};
+    catch (TapException e)
+    {
+        // 提交失败
+        Debug.LogError($"Submit scores failed, code: {e.code}, message: {e.message}");
+    }
+}
 
-TapTapLeaderboard.SubmitScores(singleScore, callback);
+// 或者在需要时批量提交多个分数
+public async void SubmitMultipleScores()
+{
+    var multipleScores = new List<SubmitScoresRequest.ScoreItem>
+    {
+        new SubmitScoresRequest.ScoreItem
+        {
+            LeaderboardId = "leaderboard_1",
+            Score = 1000
+        },
+        new SubmitScoresRequest.ScoreItem
+        {
+            LeaderboardId = "leaderboard_2", 
+            Score = 2000
+        }
+    };
+
+    try
+    {
+        var result = await TapTapLeaderboard.SubmitScores(multipleScores);
+        Debug.Log($"Submit multiple scores success: {result}");
+    }
+    catch (TapException e)
+    {
+        Debug.LogError($"Submit multiple scores failed, code: {e.code}, message: {e.message}");
+    }
+}
 ```
 
 </>
@@ -731,52 +1193,179 @@ TapTapLeaderboard.submitScores(
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义响应回调类
+class SubmitScoresCallback: NSObject, TapTapLeaderboardResponseCallback {
+    func onSuccess(data: Any) {
+        // 提交成功，data 为 TapTapSubmitScoresResponse 类型
+        if let response = data as? TapTapSubmitScoresResponse {
+            print("提交成功: \(response.items.count) 个分数")
+            for item in response.items {
+                print("排行榜 \(item.leaderboardId): \(item.scoreResult?.rawScore ?? 0)")
+            }
+        }
+    }
+    
+    func onFailure(code: Int, message: String) {
+        // 提交失败
+        print("提交失败: code=\(code), message=\(message)")
+    }
+}
+
+// 提交分数
+func submitPlayerScores() {
+    // 创建分数项
+    let scores = [
+        TapTapLeaderboardScoreItem(leaderboardId: "leaderboard_1", score: 1000),
+        TapTapLeaderboardScoreItem(leaderboardId: "leaderboard_2", score: 2000)
+    ]
+    
+    // 创建回调
+    let callback = SubmitScoresCallback()
+    
+    // 提交分数（最多5个分数）
+    TapTapLeaderboard.submitScores(scores: scores, callback: callback)
+}
+
+// 提交单个分数的便捷方法
+func submitSingleScore(leaderboardId: String, score: Int64) {
+    let scoreItem = TapTapLeaderboardScoreItem(leaderboardId: leaderboardId, score: score)
+    let callback = SubmitScoresCallback()
+    
+    TapTapLeaderboard.submitScores(scores: [scoreItem], callback: callback)
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义提交分数响应回调类
+@interface SubmitScoresCallback : NSObject <TapTapLeaderboardResponseCallback>
+@end
+
+@implementation SubmitScoresCallback
+
+- (void)onSuccessWithData:(id)data {
+    // 提交成功，data 为 TapTapSubmitScoresResponse 类型
+    if ([data isKindOfClass:[TapTapSubmitScoresResponse class]]) {
+        TapTapSubmitScoresResponse *response = (TapTapSubmitScoresResponse *)data;
+        NSLog(@"提交成功: %lu 个分数", (unsigned long)response.items.count);
+        for (TapTapSubmitScoreResponseItem *item in response.items) {
+            NSLog(@"排行榜 %@: %lld", item.leaderboardId, item.scoreResult.rawScore);
+        }
+    }
+}
+
+- (void)onFailureWithCode:(NSInteger)code message:(NSString *)message {
+    // 提交失败
+    NSLog(@"提交失败: code=%ld, message=%@", (long)code, message);
+}
+
+@end
+
+// 提交分数
+- (void)submitPlayerScores {
+    // 创建分数项
+    TapTapLeaderboardScoreItem *scoreItem1 = [[TapTapLeaderboardScoreItem alloc] 
+        initWithLeaderboardId:@"leaderboard_1" score:1000];
+    TapTapLeaderboardScoreItem *scoreItem2 = [[TapTapLeaderboardScoreItem alloc] 
+        initWithLeaderboardId:@"leaderboard_2" score:2000];
+    NSArray *scores = @[scoreItem1, scoreItem2];
+    
+    // 创建回调
+    SubmitScoresCallback *callback = [[SubmitScoresCallback alloc] init];
+    
+    // 提交分数（最多5个分数）
+    [TapTapLeaderboard submitScoresWithScores:scores callback:callback];
+}
+
+// 提交单个分数的便捷方法
+- (void)submitSingleScoreWithLeaderboardId:(NSString *)leaderboardId score:(long long)score {
+    TapTapLeaderboardScoreItem *scoreItem = [[TapTapLeaderboardScoreItem alloc] 
+        initWithLeaderboardId:leaderboardId score:score];
+    SubmitScoresCallback *callback = [[SubmitScoresCallback alloc] init];
+    
+    [TapTapLeaderboard submitScoresWithScores:@[scoreItem] callback:callback];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 获取排行榜数据
 
 分页获取排行榜数据，支持总榜和好友榜。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-// 获取排行榜数据
-string leaderboardId = "your_leaderboard_id";
-string leaderboardCollection = "public"; // 总榜，使用"friends"获取好友榜
-string nextPageToken = null; // 首次请求传null，加载更多时传上次请求返回的nextPage
-string periodToken = null; // 时间周期标识，默认为当前周期
-
-var callback = new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>
+// 获取排行榜数据（异步方法，需要在async方法中调用）
+public async void LoadLeaderboardData()
 {
-    OnSuccessAction = (scores) =>
-    {
-        // 获取成功
-        // 保存分页标识用于加载更多数据
-        nextPageToken = scores.nextPage;
-        
-        // 处理分数数据
-        if (scores.scores != null)
-        {
-            // 处理排行榜数据
-        }
-    },
-    OnFailureAction = (code, message) =>
-    {
-        // 获取失败
-    }
-};
+    string leaderboardId = "your_leaderboard_id";
+    string leaderboardCollection = "public"; // 总榜："public"，好友榜："friends"
+    string nextPageToken = null; // 首次请求传null，加载更多时传上次请求返回的nextPage
+    string periodToken = null; // 时间周期标识，传null使用当前周期
 
-TapTapLeaderboard.LoadLeaderboardScores(
-    leaderboardId,
-    leaderboardCollection,
-    nextPageToken,
-    periodToken,
-    callback
-);
+    try
+    {
+        var scores = await TapTapLeaderboard.LoadLeaderboardScores(
+            leaderboardId,
+            leaderboardCollection,
+            nextPageToken,
+            periodToken);
+        
+        // 获取成功
+        if (scores != null)
+        {
+            // 保存分页标识用于加载更多数据
+            nextPageToken = scores.nextPage;
+            
+            // 处理分数数据
+            if (scores.scores != null && scores.scores.Count > 0)
+            {
+                Debug.Log($"Loaded {scores.scores.Count} scores");
+                
+                // 遍历排行榜数据
+                for (int i = 0; i < scores.scores.Count; i++)
+                {
+                    var score = scores.scores[i];
+                    Debug.Log($"Rank {score.rank}: {score.user?.name} - Score: {score.score}");
+                }
+            }
+            else
+            {
+                Debug.Log("No scores found for this leaderboard");
+            }
+        }
+    }
+    catch (TapException e)
+    {
+        // 获取失败，根据错误码进行处理
+        Debug.LogError($"Load leaderboard scores failed, code: {e.code}, message: {e.message}");
+        
+        // 可以根据错误码进行特殊处理
+        if (e.code == 500102)
+        {
+            // 用户未登录，引导登录
+            Debug.LogWarning("User not logged in, please login first");
+        }
+    }
+}
 ```
 
 </>
@@ -842,47 +1431,216 @@ TapTapLeaderboard.loadLeaderboardScores(
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义加载排行榜数据回调类
+class LoadLeaderboardCallback: NSObject, TapTapLeaderboardResponseCallback {
+    func onSuccess(data: Any) {
+        // 获取成功，data 为 TapTapLeaderboardDataResponse 类型
+        if let response = data as? TapTapLeaderboardDataResponse {
+            print("加载成功: \(response.scores?.count ?? 0) 个分数")
+            
+            // 处理分数数据
+            if let scores = response.scores {
+                for score in scores {
+                    let userName = score.user?.name ?? "Unknown"
+                    let userScore = score.score ?? 0
+                    let rank = score.rank ?? 0
+                    print("排名 \(rank): \(userName) - 分数: \(userScore)")
+                }
+            }
+            
+            // 保存下一页标识用于分页加载
+            let nextPage = response.nextPage
+            if !nextPage.isEmpty {
+                print("还有更多数据，nextPage: \(nextPage)")
+            }
+        }
+    }
+    
+    func onFailure(code: Int, message: String) {
+        // 获取失败
+        print("获取排行榜数据失败: code=\(code), message=\(message)")
+        
+        // 根据错误码进行特殊处理
+        if code == 500102 {
+            print("用户未登录，需要引导用户登录")
+        }
+    }
+}
+
+// 获取排行榜数据
+func loadLeaderboardData() {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.public // 总榜
+    let nextPage: String? = nil // 首次请求传nil，分页时传上次的nextPage
+    let periodToken: String? = nil // 时间周期标识，传nil使用当前周期
+    
+    let callback = LoadLeaderboardCallback()
+    
+    TapTapLeaderboard.loadLeaderboardScores(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        nextPage: nextPage,
+        periodToken: periodToken,
+        callback: callback
+    )
+}
+
+// 分页加载更多数据
+func loadMoreLeaderboardData(nextPage: String) {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.public
+    let callback = LoadLeaderboardCallback()
+    
+    TapTapLeaderboard.loadLeaderboardScores(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        nextPage: nextPage,
+        periodToken: nil,
+        callback: callback
+    )
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义加载排行榜数据回调类
+@interface LoadLeaderboardCallback : NSObject <TapTapLeaderboardResponseCallback>
+@property (nonatomic, copy) void (^successBlock)(TapTapLeaderboardDataResponse *response);
+@property (nonatomic, copy) void (^failureBlock)(NSInteger code, NSString *message);
+@end
+
+@implementation LoadLeaderboardCallback
+
+- (void)onSuccessWithData:(id)data {
+    // 获取成功，data 为 TapTapLeaderboardDataResponse 类型
+    if ([data isKindOfClass:[TapTapLeaderboardDataResponse class]]) {
+        TapTapLeaderboardDataResponse *response = (TapTapLeaderboardDataResponse *)data;
+        NSLog(@"加载成功: %lu 个分数", (unsigned long)response.scores.count);
+        
+        // 处理分数数据
+        for (TapTapLeaderboardScore *score in response.scores) {
+            NSString *userName = score.user.name ?: @"Unknown";
+            long long userScore = score.score ? score.score.longLongValue : 0;
+            long long rank = score.rank ? score.rank.longLongValue : 0;
+            NSLog(@"排名 %lld: %@ - 分数: %lld", rank, userName, userScore);
+        }
+        
+        // 保存下一页标识用于分页加载
+        NSString *nextPage = response.nextPage;
+        if (nextPage && nextPage.length > 0) {
+            NSLog(@"还有更多数据，nextPage: %@", nextPage);
+        }
+        
+        if (self.successBlock) {
+            self.successBlock(response);
+        }
+    }
+}
+
+- (void)onFailureWithCode:(NSInteger)code message:(NSString *)message {
+    // 获取失败
+    NSLog(@"获取排行榜数据失败: code=%ld, message=%@", (long)code, message);
+    
+    // 根据错误码进行特殊处理
+    if (code == 500102) {
+        NSLog(@"用户未登录，需要引导用户登录");
+    }
+    
+    if (self.failureBlock) {
+        self.failureBlock(code, message);
+    }
+}
+
+@end
+
+// 获取排行榜数据
+- (void)loadLeaderboardData {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection public]; // 总榜
+    NSString *nextPage = nil; // 首次请求传nil，分页时传上次的nextPage
+    NSString *periodToken = nil; // 时间周期标识，传nil使用当前周期
+    
+    LoadLeaderboardCallback *callback = [[LoadLeaderboardCallback alloc] init];
+    
+    [TapTapLeaderboard loadLeaderboardScoresWithLeaderboardId:leaderboardId 
+                                                   collection:collection 
+                                                     nextPage:nextPage 
+                                                  periodToken:periodToken 
+                                                     callback:callback];
+}
+
+// 分页加载更多数据
+- (void)loadMoreLeaderboardDataWithNextPage:(NSString *)nextPage {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection public];
+    LoadLeaderboardCallback *callback = [[LoadLeaderboardCallback alloc] init];
+    
+    [TapTapLeaderboard loadLeaderboardScoresWithLeaderboardId:leaderboardId 
+                                                   collection:collection 
+                                                     nextPage:nextPage 
+                                                  periodToken:nil 
+                                                     callback:callback];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 获取当前用户分数
 
 获取当前登录用户在指定排行榜的分数和排名。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-// 获取当前用户分数
-string leaderboardId = "your_leaderboard_id";
-string leaderboardCollection = "public"; // 总榜，使用"friends"获取好友榜
-string periodToken = null; // 时间周期标识，默认为当前周期
-
-var callback = new TapTapLeaderboardResponseCallback<UserScoreResponse>
+// 获取当前用户分数（异步方法，需要在async方法中调用）
+public async void LoadCurrentPlayerScore()
 {
-    OnSuccessAction = (result) =>
+    string leaderboardId = "your_leaderboard_id";
+    string leaderboardCollection = "public"; // 总榜，使用"friends"获取好友榜
+    string periodToken = null; // 时间周期标识，默认为当前周期
+
+    try
     {
+        var result = await TapTapLeaderboard.LoadCurrentPlayerLeaderboardScore(
+            leaderboardId,
+            leaderboardCollection,
+            periodToken);
+        
         // 获取成功
         if (result.currentUserScore != null)
         {
             var userScore = result.currentUserScore;
+            Debug.Log($"Current player score: {userScore.score}, rank: {userScore.rank}");
             // 处理用户分数和排名
         }
-    },
-    OnFailureAction = (code, message) =>
+        else
+        {
+            Debug.Log("User has no score on this leaderboard");
+        }
+    }
+    catch (TapException e)
     {
         // 获取失败
+        Debug.LogError($"Load current player score failed, code: {e.code}, message: {e.message}");
     }
-};
-
-TapTapLeaderboard.LoadCurrentPlayerLeaderboardScore(
-    leaderboardId,
-    leaderboardCollection,
-    periodToken,
-    callback
-);
+}
 ```
 
 </>
@@ -947,48 +1705,185 @@ TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义获取当前用户分数回调类
+class LoadCurrentPlayerScoreCallback: NSObject, TapTapLeaderboardResponseCallback {
+    func onSuccess(data: Any) {
+        // 获取成功，data 为 TapTapUserScoreResponse 类型
+        if let response = data as? TapTapUserScoreResponse {
+            if let currentUserScore = response.currentUserScore {
+                let score = currentUserScore.score ?? 0
+                let rank = currentUserScore.rank ?? 0
+                let rankDisplay = currentUserScore.rankDisplay ?? ""
+                print("当前用户分数: \(score), 排名: \(rank), 排名显示: \(rankDisplay)")
+            } else {
+                print("用户在此排行榜上暂无分数")
+            }
+            
+            // 获取排行榜信息
+            if let leaderboardInfo = response.leaderboard {
+                print("排行榜名称: \(leaderboardInfo.name)")
+            }
+        }
+    }
+    
+    func onFailure(code: Int, message: String) {
+        // 获取失败
+        print("获取当前用户分数失败: code=\(code), message=\(message)")
+    }
+}
+
+// 获取当前用户分数
+func loadCurrentPlayerScore() {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.public // 总榜
+    let periodToken: String? = nil // 时间周期标识，传nil使用当前周期
+    
+    let callback = LoadCurrentPlayerScoreCallback()
+    
+    TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        periodToken: periodToken,
+        callback: callback
+    )
+}
+
+// 获取好友榜当前用户分数
+func loadCurrentPlayerScoreInFriends() {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.friends // 好友榜
+    let callback = LoadCurrentPlayerScoreCallback()
+    
+    TapTapLeaderboard.loadCurrentPlayerLeaderboardScore(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        periodToken: nil,
+        callback: callback
+    )
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义获取当前用户分数回调类
+@interface LoadCurrentPlayerScoreCallback : NSObject <TapTapLeaderboardResponseCallback>
+@end
+
+@implementation LoadCurrentPlayerScoreCallback
+
+- (void)onSuccessWithData:(id)data {
+    // 获取成功，data 为 TapTapUserScoreResponse 类型
+    if ([data isKindOfClass:[TapTapUserScoreResponse class]]) {
+        TapTapUserScoreResponse *response = (TapTapUserScoreResponse *)data;
+        if (response.currentUserScore) {
+            long long score = response.currentUserScore.score ? response.currentUserScore.score.longLongValue : 0;
+            long long rank = response.currentUserScore.rank ? response.currentUserScore.rank.longLongValue : 0;
+            NSString *rankDisplay = response.currentUserScore.rankDisplay ?: @"";
+            NSLog(@"当前用户分数: %lld, 排名: %lld, 排名显示: %@", score, rank, rankDisplay);
+        } else {
+            NSLog(@"用户在此排行榜上暂无分数");
+        }
+        
+        // 获取排行榜信息
+        if (response.leaderboard) {
+            NSLog(@"排行榜名称: %@", response.leaderboard.name);
+        }
+    }
+}
+
+- (void)onFailureWithCode:(NSInteger)code message:(NSString *)message {
+    // 获取失败
+    NSLog(@"获取当前用户分数失败: code=%ld, message=%@", (long)code, message);
+}
+
+@end
+
+// 获取当前用户分数
+- (void)loadCurrentPlayerScore {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection public]; // 总榜
+    NSString *periodToken = nil; // 时间周期标识，传nil使用当前周期
+    
+    LoadCurrentPlayerScoreCallback *callback = [[LoadCurrentPlayerScoreCallback alloc] init];
+    
+    [TapTapLeaderboard loadCurrentPlayerLeaderboardScoreWithLeaderboardId:leaderboardId 
+                                                               collection:collection 
+                                                              periodToken:periodToken 
+                                                                 callback:callback];
+}
+
+// 获取好友榜当前用户分数
+- (void)loadCurrentPlayerScoreInFriends {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection friends]; // 好友榜
+    LoadCurrentPlayerScoreCallback *callback = [[LoadCurrentPlayerScoreCallback alloc] init];
+    
+    [TapTapLeaderboard loadCurrentPlayerLeaderboardScoreWithLeaderboardId:leaderboardId 
+                                                               collection:collection 
+                                                              periodToken:nil 
+                                                                 callback:callback];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 获取用户相近分数
 
 查询当前用户相近的其他用户成绩（上下X位）。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-// 获取用户相近分数
-        string leaderboardId = "your_leaderboard_id";
-string leaderboardCollection = "friends"; // 好友榜
-string periodToken = "weekly"; // 时间周期标识
-int? maxCount = 10; // 最大返回数量
-        
-var callback = new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>
-        {
-            OnSuccessAction = (result) =>
-            {
-        // 获取成功
-        if (result.scores != null)
-                {
-            // 处理相近用户分数数据
-                }
-            },
-            OnFailureAction = (code, message) =>
-            {
-        // 获取失败
-            }
-        };
+// 获取用户相近分数（异步方法，需要在async方法中调用）
+public async void LoadPlayerCenteredScores()
+{
+    string leaderboardId = "your_leaderboard_id";
+    string leaderboardCollection = "friends"; // 好友榜
+    string periodToken = "weekly"; // 时间周期标识
+    int maxCount = 10; // 最大返回数量
 
-TapTapLeaderboard.LoadPlayerCenteredScores(
+    try
+    {
+        var result = await TapTapLeaderboard.LoadPlayerCenteredScores(
             leaderboardId,
             leaderboardCollection,
-    periodToken,
-    maxCount,
-            callback
-        );
+            periodToken,
+            maxCount);
+        
+        // 获取成功
+        if (result.scores != null)
+        {
+            Debug.Log($"Loaded {result.scores.Count} player centered scores");
+            // 处理相近用户分数数据
+            foreach (var score in result.scores)
+            {
+                Debug.Log($"Player: {score.user.name}, Score: {score.score}, Rank: {score.rank}");
+            }
+        }
+    }
+    catch (TapException e)
+    {
+        // 获取失败
+        Debug.LogError($"Load player centered scores failed, code: {e.code}, message: {e.message}");
+    }
+}
 ```
 
 </>
@@ -1055,6 +1950,146 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义获取相近用户分数回调类
+class LoadPlayerCenteredScoresCallback: NSObject, TapTapLeaderboardResponseCallback {
+    func onSuccess(data: Any) {
+        // 获取成功，data 为 TapTapLeaderboardDataResponse 类型
+        if let response = data as? TapTapLeaderboardDataResponse {
+            if let scores = response.scores {
+                print("获取到 \(scores.count) 个相近用户分数")
+                
+                // 处理相近用户分数数据
+                for score in scores {
+                    let userName = score.user?.name ?? "Unknown"
+                    let userScore = score.score ?? 0
+                    let rank = score.rank ?? 0
+                    print("排名 \(rank): \(userName) - 分数: \(userScore)")
+                }
+            } else {
+                print("暂无相近用户分数")
+            }
+        }
+    }
+    
+    func onFailure(code: Int, message: String) {
+        // 获取失败
+        print("获取相近分数失败: code=\(code), message=\(message)")
+    }
+}
+
+// 获取用户相近分数
+func loadPlayerCenteredScores() {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.friends // 好友榜
+    let periodToken = "weekly" // 时间周期标识
+    let maxCount = 10 // 最大返回数量
+    
+    let callback = LoadPlayerCenteredScoresCallback()
+    
+    TapTapLeaderboard.loadPlayerCenteredScores(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        periodToken: periodToken,
+        maxCount: maxCount,
+        callback: callback
+    )
+}
+
+// 获取总榜相近分数（使用默认参数）
+func loadPlayerCenteredScoresDefault() {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.public
+    let callback = LoadPlayerCenteredScoresCallback()
+    
+    // 使用默认参数：periodToken = nil, maxCount = nil
+    TapTapLeaderboard.loadPlayerCenteredScores(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        periodToken: nil,
+        maxCount: nil,
+        callback: callback
+    )
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义获取相近用户分数回调类
+@interface LoadPlayerCenteredScoresCallback : NSObject <TapTapLeaderboardResponseCallback>
+@end
+
+@implementation LoadPlayerCenteredScoresCallback
+
+- (void)onSuccessWithData:(id)data {
+    // 获取成功，data 为 TapTapLeaderboardDataResponse 类型
+    if ([data isKindOfClass:[TapTapLeaderboardDataResponse class]]) {
+        TapTapLeaderboardDataResponse *response = (TapTapLeaderboardDataResponse *)data;
+        if (response.scores && response.scores.count > 0) {
+            NSLog(@"获取到 %lu 个相近用户分数", (unsigned long)response.scores.count);
+            
+            // 处理相近用户分数数据
+            for (TapTapLeaderboardScore *score in response.scores) {
+                NSString *userName = score.user.name ?: @"Unknown";
+                long long userScore = score.score ? score.score.longLongValue : 0;
+                long long rank = score.rank ? score.rank.longLongValue : 0;
+                NSLog(@"排名 %lld: %@ - 分数: %lld", rank, userName, userScore);
+            }
+        } else {
+            NSLog(@"暂无相近用户分数");
+        }
+    }
+}
+
+- (void)onFailureWithCode:(NSInteger)code message:(NSString *)message {
+    // 获取失败
+    NSLog(@"获取相近分数失败: code=%ld, message=%@", (long)code, message);
+}
+
+@end
+
+// 获取用户相近分数
+- (void)loadPlayerCenteredScores {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection friends]; // 好友榜
+    NSString *periodToken = @"weekly"; // 时间周期标识
+    NSNumber *maxCount = @10; // 最大返回数量
+    
+    LoadPlayerCenteredScoresCallback *callback = [[LoadPlayerCenteredScoresCallback alloc] init];
+    
+    [TapTapLeaderboard loadPlayerCenteredScoresObjCWithLeaderboardId:leaderboardId 
+                                                          collection:collection 
+                                                         periodToken:periodToken 
+                                                            maxCount:maxCount 
+                                                            callback:callback];
+}
+
+// 获取总榜相近分数（使用默认参数）
+- (void)loadPlayerCenteredScoresDefault {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection public];
+    LoadPlayerCenteredScoresCallback *callback = [[LoadPlayerCenteredScoresCallback alloc] init];
+    
+    // 使用默认参数：periodToken = nil, maxCount = nil
+    [TapTapLeaderboard loadPlayerCenteredScoresObjCWithLeaderboardId:leaderboardId 
+                                                          collection:collection 
+                                                         periodToken:nil 
+                                                            maxCount:nil 
+                                                            callback:callback];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 错误处理
@@ -1074,57 +2109,65 @@ TapTapLeaderboard.loadPlayerCenteredScores(
 
 ### 错误处理示例
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-var callback = new TapTapLeaderboardResponseCallback<LeaderboardScoreResponse>
-        {
-    OnSuccessAction = (data) =>
-            {
+// 示例：获取排行榜数据并处理错误（异步方法，需要在async方法中调用）
+public async void LoadLeaderboardWithErrorHandling()
+{
+    try
+    {
+        var data = await TapTapLeaderboard.LoadLeaderboardScores(
+            "your_leaderboard_id",
+            "public",
+            null,
+            null);
+        
         // 处理成功结果
-            },
-            OnFailureAction = (code, message) =>
-            {
+        Debug.Log($"Successfully loaded {data.scores?.Count ?? 0} scores");
+    }
+    catch (TapException e)
+    {
         // 根据错误码处理不同的错误情况
-        switch (code)
+        switch (e.code)
         {
             case 500000:
                 // 排行榜周期已过期
+                Debug.LogWarning("排行榜周期已结束，请查看其他周期排行榜");
                 break;
             case 500001:
                 // 排行榜 ID 未找到
+                Debug.LogError("排行榜不存在，请检查排行榜ID");
                 break;
             case 500002:
                 // 排行榜参数错误
+                Debug.LogError("参数错误，请检查输入参数");
                 break;
             case 500101:
                 // 用户未授权
+                Debug.LogError("权限不足，请联系管理员");
                 break;
             case 500102:
                 // 用户未登录
+                Debug.LogWarning("用户未登录，需要引导用户登录");
+                // ShowLoginDialog();
                 break;
             case 500199:
                 // 未知错误
+                Debug.LogError("未知错误，请稍后重试");
                 break;
             default:
                 // 其他错误
+                Debug.LogError($"操作失败: {e.message}");
                 break;
         }
-            }
-        };
-
-// 示例：获取排行榜数据
-TapTapLeaderboard.LoadLeaderboardScores(
-    "your_leaderboard_id",
-            "public",
-    null,
-    null,
-            callback
-        );
+    }
+}
 ```
 
 </>
@@ -1225,6 +2268,208 @@ object : TapTapLeaderboardResponseCallback<LeaderboardScoresResponse> {
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 定义通用错误处理回调类
+class LeaderboardErrorHandlingCallback: NSObject, TapTapLeaderboardResponseCallback {
+    func onSuccess(data: Any) {
+        // 处理成功结果
+        print("排行榜操作成功")
+    }
+    
+    func onFailure(code: Int, message: String) {
+        // 根据错误码处理不同的错误情况
+        switch code {
+        case 500000:
+            // 排行榜周期已过期
+            showMessage("排行榜周期已结束，请查看其他周期排行榜")
+        case 500001:
+            // 排行榜 ID 未找到
+            showMessage("排行榜不存在，请检查排行榜ID")
+        case 500002:
+            // 排行榜参数错误
+            showMessage("参数错误，请检查输入参数")
+        case 500101:
+            // 用户未授权
+            showMessage("权限不足，请联系管理员")
+        case 500102:
+            // 用户未登录
+            showMessage("请先登录")
+            redirectToLogin()
+        case 500199:
+            // 未知错误
+            showMessage("未知错误，请稍后重试")
+        default:
+            // 其他错误
+            showMessage("操作失败: \(message)")
+        }
+    }
+    
+    // 显示错误消息的辅助方法
+    private func showMessage(_ message: String) {
+        print("错误提示: \(message)")
+        
+        // 在主线程显示警告框
+        DispatchQueue.main.async {
+            let alert = UIAlertController(
+                title: "提示",
+                message: message,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "确定", style: .default))
+            
+            // 获取当前视图控制器并显示警告框
+            if let topController = UIApplication.shared.keyWindow?.rootViewController {
+                var presentedController = topController
+                while let controller = presentedController.presentedViewController {
+                    presentedController = controller
+                }
+                presentedController.present(alert, animated: true)
+            }
+        }
+    }
+    
+    // 重定向到登录的辅助方法
+    private func redirectToLogin() {
+        print("重定向到登录页面")
+        // 这里可以实现具体的登录逻辑
+        // 例如：调用 TapTap 登录 SDK
+        // TapTapLogin.startTapTapLogin(...)
+    }
+}
+
+// 使用错误处理回调的示例
+func loadLeaderboardWithErrorHandling() {
+    let leaderboardId = "your_leaderboard_id"
+    let collection = TapTapLeaderboardCollection.public
+    let callback = LeaderboardErrorHandlingCallback()
+    
+    TapTapLeaderboard.loadLeaderboardScores(
+        leaderboardId: leaderboardId,
+        collection: collection,
+        nextPage: nil,
+        periodToken: nil,
+        callback: callback
+    )
+}
+
+// 错误转换工具方法
+func handleLeaderboardError(_ error: Error) -> TapLeaderboardError {
+    // 使用 TapTapLeaderboard 提供的错误转换方法
+    return TapTapLeaderboard.convertError(error)
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 定义通用错误处理回调类
+@interface LeaderboardErrorHandlingCallback : NSObject <TapTapLeaderboardResponseCallback>
+@end
+
+@implementation LeaderboardErrorHandlingCallback
+
+- (void)onSuccessWithData:(id)data {
+    // 处理成功结果
+    NSLog(@"排行榜操作成功");
+}
+
+- (void)onFailureWithCode:(NSInteger)code message:(NSString *)message {
+    // 根据错误码处理不同的错误情况
+    switch (code) {
+        case 500000:
+            // 排行榜周期已过期
+            [self showMessage:@"排行榜周期已结束，请查看其他周期排行榜"];
+            break;
+        case 500001:
+            // 排行榜 ID 未找到
+            [self showMessage:@"排行榜不存在，请检查排行榜ID"];
+            break;
+        case 500002:
+            // 排行榜参数错误
+            [self showMessage:@"参数错误，请检查输入参数"];
+            break;
+        case 500101:
+            // 用户未授权
+            [self showMessage:@"权限不足，请联系管理员"];
+            break;
+        case 500102:
+            // 用户未登录
+            [self showMessage:@"请先登录"];
+            [self redirectToLogin];
+            break;
+        case 500199:
+            // 未知错误
+            [self showMessage:@"未知错误，请稍后重试"];
+            break;
+        default:
+            // 其他错误
+            [self showMessage:[NSString stringWithFormat:@"操作失败: %@", message]];
+            break;
+    }
+}
+
+// 显示错误消息的辅助方法
+- (void)showMessage:(NSString *)message {
+    NSLog(@"错误提示: %@", message);
+    
+    // 在主线程显示警告框
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" 
+                                                                       message:message 
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"确定" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:nil]];
+        
+        // 获取当前视图控制器并显示警告框
+        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+        while (topController.presentedViewController) {
+            topController = topController.presentedViewController;
+        }
+        [topController presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+// 重定向到登录的辅助方法
+- (void)redirectToLogin {
+    NSLog(@"重定向到登录页面");
+    // 这里可以实现具体的登录逻辑
+    // 例如：调用 TapTap 登录 SDK
+    // [TapTapLogin startTapTapLogin:...];
+}
+
+@end
+
+// 使用错误处理回调的示例
+- (void)loadLeaderboardWithErrorHandling {
+    NSString *leaderboardId = @"your_leaderboard_id";
+    TapTapLeaderboardCollection *collection = [TapTapLeaderboardCollection public];
+    LeaderboardErrorHandlingCallback *callback = [[LeaderboardErrorHandlingCallback alloc] init];
+    
+    [TapTapLeaderboard loadLeaderboardScoresWithLeaderboardId:leaderboardId 
+                                                   collection:collection 
+                                                     nextPage:nil 
+                                                  periodToken:nil 
+                                                     callback:callback];
+}
+
+// 错误转换工具方法
+- (TapLeaderboardError *)handleLeaderboardError:(NSError *)error {
+    // 使用 TapTapLeaderboard 提供的错误转换方法
+    return [TapTapLeaderboard convertError:error];
+}
+```
+
+</>
+
 </MultiLang>
 
 ## 最佳实践
@@ -1233,20 +2478,27 @@ object : TapTapLeaderboardResponseCallback<LeaderboardScoresResponse> {
 
 记得在适当的时机取消注册回调，避免内存泄漏：
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-LeaderboardCallback callback = new LeaderboardCallback();
-TapTapLeaderboard.RegisterLeaderboardCallback(callback);
-TapTapLeaderboard.UnregisterLeaderboardCallback(callback);
-
-class LeaderboardCallback : ITapTapLeaderboardCallback
+public class YourGameManager : MonoBehaviour, ITapTapLeaderboardCallback
 {
-    public LeaderboardCallback(){}
+    private void Start()
+    {
+        // 注册回调
+        TapTapLeaderboard.RegisterLeaderboardCallback(this);
+    }
+    
+    private void OnDestroy()
+    {
+        // 取消注册回调避免内存泄漏
+        TapTapLeaderboard.UnregisterLeaderboardCallback(this);
+    }
 
     public void OnLeaderboardResult(int code, string message)
     {
@@ -1283,34 +2535,339 @@ override fun onDestroy() {
 
 </>
 
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+class YourViewController: UIViewController {
+    private var leaderboardCallback: LeaderboardCallbackHandler?
+    private var shareCallback: ShareCallbackHandler?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupLeaderboard()
+    }
+    
+    private func setupLeaderboard() {
+        // 注册回调
+        leaderboardCallback = LeaderboardCallbackHandler()
+        shareCallback = ShareCallbackHandler()
+        
+        TapTapLeaderboard.registerLeaderboardCallback(callback: leaderboardCallback!)
+        TapTapLeaderboard.setShareCallback(callback: shareCallback!)
+    }
+    
+    deinit {
+        // 取消注册回调避免内存泄漏
+        if let callback = leaderboardCallback {
+            TapTapLeaderboard.unregisterLeaderboardCallback(callback: callback)
+        }
+        
+        print("YourViewController deinitialized, callbacks cleaned up")
+    }
+}
+
+// 推荐使用弱引用避免循环引用
+class LeaderboardManager {
+    weak var delegate: LeaderboardDelegate?
+    private var callbacks: [TapTapLeaderboardCallback] = []
+    
+    func registerCallback(_ callback: TapTapLeaderboardCallback) {
+        callbacks.append(callback)
+        TapTapLeaderboard.registerLeaderboardCallback(callback: callback)
+    }
+    
+    func cleanup() {
+        for callback in callbacks {
+            TapTapLeaderboard.unregisterLeaderboardCallback(callback: callback)
+        }
+        callbacks.removeAll()
+    }
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+@interface YourViewController : UIViewController
+@property (nonatomic, strong) LeaderboardCallbackHandler *leaderboardCallback;
+@property (nonatomic, strong) ShareCallbackHandler *shareCallback;
+@end
+
+@implementation YourViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self setupLeaderboard];
+}
+
+- (void)setupLeaderboard {
+    // 注册回调
+    self.leaderboardCallback = [[LeaderboardCallbackHandler alloc] init];
+    self.shareCallback = [[ShareCallbackHandler alloc] init];
+    
+    [TapTapLeaderboard registerLeaderboardCallbackWithCallback:self.leaderboardCallback];
+    [TapTapLeaderboard setShareCallbackWithCallback:self.shareCallback];
+}
+
+- (void)dealloc {
+    // 取消注册回调避免内存泄漏
+    if (self.leaderboardCallback) {
+        [TapTapLeaderboard unregisterLeaderboardCallbackWithCallback:self.leaderboardCallback];
+    }
+    
+    NSLog(@"YourViewController dealloc, callbacks cleaned up");
+}
+
+@end
+
+// 推荐使用弱引用避免循环引用
+@interface LeaderboardManager : NSObject
+@property (nonatomic, weak) id<LeaderboardDelegate> delegate;
+@property (nonatomic, strong) NSMutableArray<id<TapTapLeaderboardCallback>> *callbacks;
+@end
+
+@implementation LeaderboardManager
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _callbacks = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
+- (void)registerCallback:(id<TapTapLeaderboardCallback>)callback {
+    [self.callbacks addObject:callback];
+    [TapTapLeaderboard registerLeaderboardCallbackWithCallback:callback];
+}
+
+- (void)cleanup {
+    for (id<TapTapLeaderboardCallback> callback in self.callbacks) {
+        [TapTapLeaderboard unregisterLeaderboardCallbackWithCallback:callback];
+    }
+    [self.callbacks removeAllObjects];
+}
+
+@end
+```
+
+</>
+
 </MultiLang>
 
 ### 2. 用户登录检测
 
 在使用排行榜功能前，建议先检查用户登录状态：
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
 ```csharp
-using TapSDK.Leaderboard
+using TapSDK.Leaderboard;
+using UnityEngine;
 
-// 排行榜回调处理
-var leaderboardCallback = new LeaderboardCallback();
-TapTapLeaderboard.RegisterLeaderboardCallback(leaderboardCallback);
-TapTapLeaderboard.UnregisterLeaderboardCallback(leaderboardCallback);
-
-class LeaderboardCallback : ITapTapLeaderboardCallback
+public class YourGameManager : MonoBehaviour, ITapTapLeaderboardCallback
 {
+    private void Start()
+    {
+        // 注册排行榜回调
+        TapTapLeaderboard.RegisterLeaderboardCallback(this);
+    }
+
     public void OnLeaderboardResult(int code, string message)
     {
         switch (code)
         {
             case 500102:
                 // 引导用户登录
+                ShowLoginDialog();
                 break;
         }
+    }
+    
+    private void ShowLoginDialog()
+    {
+        // 引导用户进行登录
+    }
+}
+```
+
+### 3. 完整使用示例
+
+以下是一个完整的排行榜管理器示例，展示了如何在Unity中正确使用排行榜功能：
+
+```csharp
+using System.Collections.Generic;
+using TapSDK.Leaderboard;
+using UnityEngine;
+
+public class LeaderboardManager : MonoBehaviour, ITapTapLeaderboardCallback
+{
+    [Header("排行榜配置")]
+    public string leaderboardId = "your_leaderboard_id";
+    
+    private string nextPageToken = null;
+    private bool isInitialized = false;
+
+    private void Start()
+    {
+        InitializeLeaderboard();
+    }
+
+    private void OnDestroy()
+    {
+        // 清理资源
+        if (isInitialized)
+        {
+            TapTapLeaderboard.UnregisterLeaderboardCallback(this);
+        }
+    }
+
+    /// <summary>
+    /// 初始化排行榜
+    /// </summary>
+    public void InitializeLeaderboard()
+    {
+        // 注册回调
+        TapTapLeaderboard.RegisterLeaderboardCallback(this);
+        
+        // 设置分享回调
+        var shareCallback = new TapTapLeaderboardShareCallback
+        {
+            OnShareSuccessAction = (localPath) =>
+            {
+                Debug.Log($"Share success: {localPath}");
+            },
+            OnShareFailedAction = (error) =>
+            {
+                Debug.LogError($"Share failed: {error?.Message}");
+            }
+        };
+        TapTapLeaderboard.SetShareCallback(shareCallback);
+        
+        isInitialized = true;
+        Debug.Log("Leaderboard initialized successfully");
+    }
+
+    /// <summary>
+    /// 提交玩家分数
+    /// </summary>
+    public async void SubmitScore(long score)
+    {
+        if (string.IsNullOrEmpty(leaderboardId))
+        {
+            Debug.LogError("Leaderboard ID is not set");
+            return;
+        }
+
+        var scoreItems = new List<SubmitScoresRequest.ScoreItem>
+        {
+            new SubmitScoresRequest.ScoreItem
+            {
+                LeaderboardId = leaderboardId,
+                Score = score
+            }
+        };
+
+        try
+        {
+            var result = await TapTapLeaderboard.SubmitScores(scoreItems);
+            Debug.Log($"Score submitted successfully: {score}");
+        }
+        catch (TapException e)
+        {
+            Debug.LogError($"Submit score failed: {e.code} - {e.message}");
+            HandleLeaderboardError(e.code);
+        }
+    }
+
+    /// <summary>
+    /// 打开排行榜界面
+    /// </summary>
+    public void OpenLeaderboard(bool friendsOnly = false)
+    {
+        string collection = friendsOnly ? "friends" : "public";
+        TapTapLeaderboard.OpenLeaderboard(leaderboardId, collection);
+    }
+
+    /// <summary>
+    /// 加载排行榜数据
+    /// </summary>
+    public async void LoadLeaderboardScores(bool friendsOnly = false, bool loadMore = false)
+    {
+        string collection = friendsOnly ? "friends" : "public";
+        string pageToken = loadMore ? nextPageToken : null;
+
+        try
+        {
+            var scores = await TapTapLeaderboard.LoadLeaderboardScores(
+                leaderboardId, collection, pageToken, null);
+
+            if (scores?.scores != null && scores.scores.Count > 0)
+            {
+                nextPageToken = scores.nextPage;
+                Debug.Log($"Loaded {scores.scores.Count} scores");
+                
+                // 处理数据
+                ProcessLeaderboardScores(scores.scores);
+            }
+            else
+            {
+                Debug.Log("No scores available");
+            }
+        }
+        catch (TapException e)
+        {
+            Debug.LogError($"Load leaderboard failed: {e.code} - {e.message}");
+            HandleLeaderboardError(e.code);
+        }
+    }
+
+    /// <summary>
+    /// 处理排行榜数据
+    /// </summary>
+    private void ProcessLeaderboardScores(List<Score> scores)
+    {
+        foreach (var score in scores)
+        {
+            Debug.Log($"Rank: {score.rank}, Player: {score.user?.name}, Score: {score.score}");
+        }
+    }
+
+    /// <summary>
+    /// 处理错误码
+    /// </summary>
+    private void HandleLeaderboardError(int errorCode)
+    {
+        switch (errorCode)
+        {
+            case 500102:
+                Debug.LogWarning("User not logged in");
+                // 这里可以触发登录流程
+                break;
+            case 500001:
+                Debug.LogError("Leaderboard not found");
+                break;
+            default:
+                Debug.LogError($"Leaderboard error: {errorCode}");
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 排行榜回调处理
+    /// </summary>
+    public void OnLeaderboardResult(int code, string message)
+    {
+        Debug.Log($"Leaderboard callback: {code} - {message}");
+        HandleLeaderboardError(code);
     }
 }
 ```
@@ -1346,6 +2903,386 @@ val callback = object : TapTapLeaderboardCallback {
         }
     }
 }
+```
+
+</>
+
+<>
+
+```swift
+import TapTapLeaderboardSDK
+
+// 在排行榜回调中处理未登录状态
+class LoginCheckHandler: NSObject, TapTapLeaderboardCallback {
+    func onLeaderboardResult(code: Int, message: String) {
+        if code == 500102 {
+            // 引导用户登录
+            showLoginDialog()
+        }
+    }
+    
+    private func showLoginDialog() {
+        DispatchQueue.main.async {
+            // 显示登录对话框或跳转到登录页面
+            let alert = UIAlertController(
+                title: "需要登录",
+                message: "请先登录TapTap账号才能使用排行榜功能",
+                preferredStyle: .alert
+            )
+            
+            alert.addAction(UIAlertAction(title: "立即登录", style: .default) { _ in
+                // 调用 TapTap 登录
+                // TapTapLogin.startTapTapLogin(...)
+            })
+            
+            alert.addAction(UIAlertAction(title: "稍后再说", style: .cancel))
+            
+            // 显示警告框
+            if let topController = UIApplication.shared.keyWindow?.rootViewController {
+                var presentedController = topController
+                while let controller = presentedController.presentedViewController {
+                    presentedController = controller
+                }
+                presentedController.present(alert, animated: true)
+            }
+        }
+    }
+}
+
+### 3. 完整使用示例
+
+以下是一个完整的iOS排行榜管理器示例，展示了如何正确使用排行榜功能：
+
+```swift
+import TapTapLeaderboardSDK
+import TapTapCoreSDK
+
+// 排行榜代理协议
+protocol LeaderboardManagerDelegate: AnyObject {
+    func didLoadScores(_ scores: [TapTapLeaderboardScore])
+    func didFailWithError(_ error: Error)
+    func didSubmitScore(_ success: Bool)
+}
+
+class LeaderboardManager: NSObject {
+    // MARK: - Properties
+    static let shared = LeaderboardManager()
+    
+    weak var delegate: LeaderboardManagerDelegate?
+    private let leaderboardId = "your_leaderboard_id"
+    private var nextPageToken: String?
+    private var isInitialized = false
+    
+    // 回调处理器
+    private var leaderboardCallback: LeaderboardCallbackHandler?
+    private var shareCallback: ShareCallbackHandler?
+    
+    // MARK: - Initialization
+    override init() {
+        super.init()
+        setupLeaderboard()
+    }
+    
+    deinit {
+        cleanup()
+    }
+    
+    // MARK: - Setup
+    private func setupLeaderboard() {
+        // 创建回调处理器
+        leaderboardCallback = LeaderboardCallbackHandler()
+        shareCallback = ShareCallbackHandler()
+        
+        // 注册回调
+        if let callback = leaderboardCallback {
+            TapTapLeaderboard.registerLeaderboardCallback(callback: callback)
+        }
+        
+        if let shareHandler = shareCallback {
+            TapTapLeaderboard.setShareCallback(callback: shareHandler)
+        }
+        
+        isInitialized = true
+        print("Leaderboard initialized successfully")
+    }
+    
+    // MARK: - Public Methods
+    
+    /// 提交玩家分数
+    func submitScore(_ score: Int64) {
+        let scoreItem = TapTapLeaderboardScoreItem(leaderboardId: leaderboardId, score: score)
+        let callback = SubmitScoreCallback { [weak self] success in
+            self?.delegate?.didSubmitScore(success)
+        }
+        
+        TapTapLeaderboard.submitScores(scores: [scoreItem], callback: callback)
+    }
+    
+    /// 打开排行榜界面
+    func openLeaderboard(friendsOnly: Bool = false) {
+        let collection = friendsOnly ? TapTapLeaderboardCollection.friends : TapTapLeaderboardCollection.public
+        TapTapLeaderboard.openLeaderboard(leaderboardId: leaderboardId, collection: collection)
+    }
+    
+    /// 加载排行榜数据
+    func loadLeaderboardScores(friendsOnly: Bool = false, loadMore: Bool = false) {
+        let collection = friendsOnly ? TapTapLeaderboardCollection.friends : TapTapLeaderboardCollection.public
+        let pageToken = loadMore ? nextPageToken : nil
+        
+        let callback = LoadScoresCallback { [weak self] response in
+            if let scores = response?.scores {
+                self?.nextPageToken = response?.nextPage
+                self?.delegate?.didLoadScores(scores)
+            }
+        } onFailure: { [weak self] error in
+            self?.delegate?.didFailWithError(error)
+        }
+        
+        TapTapLeaderboard.loadLeaderboardScores(
+            leaderboardId: leaderboardId,
+            collection: collection,
+            nextPage: pageToken,
+            periodToken: nil,
+            callback: callback
+        )
+    }
+    
+    /// 打开用户个人资料
+    func openUserProfile(openId: String) {
+        TapTapLeaderboard.openUserProfile(openId: openId, unionId: "")
+    }
+    
+    // MARK: - Private Methods
+    private func cleanup() {
+        if let callback = leaderboardCallback {
+            TapTapLeaderboard.unregisterLeaderboardCallback(callback: callback)
+        }
+        isInitialized = false
+        print("Leaderboard manager cleaned up")
+    }
+}
+
+// MARK: - Callback Handlers
+private class LeaderboardCallbackHandler: NSObject, TapTapLeaderboardCallback {
+    func onLeaderboardResult(code: Int, message: String) {
+        switch code {
+        case 500102:
+            print("User not logged in, need to login")
+            // 可以在这里触发登录流程
+        default:
+            print("Leaderboard callback: code=\(code), message=\(message)")
+        }
+    }
+}
+
+private class ShareCallbackHandler: NSObject, TapTapLeaderboardShareCallback {
+    func onShareSuccess(localPath: String) {
+        print("Share success: \(localPath)")
+        // 可以在这里实现系统分享
+    }
+    
+    func onShareFailed(error: Error) {
+        print("Share failed: \(error.localizedDescription)")
+    }
+}
+
+private class SubmitScoreCallback: NSObject, TapTapLeaderboardResponseCallback {
+    private let onSuccess: (Bool) -> Void
+    
+    init(onSuccess: @escaping (Bool) -> Void) {
+        self.onSuccess = onSuccess
+        super.init()
+    }
+    
+    func onSuccess(data: Any) {
+        onSuccess(true)
+    }
+    
+    func onFailure(code: Int, message: String) {
+        onSuccess(false)
+        print("Submit score failed: code=\(code), message=\(message)")
+    }
+}
+
+private class LoadScoresCallback: NSObject, TapTapLeaderboardResponseCallback {
+    private let onSuccess: (TapTapLeaderboardDataResponse?) -> Void
+    private let onFailure: (Error) -> Void
+    
+    init(onSuccess: @escaping (TapTapLeaderboardDataResponse?) -> Void, 
+         onFailure: @escaping (Error) -> Void) {
+        self.onSuccess = onSuccess
+        self.onFailure = onFailure
+        super.init()
+    }
+    
+    func onSuccess(data: Any) {
+        if let response = data as? TapTapLeaderboardDataResponse {
+            onSuccess(response)
+        } else {
+            onSuccess(nil)
+        }
+    }
+    
+    func onFailure(code: Int, message: String) {
+        let error = NSError(domain: "TapLeaderboard", code: code, userInfo: [NSLocalizedDescriptionKey: message])
+        onFailure(error)
+    }
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+
+// 在排行榜回调中处理未登录状态
+@interface LoginCheckHandler : NSObject <TapTapLeaderboardCallback>
+@end
+
+@implementation LoginCheckHandler
+
+- (void)onLeaderboardResultWithCode:(NSInteger)code message:(NSString *)message {
+    if (code == 500102) {
+        // 引导用户登录
+        [self showLoginDialog];
+    }
+}
+
+- (void)showLoginDialog {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 显示登录对话框或跳转到登录页面
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"需要登录"
+                                                                       message:@"请先登录TapTap账号才能使用排行榜功能"
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:@"立即登录" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction * _Nonnull action) {
+            // 调用 TapTap 登录
+            // [TapTapLogin startTapTapLogin:...];
+        }]];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:@"稍后再说" 
+                                                  style:UIAlertActionStyleCancel 
+                                                handler:nil]];
+        
+        // 显示警告框
+        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+        while (topController.presentedViewController) {
+            topController = topController.presentedViewController;
+        }
+        [topController presentViewController:alert animated:YES completion:nil];
+    });
+}
+
+@end
+
+### 3. 完整使用示例
+
+以下是一个完整的iOS排行榜管理器示例，展示了如何在Objective-C中正确使用排行榜功能：
+
+```objc
+#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
+#import <TapTapCoreSDK/TapTapSDK.h>
+
+// 排行榜代理协议
+@protocol LeaderboardManagerDelegate <NSObject>
+- (void)didLoadScores:(NSArray<TapTapLeaderboardScore *> *)scores;
+- (void)didFailWithError:(NSError *)error;
+- (void)didSubmitScore:(BOOL)success;
+@end
+
+@interface LeaderboardManager : NSObject
+@property (nonatomic, weak) id<LeaderboardManagerDelegate> delegate;
+@property (nonatomic, strong, readonly) NSString *leaderboardId;
+@property (nonatomic, strong) NSString *nextPageToken;
+@property (nonatomic, assign) BOOL isInitialized;
+
+// 回调处理器
+@property (nonatomic, strong) LeaderboardCallbackHandler *leaderboardCallback;
+@property (nonatomic, strong) ShareCallbackHandler *shareCallback;
+
++ (instancetype)sharedManager;
+- (void)submitScore:(long long)score;
+- (void)openLeaderboardWithFriendsOnly:(BOOL)friendsOnly;
+- (void)loadLeaderboardScoresWithFriendsOnly:(BOOL)friendsOnly loadMore:(BOOL)loadMore;
+- (void)openUserProfileWithOpenId:(NSString *)openId;
+@end
+
+@implementation LeaderboardManager
+
++ (instancetype)sharedManager {
+    static LeaderboardManager *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[LeaderboardManager alloc] init];
+    });
+    return instance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _leaderboardId = @"your_leaderboard_id";
+        [self setupLeaderboard];
+    }
+    return self;
+}
+
+- (void)setupLeaderboard {
+    // 创建回调处理器
+    self.leaderboardCallback = [[LeaderboardCallbackHandler alloc] init];
+    self.shareCallback = [[ShareCallbackHandler alloc] init];
+    
+    // 注册回调
+    [TapTapLeaderboard registerLeaderboardCallbackWithCallback:self.leaderboardCallback];
+    [TapTapLeaderboard setShareCallbackWithCallback:self.shareCallback];
+    
+    self.isInitialized = YES;
+    NSLog(@"Leaderboard initialized successfully");
+}
+
+- (void)submitScore:(long long)score {
+    TapTapLeaderboardScoreItem *scoreItem = [[TapTapLeaderboardScoreItem alloc] 
+        initWithLeaderboardId:self.leaderboardId score:score];
+    
+    SubmitScoresCallback *callback = [[SubmitScoresCallback alloc] init];
+    [TapTapLeaderboard submitScoresWithScores:@[scoreItem] callback:callback];
+}
+
+- (void)openLeaderboardWithFriendsOnly:(BOOL)friendsOnly {
+    TapTapLeaderboardCollection *collection = friendsOnly ? 
+        [TapTapLeaderboardCollection friends] : [TapTapLeaderboardCollection public];
+    [TapTapLeaderboard openLeaderboardWithLeaderboardId:self.leaderboardId collection:collection];
+}
+
+- (void)loadLeaderboardScoresWithFriendsOnly:(BOOL)friendsOnly loadMore:(BOOL)loadMore {
+    TapTapLeaderboardCollection *collection = friendsOnly ? 
+        [TapTapLeaderboardCollection friends] : [TapTapLeaderboardCollection public];
+    NSString *pageToken = loadMore ? self.nextPageToken : nil;
+    
+    LoadLeaderboardCallback *callback = [[LoadLeaderboardCallback alloc] init];
+    [TapTapLeaderboard loadLeaderboardScoresWithLeaderboardId:self.leaderboardId 
+                                                   collection:collection 
+                                                     nextPage:pageToken 
+                                                  periodToken:nil 
+                                                     callback:callback];
+}
+
+- (void)openUserProfileWithOpenId:(NSString *)openId {
+    [TapTapLeaderboard openUserProfileWithOpenId:openId unionId:@""];
+}
+
+- (void)dealloc {
+    if (self.leaderboardCallback) {
+        [TapTapLeaderboard unregisterLeaderboardCallbackWithCallback:self.leaderboardCallback];
+    }
+    NSLog(@"Leaderboard manager cleaned up");
+}
+
+@end
 ```
 
 </>

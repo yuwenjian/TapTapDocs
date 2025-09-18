@@ -85,7 +85,7 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapRelationLite` 、 `TapTapLogin` 模块：
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -156,13 +156,73 @@ allprojects {
 
 </>
 
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapRelationLiteSDK', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+3. 将工程 Pods 目录下 `TapTapRelationLiteSDK/Frameworks/TapTapRelationLiteResource.bundle` 和 `TapTapProfileSDK/Frameworks/TapTapProfileResource.bundle`
+   等资源文件导入工程中
+
+**本地文件依赖**
+
+好友 Lite 模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapRelationLiteSDK ` 好友依赖库
+- `TapTapRelationLiteResource.bundle` 好友资源文件
+- `TapTapProfileSDK ` 用户名片依赖库
+- `TapTapProfileResource.bundle` 用户名片资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+3. SDK 内部使用了 [`Kingfisher` 6.0 依赖库](https://github.com/onevcat/Kingfisher/releases/tag/6.0.0)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+</>
+
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapRelationLiteSDK', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+3. 将工程 Pods 目录下 `TapTapRelationLiteSDK/Frameworks/TapTapRelationLiteResource.bundle` 和 `TapTapProfileSDK/Frameworks/TapTapProfileResource.bundle`
+   等资源文件导入工程中
+
+**本地文件依赖**
+
+好友 Lite 模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapRelationLiteSDK ` 好友依赖库
+- `TapTapRelationLiteResource.bundle` 好友资源文件
+- `TapTapProfileSDK ` 用户名片依赖库
+- `TapTapProfileResource.bundle` 用户名片资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+3. SDK 内部使用了 [`Kingfisher` 6.0 依赖库](https://github.com/onevcat/Kingfisher/releases/tag/6.0.0)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+</>
+
 </MultiLang>
 
 ## SDK 初始化
 
 详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -247,12 +307,49 @@ TapTapSdk.init(
 ```
 </>
 
+<>
+
+```swift
+import TapTapCoreSDK
+
+// 核心配置项
+let options = TapTapSdkOptions()
+options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
+options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
+options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
+options.enableLog = enableLog.selectedSegmentIndex == 0 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapLanguageType.auto // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
+options.screenOrientation = .landscape // 应用屏幕方向，.landscape 横屏， .portrait 竖屏
+// 初始化 SDK
+TapTapSDK.initWith(options)
+
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapSDK.h"
+
+// 核心配置项
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
+options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
+options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
+options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapLanguageType_Auto; // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
+options.screenOrientation = TapTapScreenOrientationLandscape; // 应用屏幕方向，TapTapScreenOrientationLandscape 横屏，TapTapScreenOrientationPortrait 竖屏
+// 初始化 SDK
+[TapTapSDK initWithOptions:options];
+```
+</>
+
 </MultiLang>
 
 ## 注册/注销 统一状态码监听回调
 统一状态回调，不同 code 代表不同的状态。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -326,13 +423,75 @@ TapTapRelationLite.unregisterRelationLiteCallback(callback = relationLiteCallbac
 
 </>
 
+<>
+
+```swift
+import TapTapRelationLiteSDK
+
+class MyRelationLiteDelegate: NSObject, TapTapRelationLiteDelegate {
+    func onRelationLiteResult(code: Int) {
+         switch(code){
+            case TapTapRelationLiteCode.NEED_LOGIN:
+                // 需要登录
+            case TapTapRelationLiteCode.NEED_USER_FRIENDS_SCOPE:
+                // 缺少好友权限
+            case TapTapRelationLiteCode.REQUEST_ERROR:
+                // 请求错误
+            default:
+                // 其他错误
+            }
+    }
+    
+}
+
+let myRelationLiteDelegate = MyRelationLiteDelegate()
+// 注册好友回调
+TapTapRelationLite.registerRelationLiteDelegate(delegate: myRelationLiteDelegate)
+
+// 移除好友回调
+TapTapRelationLite.unregisterRelationLiteDelegate(delegate: myRelationLiteDelegate)
+```
+</>
+
+<>
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+@interface GameMainController() <TapTapRelationLiteDelegate>
+
+@end
+@implementation GameMainController
+
+- (void) handleRelationDelegate {
+    [TapTapRelationLite registerRelationLiteDelegateWithDelegate:self];
+    
+    [TapTapRelationLite unregisterRelationLiteDelegateWithDelegate:self];
+}
+
+- (void)onRelationLiteResultWithCode:(NSInteger)code { 
+    if(code == TapTapRelationLiteCode.NEED_LOGIN){
+        // 未登录
+    }else if(code == TapTapRelationLiteCode.NEED_USER_FRIENDS_SCOPE){
+        // 缺少好友权限授权
+    }else if (code == TapTapRelationLiteCode.REQUEST_ERROR){
+        // 请求错误
+    }else{
+        // 其他错误
+    }
+}
+@end
+
+```
+</>
+
 </MultiLang>
 
 ## 邀请好友上线
 
 打开邀请好友页面，向选中好友发送邀请上线消息。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
@@ -352,13 +511,25 @@ import com.taptap.sdk.relation.lite.TapTapRelationLite
 TapTapRelationLite.inviteGame()
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+TapTapRelationLite.inviteGame()
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+[TapTapRelationLite inviteGame];
+```
+
 </MultiLang>
 
 ## 邀请好友组队
 
 打开邀请好友页面，向选中好友发送邀请组队消息，需要传组队相关参数teamId。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
@@ -381,69 +552,43 @@ val teamId = ""
 TapTapRelationLite.inviteTeam(teamId = teamId)
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+let teamId = ""
+TapTapRelationLite.inviteTeam(teamId: teamId)
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+NSString * teamId = @"";
+[TapTapRelationLite inviteTeamWithTeamId:teamId];
+```
 </MultiLang>
 
 ## 获取好友列表
 
 获取当前用户的好友列表。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
 
-class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+// 如非第一页 使用接口返回的nextPageToken
+string nextPageToken = "";
+try
 {
-
-    public RelationLiteRequestCallback(){}
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 好友列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：好友列表请求结果
-    }
-
-    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
-    {
-        // 关注列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：关注列表请求结果
-    }
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 粉丝列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：粉丝列表请求结果
-    }
-
-    public void OnSyncRelationshipSuccess(string openId, string unionId)
-    {
-        // 同步好友关系成功
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
-    {
-        // 同步好友关系失败
-        // errorMessage：错误信息
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnRequestError(string errorMessage)
-    {
-        // 接口请求错误
-        // errorMessage：错误信息
-    }
-
-    // 如非第一页 使用接口返回的nextPageToken
-    string nextPageToken = "";
-    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
-    TapTapRelationLite.GetFriendsList(nextPageToken, callback);
+    var result = await TapTapRelationLite.GetFriendsList(nextPageToken);
+    // result.nextPageToken 下一页请求token，分页请求需传入
+    // result.list  好友列表请求结果
 }
+catch (Exception e)
+{
+     Debug.Log($"friendsList request error : {e.Message}");
+}
+
 ```
 
 ```java
@@ -478,68 +623,53 @@ val nextPage = ""
             })
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+let nextPageToken = ""
+TapTapRelationLite.getFriendsList(nextPageToken: nextPageToken) { result, error in
+    if let error {
+        NSLog("request error : \(error.localizedDescription)")
+        return
+    }
+    // 请求成功， 好友数据：result?.list,   下一页 token ： result?.nextPageToken
+}
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+NSString * nextPageToken = @"";
+[TapTapRelationLite getFriendsListWithNextPageToken:nextPageToken completion:^(RelationLiteUserResult * _Nullable result, NSError * _Nullable error) {
+    if(error){
+        NSLog(@"request error : %@", error.localizedDescription);
+        return;
+    }
+    // 请求成功， 好友数据：result.list, 下一页 token ：result.nextPageToken
+}];
+```
 </MultiLang>
 
 ## 获取关注列表
 
 获取当前用户的关注列表。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
 
-class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+// 如非第一页 使用接口返回的nextPageToken
+string nextPageToken = "";
+try
 {
-
-    public RelationLiteRequestCallback(){}
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 好友列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：好友列表请求结果
-    }
-
-    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
-    {
-        // 关注列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：关注列表请求结果
-    }
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 粉丝列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：粉丝列表请求结果
-    }
-
-    public void OnSyncRelationshipSuccess(string openId, string unionId)
-    {
-        // 同步好友关系成功
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
-    {
-        // 同步好友关系失败
-        // errorMessage：错误信息
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnRequestError(string errorMessage)
-    {
-        // 接口请求错误
-        // errorMessage：错误信息
-    }
-
-    // 如非第一页 使用接口返回的nextPageToken
-    string nextPageToken = "";
-    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
-    TapTapRelationLite.GetFollowingList(nextPageToken, callback);
+    var result = await TapTapRelationLite.GetFollowingList(nextPageToken);
+    // result.nextPageToken 下一页请求token，分页请求需传入
+    // result.list  关注列表请求结果
+}
+catch (Exception e)
+{
+    Debug.Log($"followingList request error :  {e.Message}");
 }
 ```
 
@@ -575,68 +705,53 @@ val nextPage = ""
             })
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+let nextPageToken = ""
+TapTapRelationLite.getFollowingList(nextPageToken: nextPageToken) { result, error in
+    if let error {
+        NSLog("request error : \(error.localizedDescription)")
+        return
+    }
+    // 请求成功， 关注用户数据：result?.list,   下一页 token ： result?.nextPageToken
+}
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+NSString * nextPageToken = @"";
+[TapTapRelationLite getFollowingListWithNextPageToken:nextPageToken completion:^(RelationLiteUserResult * _Nullable result, NSError * _Nullable error) {
+    if(error){
+        NSLog(@"request error : %@", error.localizedDescription);
+        return;
+    }
+    // 请求成功， 关注用户数据：result.list, 下一页 token ：result.nextPageToken
+}];
+```
 </MultiLang>
 
 ## 获取粉丝列表
 
 获取当前用户的粉丝列表。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
 
-class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+// 如非第一页 使用接口返回的nextPageToken
+string nextPageToken = "";
+try
 {
-
-    public RelationLiteRequestCallback(){}
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 好友列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：好友列表请求结果
-    }
-
-    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
-    {
-        // 关注列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：关注列表请求结果
-    }
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 粉丝列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：粉丝列表请求结果
-    }
-
-    public void OnSyncRelationshipSuccess(string openId, string unionId)
-    {
-        // 同步好友关系成功
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
-    {
-        // 同步好友关系失败
-        // errorMessage：错误信息
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnRequestError(string errorMessage)
-    {
-        // 接口请求错误
-        // errorMessage：错误信息
-    }
-
-    // 如非第一页 使用接口返回的nextPageToken
-    string nextPageToken = "";
-    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
-    TapTapRelationLite.GetFansList(nextPageToken, callback);
+    var result = await TapTapRelationLite.GetFansList(nextPageToken);
+    // result.nextPageToken 下一页请求token，分页请求需传入
+    // result.list  粉丝列表请求结果
+}
+catch (Exception e)
+{
+    Debug.Log($"fansList request error :  {e.Message}");
 }
 ```
 
@@ -660,16 +775,42 @@ import com.taptap.sdk.relation.lite.internal.TapTapRelationRequestCallback
 import com.taptap.sdk.relation.lite.internal.model.RelationLiteUserItem
 
 val nextPage = ""
-        TapTapRelationLite.getFansList(
-            nextPageToken = nextPage,
-            callback = object : TapTapRelationRequestCallback() {
-                override fun onFansListResult(
-                    fansList: List<RelationLiteUserItem>,
-                    nextPageToken: String
-                ) {
+TapTapRelationLite.getFansList(
+    nextPageToken = nextPage,
+    callback = object : TapTapRelationRequestCallback() {
+        override fun onFansListResult(
+            fansList: List<RelationLiteUserItem>,
+            nextPageToken: String
+        ) {
 
-                }
-            })
+        }
+    })
+```
+
+```swift
+import TapTapRelationLiteSDK
+
+let nextPageToken = ""
+TapTapRelationLite.getFansList(nextPageToken: nextPageToken) { result, error in
+    if let error {
+        NSLog("request error : \(error.localizedDescription)")
+        return
+    }
+    // 请求成功， 粉丝数据：result?.list,   下一页 token ： result?.nextPageToken
+}
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+NSString * nextPageToken = @"";
+[TapTapRelationLite getFansListWithNextPageToken:nextPageToken completion:^(RelationLiteUserResult * _Nullable result, NSError * _Nullable error) {
+    if(error){
+        NSLog(@"request error : %@", error.localizedDescription);
+        return;
+    }
+    // 请求成功， 粉丝数据：result.list, 下一页 token ：result.nextPageToken
+}];
 ```
 
 </MultiLang>
@@ -678,70 +819,29 @@ val nextPage = ""
 
 使用好友 openId 将好友关系同步至 TapTap。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
 
-class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+// 0-新增好友 1-删除好友
+int action = 1;
+// 当前用户昵称
+string nickname = "";
+// 好友用户昵称
+string friendNickname = "";
+// 好友openId
+string friendOpenId = "";
+
+try
 {
-
-    public RelationLiteRequestCallback(){}
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 好友列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：好友列表请求结果
-    }
-
-    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
-    {
-        // 关注列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：关注列表请求结果
-    }
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 粉丝列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：粉丝列表请求结果
-    }
-
-    public void OnSyncRelationshipSuccess(string openId, string unionId)
-    {
-        // 同步好友关系成功
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
-    {
-        // 同步好友关系失败
-        // errorMessage：错误信息
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnRequestError(string errorMessage)
-    {
-        // 接口请求错误
-        // errorMessage：错误信息
-    }
-
-    // 0-新增好友 1-删除好友
-    int action = 1;
-    // 当前用户昵称
-    string nickname = "";
-    // 好友用户昵称
-    string friendNickname = "";
-    // 好友openId
-    string friendOpenId = "";
-
-    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
-    TapTapRelationLite.SyncRelationshipWithOpenId(action, nickname, friendNickname, friendOpenId, callback);
+    await TapTapRelationLite.SyncRelationshipWithOpenId(action, nickname, friendNickname, friendOpenId);
 }
+catch (Exception e)
+{
+    Debug.Log($" request error :  {e.Message}");
+}
+
 ```
 
 ```java
@@ -795,76 +895,66 @@ TapTapRelationLite.syncRelationshipWithOpenId(
 })
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+let action = 0 // 0-新增好友 1-删除好友
+let nickname = ""
+let friendNickname = ""
+let friendOpenId = ""
+TapTapRelationLite.syncRelationshipWithOpenId(action: action , nickname: nickname, friendNickname: friendNickname, friendOpenId: friendOpenId) { error in
+    if let error {
+        NSLog("request error : \(error.localizedDescription)")
+        return
+    }
+    // 同步成功
+}
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+NSInteger action = 0;
+NSString * nickName = @"";
+NSString * friendNickName = @"";
+NSString * friendOpenId = @"";
+[TapTapRelationLite syncRelationshipWithOpenIdWithAction:action nickname:nickName friendNickname:friendNickName friendOpenId:friendOpenId completion:^(NSError * _Nullable error) {
+    if(error){
+        NSLog(@" sync fail error = %@", error.localizedDescription);
+        return;
+    }
+    //同步成功
+}];
+```
+
 </MultiLang>
 
 ## 同步好友关系（unionId）
 
 使用好友 unionId 将好友关系同步至 TapTap。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
 
-class RelationLiteRequestCallback : ITapTapRelationLiteRequestCallback
+// 0-新增好友 1-删除好友
+int action = 1;
+// 当前用户昵称
+string nickname = "";
+// 好友用户昵称
+string friendNickname = "";
+// 好友 unionId
+string friendUnionId = ""
+try
 {
-
-    public RelationLiteRequestCallback(){}
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 好友列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：好友列表请求结果
-    }
-
-    public void OnFollowingListResult(string nextPageToken, List<RelationLiteUserItem> followingList)
-    {
-        // 关注列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：关注列表请求结果
-    }
-
-    public void OnFriendsListResult(string nextPageToken, List<RelationLiteUserItem> friendsList)
-    {
-        // 粉丝列表
-        // nextPageToken： 下一页请求token，分页请求需传入
-        // friendsList：粉丝列表请求结果
-    }
-
-    public void OnSyncRelationshipSuccess(string openId, string unionId)
-    {
-        // 同步好友关系成功
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnSyncRelationshipFail(string errorMessage, string openId, string unionId)
-    {
-        // 同步好友关系失败
-        // errorMessage：错误信息
-        // openId： 好友openId
-        // unionId：好友unionId
-    }
-
-    public void OnRequestError(string errorMessage)
-    {
-        // 接口请求错误
-        // errorMessage：错误信息
-    }
-
-    // 0-新增好友 1-删除好友
-    int action = 1;
-    // 当前用户昵称
-    string nickname = "";
-    // 好友用户昵称
-    string friendNickname = "";
-    // 好友unionId
-    string friendUnionId = "";
-
-    RelationLiteRequestCallback callback = new RelationLiteRequestCallback();
-    TapTapRelationLite.SyncRelationshipWithUnionId(action, nickname, friendNickname, friendUnionId, callback);
+    await TapTapRelationLite.SyncRelationshipWithUnionId(action, nickname, friendNickname, friendUnionId);
 }
+catch (Exception e)
+{
+    Debug.Log($" request error :  {e.Message}");
+}
+
 ```
 
 ```java
@@ -918,13 +1008,46 @@ TapTapRelationLite.syncRelationshipWithUnionId(
 })
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+let action = 0 // 0-新增好友 1-删除好友
+let nickname = ""
+let friendNickname = ""
+let friendUnionId = ""
+TapTapRelationLite.syncRelationshipWithUnionId(action: action , nickname: nickname, friendNickname: friendNickname, friendUnionId: friendUnionId) {
+    error in
+    if let error {
+        NSLog("request error : \(error.localizedDescription)")
+        return
+    }
+    // 同步成功
+}
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+NSInteger action = 0;
+NSString * nickName = @"";
+NSString * friendNickName = @"";
+NSString * friendUnionId = @"";
+[TapTapRelationLite syncRelationshipWithUnionIdWithAction: action nickname:nickName friendNickname:friendNickName friendUnionId:friendUnionId completion:^(NSError * _Nullable error) {
+    if(error){
+        NSLog(@" sync fail error = %@", error.localizedDescription);
+        return;
+    }
+    // 同步成功
+}];
+```
+
 </MultiLang>
 
 ## 展示 TapTap 用户名片
 
 展示指定用户的名片弹窗，可用于关注/取关用户。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.RelationLite;
@@ -950,6 +1073,26 @@ val unionId = "";
 TapTapRelationLite.showTapUserProfile(openId = openId, unionId = unionId)
 ```
 
+```swift
+import TapTapRelationLiteSDK
+
+// openId unionId二选一即可
+let openId = ""
+let unionId = ""
+
+TapTapRelationLite.showTapUserProfile(openId: openId)
+
+TapTapRelationLite.showTapUserProfile(unionId: unionId)
+```
+
+```objc
+#import "TapTapRelationLiteSDK/TapTapRelationLiteSDK-Swift.h"
+
+// openId unionId二选一即可
+NSString * openId = @"";
+NSString * unionId = @"";
+[TapTapRelationLite showTapUserProfileWithOpenId:openId unionId:unionId];
+```
 </MultiLang>
 
 ## 国际化

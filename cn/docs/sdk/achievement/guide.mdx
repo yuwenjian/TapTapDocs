@@ -461,23 +461,23 @@ TapTapAchievement.unregisterCallback(callback)
 ```swift
 import TapTapAchievementSDK
 
-class CallbackImpl: NSObject, TapTapAcheievementCallback {
+class CallbackImpl: NSObject, TapTapAchievementCallback {
 
-		override init() {}
-		
-		// 成就状态更新成功
-		func onAchievementSuccess(code: Int, result: TapTapAchievementResult) {
-	        // code 70001 解锁成就成功
-	        // code 70002 增加步长成功
-	        // result 成就数据详情
-        }
-		
-		// 成就状态更新失败或其他错误    
-		func onAchievementFailure(achievementId: String, errorCode: Int, errorMsg: String) {
-			 // achievementId 触发失败的成就 ID， 如果调用的是 [ShowAchievements] 接口，则为 "" 空字符串。
-        	 // errorCode 错误码
-        	 // errorMsg 错误描述
-		 }
+    override init() {}
+    
+    // 成就状态更新成功
+    func onAchievementSuccess(code: Int, result: TapTapAchievementResult) {
+        // code 70001 解锁成就成功
+        // code 70002 增加步长成功
+        // result 成就数据详情
+    }
+    
+    // 成就状态更新失败或其他错误    
+    func onAchievementFailure(achievementId: String, errorCode: Int, errorMsg: String) {
+        // achievementId 触发失败的成就 ID， 如果调用的是 [ShowAchievements] 接口，则为 "" 空字符串。
+        // errorCode 错误码
+        // errorMsg 错误描述
+    }
 }
 let callback = CallbackImpl()
 TapTapAchievement.registerCallback(callback: callback)
@@ -524,7 +524,7 @@ public class TapAchievementCallbackCode: NSObject {
 ```objc
 #import "TapTapAchievementSDK/TapTapAchievementSDK-Swift.h"
 
-@interface GameMainController () <TapTapAcheievementCallback>
+@interface GameMainController () <TapTapAchievementCallback>
 
 @end
 @implementation GameMainController
