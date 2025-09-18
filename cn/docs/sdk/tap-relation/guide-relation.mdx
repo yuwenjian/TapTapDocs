@@ -91,7 +91,7 @@ import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
 
 ## SDK 获取
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -163,13 +163,73 @@ allprojects {
 
 </>
 
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapRelationSDK', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+3. 将工程 Pods 目录下 `TapTapRelationSDK/Frameworks/TapTapRelationResource.bundle` 和 `TapTapProfileSDK/Frameworks/TapTapProfileResource.bundle`
+   等资源文件导入工程中
+
+**本地文件依赖**
+
+好友模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapRelationSDK ` 好友依赖库
+- `TapTapRelationResource.bundle` 好友资源文件
+- `TapTapProfileSDK ` 用户名片依赖库
+- `TapTapProfileResource.bundle` 用户名片资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+3. SDK 内部使用了 [`Kingfisher` 6.0 依赖库](https://github.com/onevcat/Kingfisher/releases/tag/6.0.0)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+</>
+
+<>
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+**远程依赖**
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapRelationSDK', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+3. 将工程 Pods 目录下 `TapTapRelationSDK/Frameworks/TapTapRelationResource.bundle` 和 `TapTapProfileSDK/Frameworks/TapTapProfileResource.bundle`
+   等资源文件导入工程中
+
+**本地文件依赖**
+
+好友模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapRelationSDK ` 好友依赖库
+- `TapTapRelationResource.bundle` 好友资源文件
+- `TapTapProfileSDK ` 用户名片依赖库
+- `TapTapProfileResource.bundle` 用户名片资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+3. SDK 内部使用了 [`Kingfisher` 6.0 依赖库](https://github.com/onevcat/Kingfisher/releases/tag/6.0.0)，开发者应提前通过远程或文件导入方式添加对应依赖。
+
+</>
+
 </MultiLang>
 
 ## SDK 初始化
 
 详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -252,13 +312,50 @@ TapTapSdk.init(
 ```
 </>
 
+<>
+
+```swift
+import TapTapCoreSDK
+
+// 核心配置项
+let options = TapTapSdkOptions()
+options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
+options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
+options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
+options.enableLog = enableLog.selectedSegmentIndex == 0 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapLanguageType.auto // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
+options.screenOrientation = .landscape // 应用屏幕方向，.landscape 横屏， .portrait 竖屏
+// 初始化 SDK
+TapTapSDK.initWith(options)
+
+```
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapSDK.h"
+
+// 核心配置项
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
+options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
+options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
+options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+options.preferredLanguage = TapLanguageType_Auto; // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
+options.screenOrientation = TapTapScreenOrientationLandscape; // 应用屏幕方向，TapTapScreenOrientationLandscape 横屏，TapTapScreenOrientationPortrait 竖屏
+// 初始化 SDK
+[TapTapSDK initWithOptions:options];
+```
+</>
+
 </MultiLang>
 
 ## 注册监听回调
 
 好友聊天 SDK 中包含多个监听回调，分别会在未登录/有新增粉丝/有新增消息时被调用。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -280,17 +377,17 @@ class RelationCallback : ITapTapRelationCallback
         // code 400001 需要用户登录
     }
 
-    public void OnNewFansCountChanged(int newFansCount)
+    public void OnNewFansCountChanged(int code, int newFansCount)
     {
         // 新增粉丝数量变化
         // newFansCount 新增粉丝数
-	}
+    }
 
-	public void OnUnreadMessageCountChanged(int unreadMsgCount)
+    public void OnUnreadMessageCountChanged(int code, int unreadMsgCount)
     {
         // 新增未读消息数量变化
         // unreadMsgCount 新增未读消息数
-	}
+    }
 
 }
 ```
@@ -358,6 +455,70 @@ TapTapRelation.unregisterRelationCallback(callback = callback)
 
 </>
 
+
+<>
+```swift
+import TapTapRelationSDK
+
+class MyRelationDelegate: NSObject, TapTapRelationDelegate {
+    
+    func onMessengerCodeResult(code: Int) {
+        // 处理好友聊天的状态码
+        // code 400001 需要用户登录
+    }
+    
+    func onNewFansCountChanged(code: Int, fansCount: Int) {
+        // 新增粉丝数量变动
+    }
+    
+    func onUnreadMessageCountChanged(code: Int, unreadMsgCount: Int) {
+        // 新增消息数量变动
+    }
+    
+}
+
+let myRelationDelegate = MyRelationDelegate()
+
+// 注册回调
+TapTapRelation.registerRelationDelegate(delegate: myRelationDelegate)
+// 移除回调
+TapTapRelation.unregisterRelationDelegate(delegate: myRelationDelegate)
+
+```
+</>
+
+<>
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+@interface GameMainController() <TapTapRelationDelegate>
+
+@end
+@implementation GameMainController
+
+- (void) handleRelationDelegate {
+    // 注册好友回调
+    [TapTapRelation registerRelationDelegateWithDelegate:self];
+    // 移除好友回调
+    [TapTapRelation unregisterRelationDelegateWithDelegate:self];
+}
+
+- (void)onMessengerCodeResultWithCode:(NSInteger)code { 
+    // 处理好友聊天的状态码
+    // code 400001 需要用户登录
+}
+
+- (void)onNewFansCountChangedWithCode:(NSInteger)code fansCount:(NSInteger)fansCount { 
+    // 新增粉丝数量变动
+}
+
+- (void)onUnreadMessageCountChangedWithCode:(NSInteger)code unreadMsgCount:(NSInteger)unreadMsgCount { 
+    // 新增消息数量变动
+}
+```
+</>
+
 </MultiLang>
 
 
@@ -365,7 +526,7 @@ TapTapRelation.unregisterRelationCallback(callback = callback)
 
 进入聊天之前的一些准备工作。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -383,13 +544,25 @@ import com.taptap.sdk.relation.TapTapRelation
 TapTapRelation.prepare()
 ```
 
+```swift
+import TapTapRelationSDK
+
+TapTapRelation.prepare()
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+[TapTapRelation prepare];
+```
+
 </MultiLang>
 
 ## 开始聊天
 
 打开聊天页面，根据初始化参数 screenOrientation 会有不同的动画表现。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -407,13 +580,24 @@ import com.taptap.sdk.relation.TapTapRelation
 TapTapRelation.startMessenger()
 ```
 
+```swift
+import TapTapRelationSDK
+
+TapTapRelation.startMessenger()
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+[TapTapRelation startMessenger];
+```
 </MultiLang>
 
 ## 邀请好友上线
 
 打开邀请好友页面，向选中好友发送邀请上线消息。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -431,13 +615,24 @@ import com.taptap.sdk.relation.TapTapRelation
 TapTapRelation.inviteGame()
 ```
 
+```swift
+import TapTapRelationSDK
+
+TapTapRelation.inviteGame()
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+[TapTapRelation inviteGame];
+```
 </MultiLang>
 
 ## 邀请好友组队
 
 打开邀请好友页面，向选中好友发送邀请组队消息，需要传组队相关参数teamId。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -458,13 +653,26 @@ val teamId = ""
 TapTapRelation.inviteTeam(teamId = teamId)
 ```
 
+```swift
+import TapTapRelationSDK
+
+let teamId = ""
+TapTapRelation.inviteTeam(teamId)
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+NSString * teamId = @"";
+[TapTapRelation inviteTeam:teamId];
+```
 </MultiLang>
 
 ## 获取新增粉丝数
 
 获取当前用户新增粉丝的数量，也可在callback中处理。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -485,13 +693,24 @@ import com.taptap.sdk.relation.TapTapRelation
 val fansCount = TapTapRelation.getNewFansCount()
 ```
 
+```swift
+import TapTapRelationSDK
+
+let fansCount = TapTapRelation.getNewFansCount()
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+NSInteger fansCount = [TapTapRelation getNewFansCount];
+```
 </MultiLang>
 
 ## 获取新增消息数
 
 获取当前用户新增消息的数量，也可在callback中处理。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -512,13 +731,24 @@ import com.taptap.sdk.relation.TapTapRelation
 val unreadMessageCount = TapTapRelation.getUnreadMessageCount()
 ```
 
+```swift
+import TapTapRelationSDK
+
+let unreadMessageCount = TapTapRelation.getUnreadMessageCount()
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+NSInteger unreadMessageCount = [TapTapRelation getUnreadMessageCount];
+```
 </MultiLang>
 
 ## 展示 TapTap 用户名片
 
 展示指定用户的名片弹窗，可用于关注/取关用户，传入用户的openId或者unionId。
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="unity_android_ios_v4">
 
 ```cs
 using TapSDK.Relation;
@@ -544,6 +774,26 @@ val unionId = "";
 TapTapRelation.showTapUserProfile(openId = openId, unionId = unionId)
 ```
 
+```swift
+import TapTapRelationSDK
+
+let openId = ""
+let unionId = ""
+
+// openId unionId二选一即可
+TapTapRelation.showTapUserProfile(openId: openId)
+
+TapTapRelation.showTapUserProfile(unionId: unionId)
+```
+
+```objc
+#import "TapTapRelationSDK/TapTapRelationSDK-Swift.h"
+
+// openId unionId二选一即可
+NSString * openId = @"";
+NSString * unionId = @"";
+[TapTapRelation showTapUserProfileWithOpenId:openId unionId:unionId];
+```
 </MultiLang>
 
 ## 国际化

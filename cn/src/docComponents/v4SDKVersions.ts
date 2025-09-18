@@ -1,6 +1,6 @@
-const taptapUnity = "4.8.1"
-const taptapIos = "4.8.1"
-const taptapAndroid = "4.8.1"
+const taptapUnity = "4.8.2"
+const taptapIos = "4.8.2"
+const taptapAndroid = "4.8.2"
 const taptapUnreal = "3.29.2"
 const taptapShadow = "4.8.1-beta.6"
 
