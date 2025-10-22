@@ -1,7 +1,7 @@
-const taptapUnity = "3.30.0"
-const taptapIos = "3.30.0"
-const taptapAndroid = "3.30.0"
-const taptapUnreal = "3.30.0"
+const taptapUnity = "3.30.1"
+const taptapIos = "3.30.1"
+const taptapAndroid = "3.30.1"
+const taptapUnreal = "3.30.1"
 
 const v3SDKVersions = {
   taptap: {
