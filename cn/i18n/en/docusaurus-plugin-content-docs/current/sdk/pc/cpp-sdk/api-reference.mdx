@@ -1,0 +1,533 @@
+---
+title: API Reference
+sidebar_label: API Reference
+sidebar_position: 3
+slug: /pc/cpp-sdk/api-reference/
+---
+
+## Important Notes
+
+:::warning Initialization Requirements
+Except for `TapSDK_RestartAppIfNecessary`, all other API functions must be called only after successfully calling `TapSDK_Init` for initialization.
+Calling other functions without initialization or after initialization failure will return errors or unexpected results.
+:::
+
+## Data Type Definitions
+
+### Basic Types
+
+```cpp
+typedef char ErrMsg[1024];       // Error message, maximum length 1023 bytes + '\0'
+typedef void (T_CALLTYPE *callback_t)(TapEventID, void *);  // Callback function type
+```
+
+### Enumeration Types
+
+#### TapSDK_Init_Result
+
+SDK initialization result enumeration:
+
+```cpp
+enum class TapSDK_Init_Result : uint32_t {
+    OK = 0,                     // Initialization successful
+    FailedGeneric = 1,          // Other errors
+    NoPlatform = 2,             // TapTap platform not found
+    NotLaunchedByPlatform = 3,  // Not launched through TapTap
+    PlatformVersionMismatch = 4 // Platform version mismatch
+};
+```
+
+#### TapUser_AsyncAuthorize_Result
+
+User authorization request result enumeration:
+
+```cpp
+enum class TapUser_AsyncAuthorize_Result : uint32_t {
+    Unknown = 0,    // Unknown error, usually due to uninitialized (TapSDK_Init not called) or initialization failure
+    OK = 1,         // Successfully initiated authorization process
+    Failed = 2,     // Failed to initiate authorization process, suggest prompting user to retry
+    InFlight = 3    // Authorization process in progress, suggest ignoring error or prompting user to wait
+};
+```
+
+#### TapEventID
+
+Event ID enumeration:
+
+```cpp
+enum class TapEventID : uint32_t {
+    Unknown = 0,
+    AuthorizeFinished = 2002,           // Authorization completion event
+    GamePlayableStatusChanged = 4001,   // Game playable status change event
+    DLCPlayableStatusChanged = 4002,    // DLC playable status change event
+};
+```
+
+### Structure Types
+
+#### AuthorizeFinishedResponse
+
+Authorization completion response structure:
+
+```cpp
+struct AuthorizeFinishedResponse {
+    bool is_cancel;              // Whether user cancelled authorization
+    char error[1024];            // Error message
+    char token_type[32];         // Token type
+    char kid[8*1024];            // Key ID
+    char mac_key[8*1024];        // MAC key
+    char mac_algorithm[32];      // MAC algorithm
+    char scope[1024];            // Permission scope
+};
+```
+
+#### GamePlayableStatusChangedResponse
+
+Game playable status change response structure:
+
+```cpp
+struct GamePlayableStatusChangedResponse {
+    bool is_playable;            // Whether the game is playable
+};
+```
+
+#### DLCPlayableStatusChangedResponse
+
+DLC playable status change response structure:
+
+```cpp
+struct DLCPlayableStatusChangedResponse {
+    char dlc_id[32];             // DLC ID
+    bool is_playable;            // Whether the DLC is playable
+};
+```
+
+## SDK Core Functions
+
+### TapSDK_RestartAppIfNecessary
+
+Check if app restart is necessary.
+
+```cpp
+bool TapSDK_RestartAppIfNecessary(const char *clientID);
+```
+
+**Parameters:**
+- `clientID`: Client ID
+
+**Return Value:**
+- `true`: Restart required, TapTap will reopen the game, please exit the game process immediately
+- `false`: No restart needed, can continue with initialization
+
+**Usage Example:**
+
+```cpp
+const char* clientID = "your_client_id";
+if (TapSDK_RestartAppIfNecessary(clientID)) {
+    std::cout << "App restart required" << std::endl;
+    return 0; // Exit immediately
+}
+```
+
+**Notes:**
+- This function must be called before `TapSDK_Init`
+- If it returns true, exit the program immediately and wait for TapTap to restart the game
+
+### TapSDK_Init
+
+Initialize the SDK.
+
+```cpp
+TapSDK_Init_Result TapSDK_Init(ErrMsg *errMsg, const char *pubKey);
+```
+
+**Parameters:**
+- `errMsg`: Error message buffer, length 1024 bytes
+- `pubKey`: Public key obtained from TapTap Developer Center
+
+**Return Value:**
+- `TapSDK_Init_Result`: Initialization result enumeration
+
+**Usage Example:**
+
+```cpp
+ErrMsg errMsg;
+const char* pubKey = "your_public_key";
+TapSDK_Init_Result result = TapSDK_Init(&errMsg, pubKey);
+
+switch (result) {
+    case TapSDK_Init_Result::OK:
+        std::cout << "Initialization successful" << std::endl;
+        break;
+    case TapSDK_Init_Result::NoPlatform:
+        std::cout << "TapTap platform not found, please download and install TapTap launcher" << std::endl;
+        std::cout << "Download URL: https://www.taptap.cn/mobile" << std::endl;
+        break;
+    case TapSDK_Init_Result::NotLaunchedByPlatform:
+        std::cout << "Game not launched through TapTap launcher, please reopen from launcher" << std::endl;
+        break;
+    case TapSDK_Init_Result::PlatformVersionMismatch:
+        std::cout << "Platform version mismatch, please upgrade TapTap launcher or game to latest version" << std::endl;
+        break;
+    default:
+        std::cout << "Initialization failed: " << errMsg << std::endl;
+        std::cout << "Please close the game and reopen from TapTap" << std::endl;
+        break;
+}
+```
+
+### TapSDK_Shutdown
+
+Shutdown the SDK and release resources.
+
+```cpp
+bool TapSDK_Shutdown();
+```
+
+**Return Value:**
+- `true`: Successfully closed
+- `false`: Failed to close (usually due to uninitialized (TapSDK_Init not called) or initialization failure)
+
+**Usage Example:**
+
+```cpp
+if (TapSDK_Shutdown()) {
+    std::cout << "SDK successfully closed" << std::endl;
+} else {
+    std::cout << "SDK shutdown failed" << std::endl;
+}
+```
+
+### TapSDK_GetClientID
+
+Get current client ID.
+
+```cpp
+bool TapSDK_GetClientID(char *buffer);
+```
+
+**Parameters:**
+- `buffer`: Buffer for storing client ID, fixed length 256 bytes
+
+**Return Value:**
+- `true`: Successfully obtained
+- `false`: Failed to obtain (usually due to uninitialized (TapSDK_Init not called) or initialization failure)
+
+**Usage Example:**
+
+```cpp
+char clientID[256];
+if (TapSDK_GetClientID(clientID)) {
+    std::cout << "Client ID: " << clientID << std::endl;
+} else {
+    std::cout << "Failed to get Client ID, please check if SDK is properly initialized" << std::endl;
+}
+```
+
+## Callback Related Functions
+
+### TapSDK_RegisterCallback
+
+Register event callback.
+
+```cpp
+void TapSDK_RegisterCallback(TapEventID eventID, callback_t callback);
+```
+
+**Parameters:**
+- `eventID`: Event ID
+- `callback`: Callback function
+
+**Usage Example:**
+
+```cpp
+void T_CALLTYPE OnAuthorizeFinished(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::AuthorizeFinished) {
+        AuthorizeFinishedResponse* response = (AuthorizeFinishedResponse*)data;
+        // Handle authorization completion event
+    }
+}
+
+// Register callback
+TapSDK_RegisterCallback(TapEventID::AuthorizeFinished, OnAuthorizeFinished);
+```
+
+### TapSDK_UnregisterCallback
+
+Unregister event callback.
+
+```cpp
+void TapSDK_UnregisterCallback(TapEventID eventID, callback_t callback);
+```
+
+**Parameters:**
+- `eventID`: Event ID
+- `callback`: Callback function to unregister
+
+**Usage Example:**
+
+```cpp
+// Unregister callback
+TapSDK_UnregisterCallback(TapEventID::AuthorizeFinished, OnAuthorizeFinished);
+```
+
+### TapSDK_RunCallbacks
+
+Process callback events, recommended to call once per frame.
+
+```cpp
+void TapSDK_RunCallbacks();
+```
+
+**Usage Example:**
+
+```cpp
+// Call in game main loop
+while (gameRunning) {
+    TapSDK_RunCallbacks(); // Process SDK events
+    
+    // Game logic
+    UpdateGame();
+    RenderGame();
+    
+    Sleep(16); // Control frame rate
+}
+```
+
+## User Related Functions
+
+### TapUser_AsyncAuthorize
+
+Asynchronously request user authorization (simplified version).
+
+```cpp
+TapUser_AsyncAuthorize_Result TapUser_AsyncAuthorize(const char* scopes);
+```
+
+**Parameters:**
+- `scopes`: Permission scope string, multiple permissions separated by commas
+
+**Return Value:**
+- `TapUser_AsyncAuthorize_Result::Unknown`: Unknown error, usually due to uninitialized or initialization failure
+- `TapUser_AsyncAuthorize_Result::OK`: Successfully initiated authorization process, waiting for user confirmation
+- `TapUser_AsyncAuthorize_Result::Failed`: Failed to initiate authorization process, suggest prompting user to retry
+- `TapUser_AsyncAuthorize_Result::InFlight`: Authorization process in progress, suggest ignoring or prompting user to wait
+
+**Common Permission Scopes:**
+- `"public_profile"`: Basic user information
+- `"user_friends"`: Friend information
+- `"public_profile,user_friends"`: Multiple permissions
+
+**Usage Example:**
+
+```cpp
+// Register authorization completion callback
+TapSDK_RegisterCallback(TapEventID::AuthorizeFinished, OnAuthorizeFinished);
+
+// Request basic user information permission
+TapUser_AsyncAuthorize_Result result = TapUser_AsyncAuthorize("public_profile");
+switch (result) {
+    case TapUser_AsyncAuthorize_Result::OK:
+        std::cout << "Authorization request sent, waiting for user confirmation" << std::endl;
+        break;
+    case TapUser_AsyncAuthorize_Result::Failed:
+        std::cout << "Failed to initiate authorization, please retry" << std::endl;
+        break;
+    case TapUser_AsyncAuthorize_Result::InFlight:
+        std::cout << "Authorization process in progress, please wait" << std::endl;
+        break;
+    case TapUser_AsyncAuthorize_Result::Unknown:
+        std::cout << "Authorization failed, please check SDK initialization status" << std::endl;
+        break;
+}
+```
+
+### TapUser_GetOpenID
+
+Get user OpenID.
+
+```cpp
+bool TapUser_GetOpenID(char *buffer);
+```
+
+**Parameters:**
+- `buffer`: Buffer for storing OpenID, fixed length 256 bytes
+
+**Return Value:**
+- `true`: Successfully obtained
+- `false`: Failed to obtain (usually due to uninitialized or initialization failure)
+
+**Usage Example:**
+
+```cpp
+char openID[256];
+if (TapUser_GetOpenID(openID)) {
+    std::cout << "User OpenID: " << openID << std::endl;
+} else {
+    std::cout << "Failed to get OpenID, please check SDK initialization status and user authorization status" << std::endl;
+}
+```
+
+## License Verification Functions
+
+### TapApps_IsOwned
+
+Check if user owns the current game.
+
+:::info Usage Instructions
+- **Only premium games need to call**: Free games do not need license verification
+- **Verified during initialization**: Game ownership is verified when `TapSDK_Init` succeeds
+- **Runtime monitoring**: During game runtime, only returns `false` when user loses ownership (such as refund)
+:::
+
+```cpp
+bool TapApps_IsOwned();
+```
+
+**Return Value:**
+- `true`: User owns the current game
+- `false`: User does not own the current game (usually occurs in refund situations)
+
+**Usage Example:**
+
+```cpp
+// Only premium games need to check
+if (TapApps_IsOwned()) {
+    std::cout << "User owns this game, can continue running" << std::endl;
+    // Continue game logic
+} else {
+    std::cout << "User has lost game ownership (possibly refunded)" << std::endl;
+    // Save progress and exit game
+    SaveGameAndExit();
+    return -1;
+}
+```
+
+## DLC Related Functions
+
+### TapDLC_IsOwned
+
+Query if user owns the specified DLC.
+
+```cpp
+bool TapDLC_IsOwned(const char *dlc_id);
+```
+
+**Parameters:**
+- `dlc_id`: DLC ID
+
+**Return Value:**
+- `true`: User owns the DLC
+- `false`: User does not own the DLC
+
+**Usage Example:**
+
+```cpp
+const char* dlcID = "expansion_pack_1";
+if (TapDLC_IsOwned(dlcID)) {
+    std::cout << "User owns DLC: " << dlcID << std::endl;
+    EnableDLCContent(dlcID);
+} else {
+    std::cout << "User does not own DLC: " << dlcID << std::endl;
+    DisableDLCContent(dlcID);
+}
+```
+
+### TapDLC_ShowStore
+
+Show the store page for the specified DLC.
+
+```cpp
+bool TapDLC_ShowStore(const char *dlc_id);
+```
+
+**Parameters:**
+- `dlc_id`: DLC ID
+
+**Return Value:**
+- `true`: Successfully displayed store page
+- `false`: Failed to display
+
+**Usage Example:**
+
+```cpp
+const char* dlcID = "expansion_pack_1";
+if (!TapDLC_IsOwned(dlcID)) {
+    // User does not own DLC, guide to purchase
+    if (TapDLC_ShowStore(dlcID)) {
+        std::cout << "DLC store page opened" << std::endl;
+    } else {
+        std::cout << "Failed to open DLC store page" << std::endl;
+    }
+}
+```
+
+## Event Handling Examples
+
+### Complete Event Handling Example
+
+```cpp
+#include "taptap_api.h"
+#include <iostream>
+
+// Authorization completion event handling
+void T_CALLTYPE OnAuthorizeFinished(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::AuthorizeFinished) {
+        AuthorizeFinishedResponse* response = (AuthorizeFinishedResponse*)data;
+        
+        if (response->is_cancel) {
+            std::cout << "User cancelled authorization" << std::endl;
+        } else if (strlen(response->error) > 0) {
+            std::cout << "Authorization failed: " << response->error << std::endl;
+        } else {
+            std::cout << "Authorization successful!" << std::endl;
+            std::cout << "Token Type: " << response->token_type << std::endl;
+            std::cout << "Scope: " << response->scope << std::endl;
+            
+            // Get user information
+            char openID[256];
+            if (TapUser_GetOpenID(openID)) {
+                std::cout << "User OpenID: " << openID << std::endl;
+            }
+        }
+    }
+}
+
+// Game playable status change event handling
+void T_CALLTYPE OnGameStatusChanged(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::GamePlayableStatusChanged) {
+        GamePlayableStatusChangedResponse* response = (GamePlayableStatusChangedResponse*)data;
+        
+        if (response->is_playable) {
+            std::cout << "Game can now continue running" << std::endl;
+        } else {
+            std::cout << "Game is no longer available, possibly refunded" << std::endl;
+            // Should save game progress and exit
+            SaveGameAndExit();
+        }
+    }
+}
+
+// DLC status change event handling
+void T_CALLTYPE OnDLCStatusChanged(TapEventID eventID, void* data) {
+    if (eventID == TapEventID::DLCPlayableStatusChanged) {
+        DLCPlayableStatusChangedResponse* response = (DLCPlayableStatusChangedResponse*)data;
+        
+        std::cout << "DLC " << response->dlc_id 
+                  << (response->is_playable ? " is now available" : " is now unavailable") << std::endl;
+        
+        if (response->is_playable) {
+            EnableDLCFeatures(response->dlc_id);
+        } else {
+            DisableDLCFeatures(response->dlc_id);
+        }
+    }
+}
+
+void SetupEventHandlers() {
+    // Register all event callbacks
+    TapSDK_RegisterCallback(TapEventID::AuthorizeFinished, OnAuthorizeFinished);
+    TapSDK_RegisterCallback(TapEventID::GamePlayableStatusChanged, OnGameStatusChanged);
+    TapSDK_RegisterCallback(TapEventID::DLCPlayableStatusChanged, OnDLCStatusChanged);
+}
+```
