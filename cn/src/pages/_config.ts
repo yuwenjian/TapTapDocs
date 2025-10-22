@@ -18,7 +18,7 @@ type Entry = {
   links: Link[];
 };
 
-export const getEntries = (brand: string, region: string): Entry[] => {
+export const getEntries = (brand: string): Entry[] => {
   const ENTRIES_TDS: Entry[] = [
     {
       title: "游戏商店",
@@ -40,35 +40,27 @@ export const getEntries = (brand: string, region: string): Entry[] => {
         },
       ],
     },
-    ...(region === "cn"
-      ? [
+    {
+      title: "社区运营指南",
+      description: "TapTap 为开发者提供的社区新手攻略",
+      links: [
         {
-          title: "社区运营指南",
-          description: "TapTap 为开发者提供的社区新手攻略",
-          links: [
-            {
-              label: "查看更多",
-              to: "/community",
-            },
-          ],
+          label: "查看更多",
+          to: "/community",
         },
-      ]
-      : []),
-    ...(region === "cn"
-      ? [
+      ],
+    },
+    {
+      title: "小游戏",
+      description: "小游戏无需下载安装即可使用，实现了客户端“点开即玩”的优质用户体验",
+      links: [
         {
-          title: "小游戏",
-          description: "小游戏无需下载安装即可使用，实现了客户端“点开即玩”的优质用户体验",
-          links: [
-            {
-              label: "查看更多",
-              href: "https://developer.taptap.cn/minigameapidoc/quick-start/document-guide/",
-              noblank: true,
-            },
-          ],
+          label: "查看更多",
+          href: "https://developer.taptap.cn/minigameapidoc/quick-start/document-guide/",
+          noblank: true,
         },
-      ]
-      : []),
+      ],
+    },
     {
       title: "资源下载",
       description: "TapTap 相关品牌元素及开发工具包下载",
@@ -83,19 +75,6 @@ export const getEntries = (brand: string, region: string): Entry[] => {
         },
       ],
     },
-    ...(region === "global"
-      ? [
-        {
-          title: "开发者运营手册",
-          links: [
-            {
-              label: "查看更多",
-              to: "/operations/manual",
-            },
-          ],
-        },
-      ]
-      : []),
   ];
 
   const ENTRIES_LEANCLOUD: Entry[] = [

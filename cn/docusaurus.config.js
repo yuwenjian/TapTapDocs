@@ -34,9 +34,12 @@ const config = {
             "zh-Hans": {
                 label: "简体中文",
             },
+            "en": {
+                label: "English",
+            },
         },
         defaultLocale: "zh-Hans",
-        locales: ["zh-Hans"],
+        locales: ["zh-Hans", "en"],
     },
 
     presets: [
@@ -109,6 +112,10 @@ const config = {
                                 to: "/tap-download",
                             },
                         ],
+                    },
+                    {
+                        type: "localeDropdown",
+                        position: "right",
                     },
                     {
                         type: "docsVersionDropdown",

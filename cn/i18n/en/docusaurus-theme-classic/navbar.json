@@ -1,0 +1,30 @@
+{
+  "title": {
+    "message": "TapTap Developer Documentation",
+    "description": "The title in the navbar"
+  },
+  "item.label.文档首页": {
+    "message": "Home",
+    "description": "Navbar item with label Home"
+  },
+  "item.label.游戏商店": {
+    "message": "Game Store",
+    "description": "Navbar item with label Game Store"
+  },
+  "item.label.游戏服务": {
+    "message": "Game Services",
+    "description": "Navbar item with label Game Services"
+  },
+  "item.label.下载": {
+    "message": "Downloads",
+    "description": "Navbar item with label Downloads"
+  },
+  "item.label.设计资源": {
+    "message": "Design Resources",
+    "description": "Navbar item with label Design Resources"
+  },
+  "item.label.SDK 工具包": {
+    "message": "SDK Toolkit",
+    "description": "Navbar item with label SDK Toolkit"
+  }
+}
