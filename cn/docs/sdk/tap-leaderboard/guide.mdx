@@ -76,6 +76,28 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 </>
 
+<>
+
+使用排行榜服务需要相册权限，所以开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>需要访问相册以保存图片</string>
+```
+
+</>
+
+<>
+
+使用排行榜服务需要相册权限，所以开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>需要访问相册以保存图片</string>
+```
+
+</>
+
 </MultiLang>
 
 ## 集成前准备
@@ -107,6 +129,20 @@ unitypackageModules={[
 {name: "TapSDK_Leaderboard.unitypackage", desc: "TapTapSDK 排行榜模块，必选"},
 ]}/>
 
+#### iOS 配置
+
+在 `Assets/Plugins/iOS/Resource` 目录下创建 `TDS-Info.plist` 文件 (如果已创建，只需添加内容即可），配置相关权限并**替换授权文案**：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>需要访问相册以保存图片</string>
+</dict>
+</plist>
+```
 </>
 
 <>
