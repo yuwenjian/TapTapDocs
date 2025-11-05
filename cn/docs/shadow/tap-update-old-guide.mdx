@@ -21,12 +21,12 @@ import { Conditional } from "/src/docComponents/conditional";
     <Conditional region="cn">
 
     - 适用于中国大陆 URL：`taptap://taptap.cn/app?app_id=AppID&source=outer|update&tab_name=new_version`
-    - 适用于其他国家或地区 URL：`tapglobal://taptap.tw/app?app_id=游戏商店id&source=outer|update`
+    - 适用于其他国家或地区 URL：`tapglobal://taptap.tw/app?app_id=AppID&source=outer|update`
 
     </Conditional>
     <Conditional region="global">
 
-    - `tapglobal://taptap.tw/app?app_id=游戏商店id&source=outer|update`
+    - `tapglobal://taptap.tw/app?app_id=AppID&source=outer|update`
 
     </Conditional>
 
@@ -103,7 +103,7 @@ public class TapGameUtil {
     if (activity != null && !TextUtils.isEmpty(appId)) {
       try {
         Uri uri = Uri.parse(String.format(Locale.US,
-            "%s/app?app_id=%s&source=outer|update", CLIENT_URI_TAPTAP, appId));
+            "%s/app?app_id=%s&source=outer|update&tab_name=new_version", CLIENT_URI_TAPTAP, appId));
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(intent);
