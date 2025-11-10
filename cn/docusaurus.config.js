@@ -143,6 +143,32 @@ const config = {
     plugins: [
         "docusaurus-plugin-sass",
         path.resolve(__dirname, "./plugins/npsmeter"),
+        [
+            "docusaurus-plugin-llms",
+            {
+                // 是否生成 llms.txt 文件（包含文档链接的索引文件）
+                generateLLMsTxt: true,
+                // 是否生成 llms-full.txt 文件（包含所有文档完整内容的单文件）
+                generateLLMsFullTxt: false,
+                // 是否从生成的内容中排除导入语句（如 import 语句）
+                excludeImports: true,
+                // 是否移除重复的标题内容
+                removeDuplicateHeadings: true,
+                // 指定要包含的文件路径模式（glob 模式），只处理 docs/sdk 目录下的文件
+                includeOrder: ["docs/sdk/**"],
+                // 是否在最后包含不匹配 includeOrder 模式的文件（false 表示不包含）
+                includeUnmatchedLast: false,
+                // 要排除的文件路径模式（glob 模式），排除 _partials 目录
+                // 注意：插件会自动排除非默认语言的 i18n 文档，无需手动配置 i18n/**
+                ignoreFiles: ["docs/sdk/_partials/**"],
+                // 是否生成独立的 markdown 文件（.md），llms.txt 中的链接将指向这些文件
+                generateMarkdownFiles: false,
+                // 设置为 false 时不输出 description
+                includeDescriptionInLinks: false,
+                // 自定义根内容
+                rootContent: "本文档提供了 TapTap SDK 开发文档的完整目录索引。",
+            },
+        ],
     ],
 };
 
