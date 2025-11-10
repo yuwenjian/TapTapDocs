@@ -1,0 +1,60 @@
+{
+  "name": "docusaurus-plugin-llms",
+  "version": "0.2.0",
+  "description": "Docusaurus plugin for generating LLM-friendly documentation following the llmstxt.org standard",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "cleanup": "node cleanup.js",
+    "prepublishOnly": "npm run build && npm run cleanup",
+    "test:unit": "node tests/test-path-transforms.js && node tests/test-header-deduplication.js && node tests/test-import-removal.js && node tests/test-partials.js && node tests/test-root-content.js && node tests/test-filenames.js && node tests/test-category-functions.js",
+    "test:integration": "node tests/test-path-transformation.js",
+    "test:locale": "node tests/test-default-locale-only.js",
+    "test:slug": "node tests/test-slug-url-generation.js",
+    "test:category": "node tests/test-category-organization.js",
+    "test": "npm run build && npm run test:unit && npm run test:integration && npm run test:locale && npm run test:slug && npm run test:category"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rachfop/docusaurus-plugin-llms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rachfop/docusaurus-plugin-llms/issues"
+  },
+  "homepage": "https://github.com/rachfop/docusaurus-plugin-llms#readme",
+  "keywords": [
+    "docusaurus",
+    "docusaurus-plugin",
+    "documentation",
+    "llm",
+    "llms",
+    "llmtxt"
+  ],
+  "author": "Patrick Rachford",
+  "email": "prachford@icloud.com",
+  "license": "MIT",
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "minimatch": "^9.0.3",
+    "yaml": "^2.8.1"
+  },
+  "peerDependencies": {
+    "@docusaurus/core": "^3.0.0"
+  },
+  "devDependencies": {
+    "@docusaurus/types": "^3.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/minimatch": "^5.1.2",
+    "@types/node": "^20.6.0",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0"
+  }
+}

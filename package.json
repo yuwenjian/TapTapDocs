@@ -32,6 +32,7 @@
     "@mdx-js/react": "^3.0.0",
     "axios": "^0.27.2",
     "clsx": "^1.2.1",
+    "docusaurus-plugin-llms": "file:./plugins/docusaurus-plugin-llms",
     "docusaurus-plugin-sass": "^0.2.5",
     "mermaid": "^9.1.6",
     "path-browserify": "^1.0.1",
