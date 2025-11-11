@@ -26,7 +26,7 @@ export const getEntries = (brand: string): Entry[] => {
       links: [
         {
           label: "查看更多",
-          to: "/store",
+          to: "/store/",
         },
       ],
     },
@@ -36,7 +36,7 @@ export const getEntries = (brand: string): Entry[] => {
       links: [
         {
           label: "查看更多",
-          to: "/sdk",
+          to: "/sdk/",
         },
       ],
     },
@@ -46,7 +46,7 @@ export const getEntries = (brand: string): Entry[] => {
       links: [
         {
           label: "查看更多",
-          to: "/community",
+          to: "/community/",
         },
       ],
     },
@@ -67,11 +67,11 @@ export const getEntries = (brand: string): Entry[] => {
       links: [
         {
           label: "设计资源",
-          to: "/design",
+          to: "/design/",
         },
         {
           label: "SDK",
-          to: "/tap-download",
+          to: "/tap-download/",
         },
       ],
     },
