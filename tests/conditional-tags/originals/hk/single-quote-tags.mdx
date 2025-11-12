@@ -1,0 +1,44 @@
+# 单引号标签测试用例 - hk
+
+## 1. 单引号区域标签 - region='global'
+
+<Conditional region='global'>
+
+这是全局区域内容，在hk目录下应该保留，但删除标签。
+
+| 标题1 | 标题2 | 标题3 |
+|---|---|---|
+| 内容1 | 内容2 | 内容3 |
+| 数据1 | 数据2 | 数据3 |
+
+</Conditional>
+
+## 2. 单引号区域标签 - region='cn'
+
+<Conditional region='cn'>
+
+这是CN区域内容，在hk目录下应该被删除，包括内容。
+
+</Conditional>
+
+## 3. 单引号与双引号混合使用
+
+<Conditional region='global' brand="tds">
+
+这是混合使用单引号与双引号的内容，在hk目录下应该保留内容，但删除标签。
+
+</Conditional>
+
+<Conditional region="cn" brand='tds'>
+
+这是混合使用双引号与单引号的内容，在hk目录下应该整个被删除。
+
+</Conditional>
+
+## 预期处理结果
+
+处理后，应该：
+1. 保留全局区域(region='global')的内容，但删除标签
+2. 删除CN区域(region='cn')的标签及其内容
+3. 保留region='global'的混合标签内容，但删除标签
+4. 删除region="cn"的混合标签及其内容 

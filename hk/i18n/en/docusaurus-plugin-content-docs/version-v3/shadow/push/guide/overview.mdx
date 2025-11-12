@@ -17,17 +17,8 @@ Push notifications allow you to deliver messages to users instantly and stay in 
 In addition to sending push notifications using the iOS and Android SDK, you can also trigger them using the REST API.
 
 
-<Conditional brand="leancloud">
-
-Before you can use the Push Notification service, please make sure you have enabled the service on **App > Settings > Security**. You may need to wait up to 3 minutes after clicking on the button before using the service.
-
-</Conditional>
-
-<Conditional brand="tds">
-
 Before you can use the Push Notification service, please make sure you have enabled the service on **Developer Center > Your game > Game Services > Configuration**. You may need to wait up to 3 minutes after clicking on the button before using the service.
 
-</Conditional>
 
 ## Glossary
 
@@ -83,7 +74,7 @@ See [iOS Push Notification Guide](/v3/sdk/push/guide/ios/).
 ## Android
 
 With the stricter permission controls enforced by Android, the deliverability of push notifications sent through the Push Notification service’s own channels has been negatively impacted.
-Therefore, we recommend that you send push notifications using mixpush. It integrates the interfaces provided by <Conditional region="cn">major Chinese handset vendors</Conditional><Conditional region="global">FCM</Conditional> so that you can trigger push notifications using a simple API.
+Therefore, we recommend that you send push notifications using mixpush. It integrates the interfaces provided by FCM so that you can trigger push notifications using a simple API.
 See [Android Mixpush Guide](/v3/sdk/push/guide/android-mixpush/) for more information.
 
 To learn more about Push Notification’s own channels, see [Android Push Notification Guide](/v3/sdk/push/guide/android/).

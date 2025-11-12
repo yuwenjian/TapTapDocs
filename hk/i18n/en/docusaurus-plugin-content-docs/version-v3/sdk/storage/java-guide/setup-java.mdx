@@ -245,7 +245,6 @@ $ gradle clean assemble
 
 If you are working on an Android project, add the following lines to the `onCreate` method of the `Application` class:
 
-<Conditional brand="tds">
 
 ```java
 import cn.leancloud.LeanCloud;
@@ -261,25 +260,6 @@ public class MyLeanCloudApp extends Application {
 }
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```java
-import cn.leancloud.LeanCloud;
-
-public class MyLeanCloudApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // Do not call the initialize method of cn.leancloud.core.LeanCloud, or you will see errors like NetworkOnMainThread.
-        LeanCloud.initialize(this, "your-app-id", "your-app-key", "https://your_server_url");
-    }
-}
-```
-
-</Conditional>
 
 Then specify the permissions needed by the SDK and declare the `MyLeanCloudApp` class in `AndroidManifest.xml`:
 
@@ -336,7 +316,6 @@ public class MyLeanCloudApp extends Application {
 
 If you are working on a Java project, add the following lines to the beginning of your code;
 
-<Conditional brand="tds">
 
 ```java
 import cn.leancloud.core.LeanCloud;
@@ -344,17 +323,6 @@ import cn.leancloud.core.LeanCloud;
 LeanCloud.initialize("your-client-id", "your-client-token", "https://your_server_url");
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```java
-import cn.leancloud.core.LeanCloud;
-
-LeanCloud.initialize("your-app-id", "your-app-key", "https://your_server_url");
-```
-
-</Conditional>
 
 Keep in mind that if you are using the SDK within Cloud Engine, you do not need to set the `serverUrl`.
 If you are initializing your project with our boilerplate, you will see that the `serverUrl` is not provided.

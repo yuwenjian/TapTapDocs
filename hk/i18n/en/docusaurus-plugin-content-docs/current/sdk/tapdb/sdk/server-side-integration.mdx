@@ -16,18 +16,9 @@ If the Response Code returned is 200, it means the data reporting was successful
 
 ### Single Report
 
-<Conditional region='cn'>
-
-`POST` `https://e.tapdb.net/v2/event`
-
-</Conditional>
-
-
-<Conditional region='global'>
 
 `POST` `https://e.tapdb.ap-sg.tapapis.com/v2/event`
 
-</Conditional>
 
 `Content-Type: application/json`
 
@@ -62,17 +53,9 @@ Request example:
 
 ### Batch Report
 
-<Conditional region='cn'>
-
-`POST` `https://e.tapdb.net/v2/batch`
-
-</Conditional>
-
-<Conditional region='global'>
 
 `POST` `https://e.tapdb.ap-sg.tapapis.com/v2/batch`
 
-</Conditional>
 
 `Content-Type: application/json`
 
@@ -147,17 +130,9 @@ Since the SDK cannot push accurate online data, a server-side online data push i
 
 *Note: Online user reports are submitted in JSON format, which differs from the format of other general event reports. Please pay attention to the distinction.*
 
-<Conditional region='cn'>
-
-`POST` `https://se.tapdb.net/tapdb/online`
-
-</Conditional>
-
-<Conditional region='global'>
 
 `POST` `https://se.tapdb.ap-sg.tapapis.com/tapdb/online`
 
-</Conditional>
 
 `Content-Type: application/json`
 
@@ -211,17 +186,9 @@ A: Check if the reporting frequency is lower than once every 5 minutes. To ensur
 
 Due to potential inaccuracies in SDK push notifications, it is recommended to directly use the server-side recharge push interface. Note that you need to stop the reporting of recharge information from the client SDK to prevent duplicate statistics.
 
-<Conditional region='cn'>
-
-`POST` `https://e.tapdb.net/v2/event`
-
-</Conditional>
-
-<Conditional region='global'>
 
 `POST` `https://e.tapdb.ap-sg.tapapis.com/v2/event`
 
-</Conditional>
 
 `Content-Type: application/json`
 

@@ -16,7 +16,7 @@ import v3SDKVersions from "/src/docComponents/v3SDKVersions";
 
 This article will show you how to use push notifications in your Unity project. We recommend that you take a look at [Push Notification Overview](/v3/sdk/push/guide/overview/) if you haven’t already.
 
-Currently we only support iOS and <Conditional region="cn">some Android vendors (Huawei, Xiaomi, VIVO, OPPO, Meizu)</Conditional><Conditional region="global">FCM</Conditional>.
+Currently we only support iOS and FCM.
 
 ## Getting Started
 
@@ -26,9 +26,9 @@ Please first obtain an iOS push notification certificate by following [APNs Conf
 
 ### Android
 
-Please first apply for push notification permissions from <Conditional region="cn">Android vendors</Conditional><Conditional region="global">FCM</Conditional> by following [Android Mixpush Guide](/v3/sdk/push/guide/android-mixpush/).
+Please first apply for push notification permissions from FCM by following [Android Mixpush Guide](/v3/sdk/push/guide/android-mixpush/).
 
-Note that you only need to follow the guide to apply for push notification permissions from <Conditional region="cn">Android vendors</Conditional><Conditional region="global">FCM</Conditional>. You **don’t** need to follow the guide to set up push notifications for Android.
+Note that you only need to follow the guide to apply for push notification permissions from FCM. You **don’t** need to follow the guide to set up push notifications for Android.
 
 ## Integrate the Push Notification Service
 
@@ -42,7 +42,6 @@ If your project “has” other Android Gradle configurations, you’ll need to 
 
 The SDK cannot be installed with UPM because it involves Android Gradle configurations.
 
-<Conditional brand="tds">
 
 ### Import the `LeanCloud-SDK-Realtime-Unity` Package:
 
@@ -66,7 +65,6 @@ You can view all installed packages by going to **Window > Package Manager**.
 
 2. Unzip `LeanCloud-SDK-Realtime-Unity.zip` and drag the Plugins directory to Unity.
 
-</Conditional>
 
 ### Set Up
 
@@ -76,58 +74,6 @@ Provide the iOS developer’s TeamId during initialization. See [Initialization]
 
 #### Android
 
-<Conditional region="cn">
-
-##### Huawei
-
-Download the file named `agconnect-services.json` applied from Huawei Push Service and place it in `Assets/LeanCloud/Push/Android/HuaWei/hms/`. When bundling, this file will be copied to the directory specified by Huawei.
-
-##### VIVO
-
-Provide the `app_id` and `api_key` applied from VIVO Push Service as the values of `com.vivo.push.app_id` and `com.vivo.push.api_key` under `meta-data` in `Assets/Plugins/Android/AndroidMenifest.xml`.
-
-##### Other Platforms
-
-For Xiaomi, OPPO, and Meizu, provide the configurations when initializing the SDK.
-
-Note that `${applicationId}` is used for the package name in `AndroidMenifest.xml`. If you need different `applicationId`s for different channels, please edit it manually.
-
-### Initialization
-
-Here you need to initialize the SDK for different vendors according to the platform and device information.
-You can use Xiaomi Push Service as the default option as it is able to establish connections when used under other vendors.
-
-```cs
-using LeanCloud.Storage;
-using LeanCloud;
-using LeanCloud.Push;
-using System.Threading.Tasks;
-using LC.Newtonsoft.Json;
-
-LCApplication.Initialize("{{appid}}", "{{appkey}}", "https://please-replace-with-your-customized.domain.com");
-
-if (Application.platform == RuntimePlatform.IPhonePlayer) {
-    LCIOSPushManager.RegisterIOSPush(IOS_TEAM_ID);
-} else if (Application.platform == RuntimePlatform.Android) {
-    string deviceModel = SystemInfo.deviceModel.ToLower();
-    if (deviceModel.Contains("huawei")) {
-        LCHuaWeiPushManager.RegisterHuaWeiPush();
-    } else if (deviceModel.Contains("oppo")) {
-        LCOPPOPushManager.RegisterOPPOPush(OPPO_APP_KEY, OPPO_APP_SECRET);
-    } else if (deviceModel.Contains("vivo")) {
-        LCVIVOPushManager.RegisterVIVOPush();
-    } else if (deviceModel.Contains("meizu")) {
-        LCMeiZuPushManager.RegisterMeiZuPush(MEIZU_APP_ID, MEIZU_APP_KEY);
-    } else /*if (deviceModel.Contains("xiaomi"))*/ {
-        // Try to register Xiaomi Push Service for other vendors
-        LCXiaoMiPushManager.RegisterXiaoMiPush(XIAOMI_APP_ID, XIAOMI_APP_KEY);
-    }
-}
-```
-
-</Conditional>
-
-<Conditional region="global">
 
 To initialize FCM:
 
@@ -135,7 +81,6 @@ To initialize FCM:
 LCFCMPushManager.RegisterFCMPush();
 ```
 
-</Conditional>
 
 ## Installation
 
@@ -221,17 +166,9 @@ You can send the push notification by providing the objectId of the Installation
 ## FAQ
 ### How do I remove the push notification services provided by certain vendors?
 
-<Conditional region="cn">
-
-You might want your app to support only certain vendors, or to release different packages for different channels. In this case, you can remove the vendor SDKs for unused vendors to reduce the size of the packages:
-
-</Conditional>
-
-<Conditional region="global">
 
 The SDK includes vendor SDKs for some Chinese Android vendors. You can remove them to reduce the size of the package.
 
-</Conditional>
 
 - Delete `Assets/LeanCloud/Push/Android/xx`. Here `xx` is the vendor name such as `HuaWei` and `XiaoMi`.
 - Delete `dependencies` from `Assets/Plugins/Android/mainTemplate.gradle`.

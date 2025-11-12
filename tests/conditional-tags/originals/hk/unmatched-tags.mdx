@@ -1,0 +1,38 @@
+# 未匹配标签测试用例 - hk
+
+## 1. 未闭合的开始标签
+
+<Conditional brand="tds">
+这个标签没有闭合标签
+
+## 2. 孤立的闭合标签
+
+这是正常内容
+</Conditional>
+这个闭合标签没有对应的开始标签
+
+## 3. 错误嵌套的标签
+
+<Conditional brand="tds">
+这是 TDS 的开始
+<Conditional region="global">
+这是嵌套内的全局区域
+</Conditional>
+这是 TDS 的结束
+</Conditional>
+</Conditional>
+
+## 4. 重复的闭合标签
+
+<Conditional brand="tds">
+这是 TDS 内容
+</Conditional>
+</Conditional>
+
+## 预期处理结果
+
+处理后，应该：
+1. 移除未闭合的开始标签
+2. 移除孤立的闭合标签
+3. 保留正确结构的内容
+4. 移除重复的闭合标签 

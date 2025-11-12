@@ -1,0 +1,67 @@
+# 复杂嵌套标签测试用例 - hk
+
+## 1. 复杂嵌套结构
+
+<Conditional brand="tds">
+TDS 内容开始
+<Conditional region="global">
+TDS + 全局内容
+<Conditional brand="leancloud">
+TDS + 全局 + LeanCloud 内容 (应该被删除)
+</Conditional>
+TDS + 全局内容继续
+</Conditional>
+<Conditional region="cn">
+TDS + CN 内容 (应该被删除)
+<Conditional brand="leancloud">
+TDS + CN + LeanCloud 内容 (应该被删除)
+</Conditional>
+TDS + CN 内容继续 (应该被删除)
+</Conditional>
+TDS 内容结束
+</Conditional>
+
+## 2. 交替嵌套
+
+<Conditional region="global">
+全局内容开始
+<Conditional brand="tds">
+全局 + TDS 内容
+</Conditional>
+<Conditional brand="leancloud">
+全局 + LeanCloud 内容 (应该被删除)
+</Conditional>
+全局内容结束
+</Conditional>
+
+## 3. 多重条件组合
+
+<Conditional region="global">
+<Conditional brand="tds">
+这是同时包含全局区域和 TDS 品牌的内容
+</Conditional>
+</Conditional>
+
+<Conditional region="cn">
+<Conditional brand="leancloud">
+这是同时包含 CN 区域和 LeanCloud 品牌的内容 (应该被删除)
+</Conditional>
+</Conditional>
+
+## 4. 重叠条件组合
+
+<Conditional region="global">
+全局区域开始
+<Conditional region="cn">
+这是错误的重叠区域标签 (应该被删除)
+</Conditional>
+全局区域结束
+</Conditional>
+
+## 预期处理结果
+
+处理后，应该：
+1. 保留所有 TDS 内容，移除其中的 LeanCloud 内容
+2. 保留所有全局区域内容，移除 CN 区域内容
+3. 正确处理各种嵌套组合，保留需要的内容
+4. 移除无效或冲突的嵌套标签 

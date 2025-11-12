@@ -1,0 +1,27 @@
+# 基本测试用例 - hk
+
+## 品牌条件标签
+
+<Conditional brand="tds">
+这是 TDS 内容，应该保留，但删除标签
+</Conditional>
+
+<Conditional brand="leancloud">
+这是 LeanCloud 内容，应该被删除
+</Conditional>
+
+## 区域条件标签
+
+<Conditional region="global">
+这是全局区域内容，应该保留，但删除标签
+</Conditional>
+
+<Conditional region="cn">
+这是 CN 区域内容，应该被删除
+</Conditional>
+
+## 预期处理结果
+
+处理后，只应保留：
+1. TDS 内容（无标签）
+2. 全局区域内容（无标签） 

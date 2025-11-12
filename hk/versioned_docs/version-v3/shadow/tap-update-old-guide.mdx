@@ -12,135 +12,34 @@ import CodeBlock from "@theme/CodeBlock";
 import { Conditional } from "/src/docComponents/conditional";
 
 
-
 在海外区域或游戏未接入 SDK 时，可以通过以下方案进行手动唤起 TapTap 客户端更新游戏:
 
 
 - 如果玩家设备已安装 TapTap 客户端，则通过以下 URL 直接唤起 TapTap 客户端到游戏详情页进行更新；
 
-    <Conditional region="cn">
-
-    - 适用于中国大陆 URL：`taptap://taptap.cn/app?app_id=AppID&source=outer|update&tab_name=new_version`
-    - 适用于其他国家或地区 URL：`tapglobal://taptap.tw/app?app_id=游戏商店id&source=outer|update`
-
-    </Conditional>
-    <Conditional region="global">
+    
+    
 
     - `tapglobal://taptap.tw/app?app_id=游戏商店id&source=outer|update`
 
-    </Conditional>
+    
 
 - 如果玩家设备没有安装 TapTap 客户端，则以 Web 形式通过以下 URL 打开游戏详情页，根据页面底部提示引导玩家下载 TapTap 客户端，安装成功后打开 TapTap 客户端，玩家根据提示选择在 TapTap 客户端里打开游戏详情页进行更新。
 
     
-    <Conditional region="cn">
-
-    - 适用于中国大陆 URL：`https://tap.cn/5d1NGyET?subc1=AppID`
-    - 适用于其他国家或地区 URL：`https://tap.io/GNYwFaZr?subc1=AppID`
-
-    </Conditional>
-    <Conditional region="global">
+    
+    
 
     - `https://tap.io/GNYwFaZr?subc1=AppID`
 
-    </Conditional>
+    
 
-注意替换其中的 `AppID`。`AppID` 是游戏在 TapTap 商店的唯一身份标识，例如：<Conditional region="cn">`https://www.taptap.cn/app/187168`</Conditional><Conditional region="global">`https://www.taptap.io/app/187168`</Conditional>，其中 `187168` 是 AppID。
+注意替换其中的 `AppID`。`AppID` 是游戏在 TapTap 商店的唯一身份标识，例如：`https://www.taptap.io/app/187168`，其中 `187168` 是 AppID。
 
 注意，除了打开 URL 外，还需要检测设备是否已经安装 TapTap 客户端，以及处理唤起失败的逻辑，这些代码都需要自行编写。
 
 下面提供 TapSDK 唤起更新的代码供参考。
 
-
-<Conditional region="cn">
-
-适用于中国大陆：
-
-```java
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
-
-public class TapGameUtil {
-
-  private static final String TAG = TapGameUtil.class.getName();
-
-  public static final String PACKAGE_NAME_TAPTAP = "com.taptap";
-
-  public static final String CLIENT_URI_TAPTAP = "taptap://taptap.cn";
-
-  public static final String DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP = "https://tap.cn/5d1NGyET";
-
-  // 跳转到 TapTap 客户端更新游戏，跳转失败时，在浏览器打开下载 TapTap 客户端页面
-  public static boolean updateGameAndFailToWebInTapTap(Activity activity, String appId) {
-    return updateGameInTapTap(activity, appId) || openWebDownloadUrlOfTapTap(activity, appId);
-  }
-
-  // 判断 TapTap 客户端是否安装
-  public static boolean isTapClientInstalled(Context context) {
-    if (context != null) {
-      boolean TapTapInstalled = false;
-      try {
-        PackageInfo packageInfo = context.getPackageManager().getPackageInfo(PACKAGE_NAME_TAPTAP, 0);
-        if (null != packageInfo) {
-          TapTapInstalled = true;
-        }
-      } catch (Exception e) {
-        Log.e(TAG, clientPackageName + " isInstalled=false");
-      }
-      return TapTapInstalled;
-    }
-    return false;
-  }
-
-  // 跳转到 TapTap 客户端更新游戏
-  public static boolean updateGameInTapClient(Activity activity, String appId) {
-    if (activity != null && !TextUtils.isEmpty(appId)) {
-      try {
-        Uri uri = Uri.parse(String.format(Locale.US,
-            "%s/app?app_id=%s&source=outer|update", CLIENT_URI_TAPTAP, appId));
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.startActivity(intent);
-      } catch (Exception e) {
-        Log.e(TAG, clientUri + "updateGameInTapTap failed");
-        return false;
-      }
-      return true;
-    }
-    Log.e(TAG, clientUri + "updateGameInTapTap failed");
-    return false;
-  }
-
-  // 在浏览器中打开下载 TapTap 客户端页面
-  public static boolean openWebDownloadUrl(Activity activity, String url) {
-    if (activity != null && !TextUtils.isEmpty(url)) {
-      try {
-        String url = String.format(Locale.US, DEFAULT_CLIENT_DOWNLOAD_URL_TAPTAP + "?subc1=%s", appId);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setData(Uri.parse(url));
-        activity.startActivity(intent);
-      } catch (Exception e) {
-        Log.e(TAG, "openWebUrl fail");
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-}
-```
-
-适用于其他国家或地区：
-
-</Conditional>
 
 ```java
 

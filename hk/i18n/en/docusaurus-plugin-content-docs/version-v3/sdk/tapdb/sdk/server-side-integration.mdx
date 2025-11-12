@@ -16,18 +16,9 @@ If the Response Code is 200, it means the data was reported successfully, please
 
 ### Single Report
 
-<Conditional region='cn'>
-
-`POST` `https://e.tapdb.net/v2/event`
-
-</Conditional>
-
-
-<Conditional region='global'>
 
 `POST` `https://e.tapdb.ap-sg.tapapis.com/v2/event`
 
-</Conditional>
 
 `Content-Type: application/json`
 
@@ -62,17 +53,9 @@ Request content example:
 
 ### Batch Report
 
-<Conditional region='cn'>
-
-`POST` `https://e.tapdb.net/v2/batch`
-
-</Conditional>
-
-<Conditional region='global'>
 
 `POST` `https://e.tapdb.ap-sg.tapapis.com/v2/batch`
 
-</Conditional>
 
 `Content-Type: application/json`
 
@@ -148,17 +131,9 @@ Since the SDK can't push accurate online data, we provide a server-side online d
 
 **Note: The online count is reported in json format, which is different from other common event reporting formats, please pay attention to the difference.**
 
-<Conditional region='cn'>
-
-`POST` `https://se.tapdb.net/tapdb/online`
-
-</Conditional>
-
-<Conditional region='global'>
 
 `POST` `https://se.tapdb.ap-sg.tapapis.com/tapdb/online`
 
-</Conditional>
 
 `Content-Type: application/json`
 
@@ -198,17 +173,9 @@ Example：
 
 Since the SDK push may be inaccurate, it is recommended to use the server-side recharge push interface directly. Note that you need to stop the reporting of recharge information in the client SDK to prevent duplicate statistics.
 
-<Conditional region='cn'>
-
-`POST` `https://e.tapdb.net/v2/event`
-
-</Conditional>
-
-<Conditional region='global'>
 
 `POST` `https://e.tapdb.ap-sg.tapapis.com/v2/event`
 
-</Conditional>
 
 `Content-Type: application/json`
 

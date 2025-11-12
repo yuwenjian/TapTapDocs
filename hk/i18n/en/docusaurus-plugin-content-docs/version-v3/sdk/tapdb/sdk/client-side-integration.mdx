@@ -160,25 +160,6 @@ Synchronize the initialization of TapDB during TapSDK initialization.
 
 <>
 
-<Conditional region='cn'>
-
-```cs
-using TapTap.Bootstrap; 
-
-var config = new TapConfig.Builder()
-    .ClientID("your_client_id")  // (Required) Client ID in the Developer Center.
-    .ClientToken("your_client_token")  // (Required) Client Token in the Developer Center.
-    .ServerURL("https://your_server_url")  //  (Required) Developer Center > Your Game > Game Services > Configuration > Domain > API
-    .RegionType(RegionType.CN)  // (Optional) CN for Mainland China; IO for international.
-    .TapDBConfig(true, "gameChannel", "gameVersion", true)  // TapDB is automatically initialized based on the configuration of TapConfig.
-    .ConfigBuilder();
-
-TapBootstrap.Init(config);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```cs
 using TapTap.Bootstrap; 
@@ -195,7 +176,6 @@ var config = new TapConfig.Builder()
 TapBootstrap.Init(config);
 ```
 
-</Conditional>
 
 TapDBConfig descriptions：
 
@@ -213,29 +193,6 @@ advertiserIDCollectionEnabled | No | IDFA switch, please refer to the [Collect D
 </>
 
 <>
-
-<Conditional region='cn'>
-
-```java
-TapDBConfig tapDBConfig = new TapDBConfig();
-tapDBConfig.setEnable(true); // Whether to open TapDB service.
-tapDBConfig.setChannel("gameChannel"); // Subcontracting channels, length not greater than 256.
-tapDBConfig.setGameVersion("1.0.0"); // Game version, when empty, automatically obtains the version of the game installation package. The length is not greater than 256.
-
-TapConfig tapConfig = new TapConfig.Builder()
-        .withAppContext(getApplicationContext())
-        .withClientId("your_client_id")  // (Required) Client ID in the Developer Center.
-        .withClientToken("your_client_token")  // (Required) Client Token in the Developer Center.
-        .withServerUrl("https://your_server_url")  // (Required) Developer Center > Your Game > Game Services > Configuration > Domain > API
-        .withRegionType(TapRegionType.CN)  // TapRegionType.CN: China;  TapRegionType.IO: Other countries or regions。
-        .withTapDBConfig(tapDBConfig)
-        .build();
-TapBootstrap.init(MainActivity.this, tapConfig);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 
 ```java
@@ -255,36 +212,11 @@ TapConfig tapConfig = new TapConfig.Builder()
 TapBootstrap.init(MainActivity.this, tapConfig);
 ```
 
-</Conditional>
 
 </>
 
 <>
 
-<Conditional region='cn'>
-
-```objectivec
-
-TapConfig *config = [TapConfig new];
-config.clientId = @"your_client_id";  // (Required) Client ID in the Developer Center.
-config.clientToken = @"your_client_token";  // (Required) Client Token in the Developer Center.
-config.region = TapSDKRegionTypeCN;  // TapRegionType.CN: China;  TapRegionType.IO: Other countries or regions.
-config.serverURL = @"https://your_server_url";  // // (Required) Developer Center > Your Game > Game Services > Configuration > Domain > API.
-
-TapDBConfig * dbConfig = [[TapDBConfig alloc]init];
-dbConfig.enable = YES; // Whether to open TapDB service.
-dbConfig.channel=@"taptap"; // Subcontracting channels, length not greater than 256.
-dbConfig.gameVersion=@"1.0.0"; // Game version, when empty, automatically obtains the version of the game installation package. The length is not greater than 256.
-dbConfig.advertiserIDCollectionEnabled=YES; // IDFA switch, please refer to the [Collect Device Fingerprint](/v3/sdk/tapdb/sdk/client-side-integration#idfaios) documentation.
-config.dbConfig = dbConfig;
-
-config.region = TapSDKRegionTypeCN;
-[TapBootstrap initWithConfig:config];
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```objectivec
 
@@ -304,7 +236,6 @@ config.dbConfig = dbConfig;
 [TapBootstrap initWithConfig:config];
 ```
 
-</Conditional>
 
 </>
 
@@ -320,24 +251,6 @@ Import the header file.
 #include "TapUEDB.h"
 ```
 
-<Conditional region='cn'>
-
-```cpp
-FTUConfig Config;
-Config.ClientID = ClientID;           // (Required) Client ID in the Developer Center.
-Config.ClientToken = ClientToken;     //  (Required) Client Token in the Developer. 
-Center.Config.ServerURL = ServerURL;  //  (Required) Developer Center > Your Game > Game Services > Configuration > Domain > API.
-Config.RegionType = ERegionType::CN;
-Config.DBConfig.Enable = true;
-Config.DBConfig.Channel = Channel;
-Config.DBConfig.GameVersion = GameVersion;
-Config.DBConfig.AdvertiserIDCollectionEnabled = AdvertiserIDCollectionEnabled;
-TapUEBootstrap::Init(Config);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```cpp
 FTUConfig Config;
@@ -352,7 +265,6 @@ Config.DBConfig.AdvertiserIDCollectionEnabled = AdvertiserIDCollectionEnabled;
 TapUEBootstrap::Init(Config);
 ```
 
-</Conditional>
 
 #### DBConfig Descriptions
 
@@ -375,17 +287,6 @@ When only using the TapDB without using the login functionality and without impo
 
 <>
 
-<Conditional region='cn'>
-
-```cs
-public static void Init(string clientId, string channel, string gameVersion, bool isCN)
-
-TapDB.Init("clientId", "taptap", "gameVersion", true);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```cs
 public static void Init(string clientId, string channel, string gameVersion, bool isCN)
@@ -393,7 +294,6 @@ public static void Init(string clientId, string channel, string gameVersion, boo
 TapDB.Init("clientId", "taptap", "gameVersion", false);
 ```
 
-</Conditional>
 
 Parameter | Can be null | Descriptions
 --- | --- | ---
@@ -406,28 +306,6 @@ isCN | Yes | true: Chaina，false: Other countries or regions.
 
 <>
 
-<Conditional region='cn'>
-
-```java
-public synchronized static void init(final Context context,
-                                        final String clientId,
-                                        final String channel,
-                                        final String gameVersion,
-                                        final boolean isCN)
-
-public synchronized static void init(final Context context,
-                                        final String clientId,
-                                        final String channel,
-                                        final String gameVersion,
-                                        final boolean isCN,
-                                        final JSONObject properties)
-
-TapDB.init(getApplicationContext(), "clientId", "taptap", "gameVersion", true);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```java
 public synchronized static void init(final Context context,
@@ -446,7 +324,6 @@ public synchronized static void init(final Context context,
 TapDB.init(getApplicationContext(), "clientId", "taptap", "gameVersion", false);
 ```
 
-</Conditional>
 
 Parameter |  Can be null | Descriptions
 --- | --- | ---
@@ -461,17 +338,6 @@ properties | Yes | The event property of device login (device_login). It can be 
 
 <>
 
-<Conditional region='cn'>
-
-```objectivec
-+ (void)onStartWithClientId:(NSString *)clientId channel:(nullable NSString *)channel version:(nullable NSString *)gameVersion isCN:(BOOL)isCN;
-
-[TapDB onStartWithClientId:@"clientid" channel:@"taptap" version:@"gameVersion" isCN:YES];
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```objectivec
 + (void)onStartWithClientId:(NSString *)clientId channel:(nullable NSString *)channel version:(nullable NSString *)gameVersion isCN:(BOOL)isCN;
@@ -479,7 +345,6 @@ properties | Yes | The event property of device login (device_login). It can be 
 [TapDB onStartWithClientId:@"clientid" channel:@"taptap" version:@"gameVersion" isCN:NO];
 ```
 
-</Conditional>
 
 Parameter | Can be null | Descriptions
 --- | --- | ---
@@ -500,20 +365,6 @@ Import：
 
 Initialize TapDB：
 
-<Conditional region='cn'>
-
-```cpp
-FTUDBConfig Config;
-Config.ClientId = TEXT("your client id");
-Config.RegionType = ERegionType::CN;
-Config.Channel = TEXT("your Channel");
-Config.GameVersion = TEXT("GameVersion");
-TapUEDB::Init(Config);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```cpp
 FTUDBConfig Config;
@@ -524,7 +375,6 @@ Config.GameVersion = TEXT("GameVersion");
 TapUEDB::Init(Config);
 ```
 
-</Conditional>
 
 #### DBConfig 
 

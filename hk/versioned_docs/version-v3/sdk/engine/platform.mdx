@@ -31,7 +31,7 @@ import Path from "/src/docComponents/path";
 
 云引擎对应用进程内部几乎没有干预，你可以选用你喜欢的开发框架和第三方组件库、自行组织项目的目录结构。云引擎的负载均衡会转发绑定域名下的所有 HTTP 请求，你可以在应用内使用 Web 框架来自行设计 HTTP API 中的路径、请求和响应的格式。
 
-目前云引擎主要为无状态的 HTTP 服务而优化，不支持在文件系统上持久地存储数据，应用可以将数据存储到 <Conditional brand="tds">[数据存储](/v3/sdk/storage/features)</Conditional><Conditional brand="leancloud">[数据存储](/v3/sdk/storage/overview/)</Conditional> 或 LeanDB 提供的 [Redis](/v3/sdk/engine/database/redis/) 和 [MySQL](/v3/sdk/engine/database/mysql/) 中。
+目前云引擎主要为无状态的 HTTP 服务而优化，不支持在文件系统上持久地存储数据，应用可以将数据存储到 [数据存储](/v3/sdk/storage/features) 或 LeanDB 提供的 [Redis](/v3/sdk/engine/database/redis/) 和 [MySQL](/v3/sdk/engine/database/mysql/) 中。
 
 <p>
   要将一个已有的项目关联到云引擎应用，可以使用 <code>{CLI_BINARY} switch</code>：
@@ -85,7 +85,7 @@ Switching to my-engine-app (group: web)`}
 
 ### 预备环境和生产环境
 
-标准版云引擎对每个分组提供了「生产环境」和「预备环境」，生产环境设计用来接收和处理线上请求；预备环境则提供了和生产环境几乎相同的环境、访问相同的数据，可以绑定单独的域名供开发者进行测试。<Conditional brand="tds">TDS</Conditional><Conditional brand="leancloud">LeanCloud</Conditional> 的客户端 SDK 在调用云函数或进行可能触发 Hook 的数据存储操作时，可以设置请求的环境（`X-LC-Prod`）。
+标准版云引擎对每个分组提供了「生产环境」和「预备环境」，生产环境设计用来接收和处理线上请求；预备环境则提供了和生产环境几乎相同的环境、访问相同的数据，可以绑定单独的域名供开发者进行测试。TDS 的客户端 SDK 在调用云函数或进行可能触发 Hook 的数据存储操作时，可以设置请求的环境（`X-LC-Prod`）。
 
 在开发过程中，你可以先将改动部署到预备环境，使用线上数据测试通过后再发布到生产环境。如果你希望有一个独立数据源的测试环境，建议单独创建一个应用。
 
@@ -113,7 +113,7 @@ Switching to my-engine-app (group: web)`}
 
 ### Git 部署
 
-云引擎还支持从 Git 仓库拉取代码进行部署，包括 [GitHub](https://github.com/)<Conditional region='cn'> 或 [Gitee](https://gitee.com/)</Conditional> 这样的第三方托管平台，和 [GitLab](https://about.gitlab.com/install/) 这样自己搭建的 Git 托管服务。你可以在 **<Path to="engine" /> > 管理部署 > 你的分组 > 部署 > Git 部署** 中设置 Git 仓库的地址。
+云引擎还支持从 Git 仓库拉取代码进行部署，包括 [GitHub](https://github.com/) 这样的第三方托管平台，和 [GitLab](https://about.gitlab.com/install/) 这样自己搭建的 Git 托管服务。你可以在 **<Path to="engine" /> > 管理部署 > 你的分组 > 部署 > Git 部署** 中设置 Git 仓库的地址。
 
 云引擎支持 SSH 协议的私有仓库（如 `git@github.com:leancloud/node-js-getting-started.git`），你需要在设置 Git 仓库地址后在 Git 托管服务处为云引擎配置 deploy key。如果你的仓库是公开的，则推荐使用 HTTPS 形式的仓库地址。
 
@@ -183,11 +183,6 @@ Switching to my-engine-app (group: web)`}
 
 ### 标准版云引擎
 
-<Conditional brand='leancloud'>
-
-云引擎的计费独立于开发版、商用版方案，开通或取消商用版不影响云引擎的实例和计费。
-
-</Conditional>
 
 :::tip
 对于商业项目和正式上线的产品，我们建议开发者升级到标准版云引擎，并使用至少两个实例，来保证业务的可用性。
@@ -268,7 +263,7 @@ Switching to my-engine-app (group: web)`}
 
 ### 实例计费规则
 
-标准版云引擎按照所选择的规格乘以数量来进行计费，每天会按照前一天最大的实例数量来扣除前一天的费用。各规格的价格可以在<Conditional brand='leancloud'>当前节点的</Conditional>价格页面查看，扣费记录可在<Conditional brand='leancloud'>云服务控制台的消费明细</Conditional><Conditional brand='tds'>开发者中心的账单</Conditional>中查看。
+标准版云引擎按照所选择的规格乘以数量来进行计费，每天会按照前一天最大的实例数量来扣除前一天的费用。各规格的价格可以在价格页面查看，扣费记录可在开发者中心的账单中查看。
 
 如果不想继续付费，可以在所有分组中将实例规格修改为「免费版」，标准实例会被删除，并在最后一个分组下赠送一个体验实例。在次日会进行最后一次扣费，之后便不会再产生费用。
 

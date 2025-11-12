@@ -12,7 +12,7 @@ import { Conditional } from "/src/docComponents/conditional";
 这篇文档是关于云引擎 SDK 的深入介绍，如需了解云函数和 Hook 的用法请看 [云函数和 Hook 开发指南](/v3/sdk/engine/functions/guides)。
 :::
 
-云引擎 SDK 通常基于 <Conditional brand="tds">[数据存储](/v3/sdk/storage/features)</Conditional><Conditional brand="leancloud">[数据存储](/v3/sdk/storage/overview/)</Conditional> 服务的 SDK，并提供了云函数和 Hook 等额外能力，供开发者在云引擎上更方便地开发后端应用。
+云引擎 SDK 通常基于 [数据存储](/v3/sdk/storage/features) 服务的 SDK，并提供了云函数和 Hook 等额外能力，供开发者在云引擎上更方便地开发后端应用。
 
 ## 接入云引擎 SDK
 
@@ -254,7 +254,7 @@ func setResponseContentType(next echo.HandlerFunc) echo.HandlerFunc {
 
 ## 使用数据存储服务
 
-接入 SDK 后，在云引擎中你就可以调用 <Conditional brand="tds">[数据存储](/v3/sdk/storage/features)</Conditional><Conditional brand="leancloud">[数据存储](/v3/sdk/storage/overview/)</Conditional> 服务作为数据库来存储数据，或者使用文件、短信、推送等功能。可以查看数据存储服务对应语言的文档了解详情。
+接入 SDK 后，在云引擎中你就可以调用 [数据存储](/v3/sdk/storage/features) 服务作为数据库来存储数据，或者使用文件、短信、推送等功能。可以查看数据存储服务对应语言的文档了解详情。
 
 数据存储相关功能可以在云函数和 Hook 中使用，也可以在程序的其他部分（如自行选用的 Web 框架）中使用。
 
@@ -595,14 +595,6 @@ $cookieStorage->set("key", "val");
 
 我们目前推荐在绑定自定义域名时勾选「强制 HTTPS」而不是使用 SDK 中的重定向中间件。
 
-<Conditional region='cn'>
-
-:::info
-不过，「强制 HTTPS」选项目前只支持独立 IP。
-如果使用加速节点，仍需在项目代码层面实现重定向。
-:::
-
-</Conditional>
 
 <details>
 <summary>点击展开关于 SDK 中重定向到 HTTPS 的用法（不推荐）</summary>

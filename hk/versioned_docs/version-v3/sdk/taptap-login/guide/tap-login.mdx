@@ -12,11 +12,6 @@ import Profiles from "../../_partials/tap-login-profile.mdx";
 
 如果你仅仅只需要接入 TapTap 这一种登录方式，确认不使用 TDS 其他云服务，可以看本篇文档。请注意，如果刚开始只选择接入「TapTap 登录」，后面又需要使用其他云服务的话，后期可能有一定的升级成本。
 
-<Conditional region='cn'>
-
-使用原来 TapSDK v1.x 版本的开发者，也可以参考 [1.x 升级 3.x 指南](../upgrade1.x) 完成 TapSDK 的升级。
-
-</Conditional>
 
 ## 环境要求
 
@@ -417,42 +412,15 @@ PublicDependencyModuleNames.AddRange(new string[] { "Core",
 
 ## 初始化
 
-<Conditional region='cn'>
-
-:::info
-游戏 [**适用地区**](/v3/sdk/start/get-ready/#适用地区) 在开启应用配置时选定。
-
-* [TapTap 开发者中心](https://developer.taptap.cn/)适用地区为中国大陆。
-
-* 出海游戏请前往 [**TapTap.io 开发者中心**](https://developer.taptap.io/) 开启游戏服务，适用地区为其他国家或地区。
-
-**单纯 TapTap 登录初始化时需要区分**适用于中国大陆还是其他国家或地区。
-:::
-
-</Conditional>
 
 <MultiLang kind="ue">
 <>
 
-<Conditional region='cn'>
-
-```cs
-// 适用于中国大陆
-TapLogin.Init(string clientID);
-
-// 适用于其他国家或地区
-TapLogin.Init(string clientID, bool isCn, bool roundCorner);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```cs
 TapLogin.Init(string clientID, bool isCn, bool roundCorner);
 ```
 
-</Conditional>
 
 **参数说明**
 
@@ -465,21 +433,6 @@ roundCorner | 网页登录时边框是否使用圆角，使用圆⻆边框为 tr
 </>
 <>
 
-<Conditional region='cn'>
-
-```java
-// 适用于中国大陆
-TapLoginHelper.init(Context context, String clientID);
-
-// 适用于其他国家或地区
-LoginSdkConfig config = new LoginSdkConfig();
-config.regionType = RegionType.IO;
-TapLoginHelper.init(Context context, String clientID, config);
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```java
 LoginSdkConfig config = new LoginSdkConfig();
@@ -487,7 +440,6 @@ config.regionType = RegionType.IO;
 TapLoginHelper.init(Context context, String clientID, config);
 ```
 
-</Conditional>
 
 **参数说明**
 
@@ -499,22 +451,6 @@ clientID | TapTap 开发者中心对应应用的 Client ID
 </>
 <>
 
-<Conditional region='cn'>
-
-```objectivec
-// 适用于中国大陆
-[TapLoginHelper initWithClientID:clientID];
-
-// 适用于其他国家或地区
-TTSDKConfig *config = [[TTSDKConfig alloc] init];
-config.regionType = RegionTypeIO;
-config.roundCorner = YES;
-[TapLoginHelper initWithClientID:clientID config:config];
-```
-
-</Conditional>
-
-<Conditional region='global'>
 
 ```objectivec
 TTSDKConfig *config = [[TTSDKConfig alloc] init];
@@ -523,7 +459,6 @@ config.roundCorner = YES;
 [TapLoginHelper initWithClientID:clientID config:config];
 ```
 
-</Conditional>
 
 **参数说明**
 

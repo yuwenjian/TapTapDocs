@@ -8,7 +8,7 @@ import { Conditional } from "/src/docComponents/conditional";
 
 ## Introduction
 
-It’s a common practice for games to have an account system that can store players’ data on the cloud. With TDS Authentication, you can easily add a robust and secure account system in your game that allows players to sign in with services like TapTap, Apple, <Conditional region="cn">WeChat, QQ</Conditional><Conditional region="global">Facebook</Conditional>, or even as a guest. Using such a system doesn’t require the knowledge of implementing the backend of an account system. You can simply call the APIs provided by the service and utilize all the account-related features by accessing the TDS User object.
+It’s a common practice for games to have an account system that can store players’ data on the cloud. With TDS Authentication, you can easily add a robust and secure account system in your game that allows players to sign in with services like TapTap, Apple, Facebook, or even as a guest. Using such a system doesn’t require the knowledge of implementing the backend of an account system. You can simply call the APIs provided by the service and utilize all the account-related features by accessing the TDS User object.
 
 ## Use Cases
 
@@ -18,7 +18,7 @@ It’s a common practice for games to have an account system that can store play
 ### Sign-in Methods
 
 - Guest account
-- OAuth with TapTap, Apple, <Conditional region="cn">WeChat, QQ</Conditional><Conditional region="global">Facebook</Conditional>, etc.
+- OAuth with TapTap, Apple, Facebook, etc.
 
 ## Using the Service
 
@@ -36,7 +36,7 @@ You may allow players to sign in as a guest so that they can access TDS services
 
 ### Third-Party Sign-on
 
-To allow players to log in with services like TapTap, Apple, <Conditional region="cn">WeChat, and QQ</Conditional><Conditional region="global">and Facebook</Conditional>, you have to obtain an OAuth token from the service provider. If you want to use TapTap Login, please first complete the application process to enable TapTap Login. You can then access the account system on TDS with the OAuth token obtained from TapTap Login.
+To allow players to log in with services like TapTap, Apple, and Facebook, you have to obtain an OAuth token from the service provider. If you want to use TapTap Login, please first complete the application process to enable TapTap Login. You can then access the account system on TDS with the OAuth token obtained from TapTap Login.
 
 ## Validating Access Tokens
 

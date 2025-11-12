@@ -56,16 +56,6 @@ Import the required namespaces
 using LeanCloud.Play;
 ```
 
-<Conditional brand="leancloud">
-
-```cs
-var client = new Client("your-app-id", "your-app-key", "tarara", playServer: "https://xxx.example.com");
-// Please replace xxx.example.com with the domain name of the custom API your app is bound to.
-```
-
-</Conditional>
-
-<Conditional brand="tds">
 
 ```cs
 var client = new Client(
@@ -79,7 +69,6 @@ var client = new Client(
 - The `Client ID` and `Client Token` of the game can be viewed at **Developer Centre > Your Games > Game Services > Application Configuration**.
 - The API domain name is viewable at **Application Configuration > Domain Configuration > API**. Refer to the documentation for [domain name](/v3/sdk/domain/guide/) for more information.
 
-</Conditional>
 
 ## Connecting to a Multiplayer server
 

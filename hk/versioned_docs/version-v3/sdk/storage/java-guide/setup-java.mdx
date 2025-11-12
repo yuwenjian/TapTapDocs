@@ -22,11 +22,6 @@ import Path from "/src/docComponents/path";
 
 我们已经将所有的 library 发布到了 maven 中心仓库，开发者可以用以下任意包管理工具来安装 SDK。
 
-<Conditional brand="leancloud">
-
-对于数据存储服务：
-
-</Conditional>
 
 <Tabs groupId="java-sdk-installation">
 <TabItem value="android" label="Android" default>
@@ -77,68 +72,6 @@ implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'`}
 
 </Tabs>
 
-<Conditional brand="leancloud">
-
-对于即时通讯与推送服务：
-
-<Tabs groupId="java-sdk-installation">
-<TabItem value="android" label="Android" default>
-
-如果是 Android 项目，使用这些包：
-
-<CodeBlock className="groovy">
-  {`implementation 'cn.leancloud:realtime-android:${v3SDKVersions.leancloud.java}'
-implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'`}
-</CodeBlock>
-
-使用混合推送服务：
-
-<CodeBlock className="groovy">
-  {`implementation 'cn.leancloud:mixpush-android:${v3SDKVersions.leancloud.java}'
-implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'`}
-</CodeBlock>
-
-</TabItem>
-
-<TabItem value="maven" label="Maven">
-
-<CodeBlock className="xml">
-  {`<dependency>
-    <groupId>cn.leancloud</groupId>
-    <artifactId>realtime-core</artifactId>
-    <version>${v3SDKVersions.leancloud.java}</version>
-</dependency>`}
-</CodeBlock>
-
-</TabItem>
-
-<TabItem value="ivy" label="Ivy">
-
-<CodeBlock className="xml">
-  {`<dependency org="cn.leancloud" name="realtime-core" rev="${v3SDKVersions.leancloud.java}" />`}
-</CodeBlock>
-
-</TabItem>
-
-<TabItem value="sbt" label="SBT">
-
-<CodeBlock className="scala">
-  {`libraryDependencies += "cn.leancloud" %% "realtime-core" % "${v3SDKVersions.leancloud.java}"`}
-</CodeBlock>
-
-</TabItem>
-
-<TabItem value="gradle" label="Gradle">
-
-<CodeBlock className="groovy">
-  {`implementation 'cn.leancloud:realtime-core:${v3SDKVersions.leancloud.java}'`}
-</CodeBlock>
-
-</TabItem>
-
-</Tabs>
-
-</Conditional>
 
 <details>
 <summary>点击查看对 maven 源的特别说明</summary>
@@ -211,7 +144,6 @@ $ gradle clean assemble
 
 ### Android 平台初始化
 
-<Conditional brand="tds">
 
 :::info
 [TapSDK 初始化](/v3/sdk/start/quickstart/#初始化)时，会自动执行这一节的初始化方法。
@@ -219,11 +151,9 @@ $ gradle clean assemble
 如果已经参考 **快速开始** 文档完成了 TapSDK 初始化，则**不需要**参考这里的初始化。
 :::
 
-</Conditional>
 
 如果是一个 Android 项目，则向 `Application` 类的 `onCreate` 方法添加：
 
-<Conditional brand="tds">
 
 ```java
 import com.tapsdk.lc.LeanCloud;
@@ -239,29 +169,9 @@ public class MyLeanCloudApp extends Application {
 }
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```java
-import cn.leancloud.LeanCloud;
-
-public class MyLeanCloudApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // 注意这里千万不要调用 cn.leancloud.core.LeanCloud 的 initialize 方法，否则会出现 NetworkOnMainThread 等错误。
-        LeanCloud.initialize(this, "your-app-id", "your-app-key", "https://your_server_url");
-    }
-}
-```
-
-</Conditional>
 
 然后指定 SDK 需要的权限并在 `AndroidManifest.xml` 里面声明 `MyLeanCloudApp` 类：
 
-<Conditional brand="tds">
 
 ```xml
 <!-- 基本模块（必须）START -->
@@ -276,72 +186,11 @@ public class MyLeanCloudApp extends Application {
 </application>
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```xml
-<!-- 基本模块（必须）START -->
-<uses-permission android:name="android.permission.INTERNET"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<!-- 基本模块 END -->
-
-<application
-  …
-  android:name=".MyLeanCloudApp" >
-
-  <!-- 即时通讯和推送 START -->
-  <!-- 即时通讯和推送都需要 PushService -->
-  <service android:name="cn.leancloud.push.PushService"/>
-  <receiver android:name="cn.leancloud.push.LCBroadcastReceiver">
-    <intent-filter>
-      <action android:name="android.intent.action.BOOT_COMPLETED"/>
-      <action android:name="android.intent.action.USER_PRESENT"/>
-      <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-    </intent-filter>
-  </receiver>
-  <!-- 即时通讯和推送 END -->
-</application>
-```
-
-注意：对于**只使用即时通讯服务**，而**不使用推送服务**的应用来说，在初始化的时候设置 `LCIMOptions#disableAutoLogin4Push` 选项，可以加快即时通讯用户登录的过程。设置方法如下：
-
-```java
-// 在 LeanCloud.initialize 之后调用，禁止自动发送推送服务的 login 请求。
-LCIMOptions.getGlobalOptions().setDisableAutoLogin4Push(true);
-```
-
-</Conditional>
-
-<Conditional brand="leancloud">
-
-#### 更安全的客户端初始化方法
-
-对 Android 开发者来说，从 6.1.0 版本开始，除了支持通过 appId + appKey 完成初始化，我们还提供一种更加安全的使用方式，支持仅仅通过 appId 来初始化应用，例如：
-
-```java
-import cn.leancloud.LeanCloud;
-
-public class MyLeanCloudApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // 提供 this、App ID、绑定的自定义 API 域名作为参数
-        LeanCloud.initializeSecurely(this, "{{appid}}", "https://your_server_url");
-    }
-}
-```
-
-这时候程序初始化不再需要 appKey，避免了核心配置信息在客户端泄漏可能带来的潜在风险。具体的集成方法可参看文档[《Android SDK 更安全的接入和初始化方式》](/v3/sdk/storage/guide/setup-android-securely/)。
-
-</Conditional>
 
 ### Java 平台初始化
 
 如果是一个普通 Java 项目，则在代码开头添加：
 
-<Conditional brand="tds">
 
 ```java
 import com.tapsdk.lc.core.LeanCloud;
@@ -349,42 +198,11 @@ import com.tapsdk.lc.core.LeanCloud;
 LeanCloud.initialize("your-client-id", "your-client-token", "https://your_server_url");
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```java
-import cn.leancloud.core.LeanCloud;
-
-LeanCloud.initialize("your-app-id", "your-app-key", "https://your_server_url");
-```
-
-</Conditional>
 
 注意，云引擎内部访问 API 是通过内网，所以不需要也不应该配置 API 自定义域名（`serverUrl`）。
 模板项目和示例代码均未配置 API 自定义域名，
 请勿调用 `setServer`，否则会变成公网访问，影响性能。
 
-<Conditional brand="leancloud">
-
-realtime-core library 也支持在纯 Java Application 中使用，但是与 Android 的调用方式有细微差异，Java Application 中需要开发者显式建立与云端的长链接（Android 平台是通过 PushService 自动建立的）。建立长链接的方法如下：
-
-```java
-LCConnectionManager.getInstance().startConnection(new LCCallback() {
-  @Override
-  protected void internalDone0(Object o, LCException e) {
-    if (e == null) {
-      System.out.println("成功建立 WebSocket 链接");
-    } else {
-      System.out.println("建立 WebSocket 链接失败：" + e.getMessage());
-    }
-  }
-});
-```
-
-只有长链接成功建立之后，后续的聊天请求才能开始。
-
-</Conditional>
 
 ## 域名
 

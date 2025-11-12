@@ -1,0 +1,85 @@
+# 模拟真实文件结构测试用例 - hk
+
+## 域名设置指南
+
+请在初始化客户端 SDK 时传入您的 API 域名，例如：
+
+<Conditional brand="tds">
+
+```java
+// 初始化 TDS SDK
+TapGameCenter.init(context, appId, clientToken, config -> {
+    config.setServerUrl("https://your-api-domain.com");
+});
+```
+
+在控制台中绑定 API 域名和文件访问域名，并完成相应的 DNS 解析配置。
+
+<Conditional region="global">
+在国际区域，域名不需要备案，但建议使用专业的域名注册商服务。
+</Conditional>
+
+<Conditional region="cn">
+在中国大陆区域，域名需要完成备案才能使用。
+</Conditional>
+
+注意：在游戏测试阶段，您可以使用我们提供的共享域名。上线前，务必切换到您自己的已备案域名，以避免潜在的 DDoS 攻击风险。
+
+</Conditional>
+
+<Conditional brand="leancloud">
+
+```java
+// 初始化 LeanCloud SDK
+AVOSCloud.initialize(context, appId, clientKey, serverUrl);
+```
+
+LeanCloud 平台要求绑定自有域名：
+
+<Conditional region="global">
+1. 国际版可以使用我们提供的共享域名
+2. 如需自有域名，请在控制台设置
+</Conditional>
+
+<Conditional region="cn">
+1. 在中国大陆节点，必须绑定已备案的域名
+2. 请在 LeanCloud 控制台 > 设置 > 域名绑定页面完成设置
+</Conditional>
+
+您可以在控制台查看域名配置指南。
+
+</Conditional>
+
+## 高级设置
+
+<Conditional brand="tds">
+<Conditional region="global">
+这部分内容同时包含 TDS 品牌和全局区域的条件
+</Conditional>
+</Conditional>
+
+<Conditional brand="tds">
+<Conditional region="cn">
+这部分内容同时包含 TDS 品牌和 CN 区域的条件
+</Conditional>
+</Conditional>
+
+<Conditional brand="leancloud">
+<Conditional region="global">
+这部分内容同时包含 LeanCloud 品牌和全局区域的条件
+</Conditional>
+</Conditional>
+
+<Conditional brand="leancloud">
+<Conditional region="cn">
+这部分内容同时包含 LeanCloud 品牌和 CN 区域的条件
+</Conditional>
+</Conditional>
+
+## 预期处理结果
+
+处理后，应该：
+1. 保留所有 TDS 品牌内容，删除 LeanCloud 内容
+2. 保留全局区域内容，删除 CN 区域内容
+3. 保留 TDS + 全局组合内容，删除其他组合
+4. 确保标签被正确移除，内容结构清晰 

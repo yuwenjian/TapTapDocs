@@ -19,8 +19,8 @@ import Path from "/src/docComponents/path";
 
 你可以在 **<Path to="storage" /> > 全文搜索** 为 Class 启用搜索，点击「添加搜索 Class」：
 
-- **Class**：选择需要启用搜索的 Class。<Conditional brand="leancloud">开发版应用最多允许 5 个 Class 启用全文搜索，商用版应用</Conditional>最多允许 10 个 Class 启用全文搜索。
-- **开放的列**：你可以选择将哪些字段加入搜索索引。默认情况下，`objectId`、`createdAt`、`updatedAt` 三个字段将无条件加入开放字段列表。除了这三个字段外，<Conditional brand="leancloud">开发版应用每个 Class 最多允许索引 5 个字段，商用版应用</Conditional>每个 Class 最多允许索引 10 个字段。请仔细挑选要索引的字段。
+- **Class**：选择需要启用搜索的 Class。最多允许 10 个 Class 启用全文搜索。
+- **开放的列**：你可以选择将哪些字段加入搜索索引。默认情况下，`objectId`、`createdAt`、`updatedAt` 三个字段将无条件加入开放字段列表。除了这三个字段外，每个 Class 最多允许索引 10 个字段。请仔细挑选要索引的字段。
 
 **如果一个 Class 启用了全文搜索，但是超过两周没有任何搜索调用，我们将自动禁用该 Class 的搜索功能。**
 

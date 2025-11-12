@@ -69,7 +69,6 @@ $ pod install --repo-update
 
 ## 初始化
 
-<Conditional brand="tds">
 
 :::info
 [TapSDK 初始化](/v3/sdk/start/quickstart/#初始化)时，会自动执行这一节的初始化方法。
@@ -77,7 +76,6 @@ $ pod install --repo-update
 如果已经参考 **快速开始** 文档完成了 TapSDK 初始化，则**不需要**参考这里的初始化。
 :::
 
-</Conditional>
 
 打开 `AppDelegate` 文件，导入基础模块头文件：
 
@@ -87,7 +85,6 @@ $ pod install --repo-update
 
 然后在 `application:didFinishLaunchingWithOptions:` 方法中设置 `App ID`，`App Key` 以及服务器地址：
 
-<Conditional brand="tds">
 
 ```objc
 [LCApplication setApplicationId:@"your-client-id"
@@ -95,17 +92,6 @@ $ pod install --repo-update
                 serverURLString:@"https://your_server_url"];
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```objc
-[LCApplication setApplicationId:@"your-app-id"
-                      clientKey:@"your-app-key"
-                serverURLString:@"https://your_server_url"];
-```
-
-</Conditional>
 
 在使用 SDK 的 API 时，请确保进行了 Application 的 ID、Key 以及 Server URL 的初始化。
 
