@@ -12,15 +12,10 @@ import Path from "/src/docComponents/path";
 
 ### Is there any limit to the number of API calls?
 
-With <Conditional brand="leancloud">Developer Edition</Conditional><Conditional brand="tds"> [Standard Edition](https://developer.taptap.cn/product-intro/price)</Conditional>, there is a free quota of 30,000 API read and write requests per day.
+With  [Standard Edition](https://developer.taptap.cn/product-intro/price), there is a free quota of 30,000 API read and write requests per day.
 
 Push service is free to use, and does not take up the free quota. The call frequency of the push message interface is limited. For details, please refer to: [Push message interface limitations](/v3/sdk/push/guide/rest/#push-message-interface) documentation.
 
-<Conditional brand="leancloud">
-
-By default, the maximum number of worker threads that can be used by the Business Edition application at one time is 60, which means that at most 60 data requests can be processed at the same time. **We will adjust this value based on application performance and operation and maintenance needs**. If you need to increase this limit, please [submit a work order](https://www.leanticket.cn) to request it.
-
-</Conditional>
 
 ### Calculation of the number of API calls
 
@@ -44,27 +39,14 @@ A call to `fetch` or `find` that returns 100 associated objects via `include` co
 
 Calling `saveAll` or `fetchAll` once to save or fetch 100 objects in an array counts as 100 API requests.
 
-<Conditional brand="leancloud">
-
-For [Social Stream](https://docs.leancloud.cn/sdk/other/openview/status_system/), `create` and `update` are billed according to the number of objects in Status and Follower/Followee.
-
-</Conditional>
 
 A query is billed by the number of requests, regardless of the size of the result. The `query.count` counts as 1 API request. Collection fetch is also billed by request count.
 
 ### How to get API access logs
 
-<Conditional brand="leancloud">
-
-Go to **<Path to="storage" /> > API Access Logs**, turn on the logging service, and refresh the page later to see the logs generated from the time it was turned on to the current time.
-
-</Conditional>
-
-<Conditional brand="tds">
 
 The Developer Center backend does not support viewing API access logs at this time.
 
-</Conditional>
 
 ### How to encode parameters for calling REST APIs in other languages
 
@@ -105,7 +87,7 @@ As with the use of traditional databases, query optimization is achieved primari
 
 Principle: When the amount of data is small, no index is built. When there is more, please remember that after building an index, you still need to update the index when writing, in exchange for less query time. Therefore, in general, if you write less and read more, you can build more indexes; if you write more and read less, you can build less indexes.
 
-Indexes can be created in **<Path to="storage" />** by selecting the corresponding Class and going to "Performance and Indexing" self-service<Conditional brand="leancloud">, see [console guide](/v3/sdk/start/dashboard/#build-indexes-for-a-certain-class-data)</Conditional> for more details. index).
+Indexes can be created in **<Path to="storage" />** by selecting the corresponding Class and going to "Performance and Indexing" self-service for more details. index).
 
 ### Does LeanCloud query support functions like `Sum`, `Group By`, `Distinct`?
 
@@ -150,7 +132,7 @@ Stored as an integer field in LeanCloud, the method to manipulate this field can
 
 ### When searching for keywords in the app, the result is data from two months ago. What should I do if the latesxt data cannot be queried?
 
-In this case, you can try to rebuild the index in **<Path to="storage" /> > Full text search** <Conditional brand="leancloud">, and there will be a reminder by email after the index is created</Conditional>.
+In this case, you can try to rebuild the index in **<Path to="storage" /> > Full text search** .
 
 Generally speaking, when a user uploads a new dictionary, or deletes data in a batch, it is necessary to perform a "rebuild index" operation. You can also try to rebuild the index when you find inconsistencies between searches and stored data.
 
@@ -169,7 +151,7 @@ If the data of a single object is too big, you need to optimize the code at the 
 
 The file storage service of China node comes with CDN acceleration, but it does not include overseas CDN acceleration.
 
-<Conditional brand="leancloud">Commercial application</Conditional> can send a work order to request to enable overseas CDN acceleration (after enabling, the cost of http/https traffic for accessing files from overseas will be adjusted to RMB 0.40/GB and RMB 0.60/GB respectively).
+ can send a work order to request to enable overseas CDN acceleration (after enabling, the cost of http/https traffic for accessing files from overseas will be adjusted to RMB 0.40/GB and RMB 0.60/GB respectively).
 
 There is no ready-made CDN acceleration service in the international version, so users need to configure it by themselves.
 
@@ -266,7 +248,7 @@ AV.Cloud.useMasterKey(true);
 
 ### JavaScript SDK will expose App Key and App Id, how to ensure security?
 
-First of all, please read [**Security overview**](/v3/sdk/storage/guide/security/) to understand the complete security system of data storage service. <Conditional brand="leancloud">It is mentioned that you can use a "secure domain name", and in the absence of a domain name, you can use [ACL](/v3/sdk/storage/guide/acl/). </Conditional>
+First of all, please read [**Security overview**](/v3/sdk/storage/guide/security/) to understand the complete security system of data storage service. 
 
 Theoretically all clients are untrusted, so security needs to be designed on the server side. If you need advanced security, you can use the [ACL](/v3/sdk/storage/guide/acl/) management. If you need more advanced customization, you can use the [cloud engine](/v3/sdk/engine/overview/).
 
@@ -274,24 +256,9 @@ Theoretically all clients are untrusted, so security needs to be designed on the
 
 ### How to prevent DDoS attacks, or high-frequency CC attacks?
 
-<Conditional brand="leancloud">
-
-Whether it is a DDoS attack or a high-frequency CC attack, it is necessary to set up a high-defense resource in front of the independent IP requested by the service.
-The specific steps are as follows:
-
-1. Bind a domain name that has been filed in the console. To use data storage and instant messaging services, you need to bind the API domain name, and to use cloud engine services, you need to bind the domain name of the cloud engine. when the SDK is initialized, specify the Server URL as the address of the API domain name bound to the console. To bind a domain name, go to Console > Application > Settings > Domain Binding.
-2. Set the DNS resolution to a separate IP (set the IP address to an A record) when binding the domain name. Independent IP can be viewed at Console Personal Center > Account Settings > Independent IP, API and Cloud Engine have different IPs, one API independent IP is free for Commercial Edition users, and the second API independent IP is charged from the moment you purchase it, there is no free IP for Cloud Engine, each IP is charged at $50 per month. 3. Purchase high security resources from a third party.
-3. Purchase high defense resources from a third party and use the newly purchased IPs above to round-trip to the source.
-
-Since many network attacks are destined to specific IPs, if the standalone IP is already publicly available with the service, you can purchase another standalone IP to be the source IP of the high defense resource to avoid the high defense resource failing due to the unavailability of the source IP.
-
-</Conditional>
-
-<Conditional brand="tds">
 
 See [TDS cloud service with high defense](/v3/sdk/start/faq/#tds-cloud-service-with-high-defense) for details.
 
-</Conditional>
 
 ### Saving data gives an error ‘The key is too long’, what is the problem?
 
@@ -301,7 +268,6 @@ You can check whether the field you want to save or update is indexed or not. Th
 
 The data storage service does not provide complete transaction function at present, but it provides some features to ensure data consistency, which can solve most of the consistency needs:
 
-<Conditional brand="tds">
 
 - Updates to multiple fields are done atomically in a single save operation on a single object.
 - Numeric fields can be updated atomically using [increment](/v3/sdk/storage/guide/js/#update-counter) (atomic counter).
@@ -309,16 +275,5 @@ The data storage service does not provide complete transaction function at prese
 - [Conditional update object](/v3/sdk/storage/guide/js/#conditional-update-object) allows you to perform an update operation only when a certain query condition is met; on top of this feature, you can implement your own more complex [two-phase commit](http://www.howardliu.cn/translation-perform-two-phase-commits-in-mongodb/).
 - You can also implement custom [exclusion locks](https://github.com/leancloud/leanengine-nodejs-demos/blob/master/) on the cloud engine with the help of [LeanCache](/v3/sdk/engine/database/redis/). functions/redlock.js).
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-- Updates to multiple fields are done atomically in a single save operation on a single object.
-- Numeric fields can be updated atomically using [increment](/v3/sdk/storage/guide/js/#update-counter) (atomic counter).
-- [Unique-index](/v3/sdk/start/dashboard/#indexing-a-class-of-data) ensures that there is only one object with the same value on a field.
-- [Conditional update object](/v3/sdk/storage/guide/js/#conditionally-update-object) can be updated only when a certain query condition is met; based on this feature, you can implement a more complex [two-phase commit](http://www.howardliu.cn/translation-perform-two-phase-commits-in-mongodb/).
-- You can also implement custom [exclusion locks](https://github.com/leancloud/leanengine-nodejs-demos/blob/master/) on the cloud engine with the help of [LeanCache](/v3/sdk/engine/database/redis/). functions/redlock.js).
-
-</Conditional>
 
 We've also recorded a [public video](https://www.bilibili.com/video/av12823801/) on this topic, which includes a detailed introduction to the above features and practical tutorials for solving common scenarios (including implementing a two-stage submission).

@@ -530,7 +530,6 @@ AV.setAdapters(adapters);
 
 无论是通过 npm 安装还是直接通过 CDN 加载，初始化的方法都是一样的。
 
-<Conditional brand="tds">
 
 <Tabs groupId="js-sdk">
 <TabItem value="存储服务" label="存储服务" default>
@@ -547,66 +546,6 @@ AV.init({
 
 </Tabs>
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-<Tabs groupId="js-sdk">
-<TabItem value="存储服务" label="存储服务" default>
-
-```js
-AV.init({
-  appId: "your-app-id",
-  appKey: "your-app-key",
-  serverURL: "https://your_server_url",
-});
-```
-
-</TabItem>
-<TabItem value="存储服务（LiveQuery）" label="存储服务（LiveQuery）">
-
-```js
-AV.init({
-  appId: "your-app-id",
-  appKey: "your-app-key",
-  serverURL: "https://your_server_url",
-});
-```
-
-</TabItem>
-<TabItem value="即时通讯" label="即时通讯">
-
-```js
-const realtime = new Realtime({
-  appId: "your-app-id",
-  appKey: "your-app-key",
-  server: "https://your_server_url",
-});
-```
-
-</TabItem>
-<TabItem value="即时通讯（含富媒体消息）" label="即时通讯（含富媒体消息）">
-
-```js
-const realtime = new Realtime({
-  appId: "your-app-id",
-  appKey: "your-app-key",
-  server: "https://your_server_url",
-  // 初始化即时通讯服务时需要指定富媒体消息插件
-  plugins: [TypedMessagesPlugin],
-});
-// 需要同时初始化存储服务
-AV.init({
-  appId: "your-app-id",
-  appKey: "your-app-key",
-  serverURL: "https://your_server_url",
-});
-```
-
-</TabItem>
-</Tabs>
-
-</Conditional>
 
 ### 应用凭证
 

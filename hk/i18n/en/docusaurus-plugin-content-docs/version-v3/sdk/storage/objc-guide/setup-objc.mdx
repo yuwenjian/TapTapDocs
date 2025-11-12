@@ -77,7 +77,6 @@ Import the basic modules into `AppDelegate`:
 
 Then configure the `App ID`, `App Key`, and the server URL under the `application:didFinishLaunchingWithOptions:` method:
 
-<Conditional brand="tds">
 
 ```objc
 [LCApplication setApplicationId:@"your-client-id"
@@ -85,17 +84,6 @@ Then configure the `App ID`, `App Key`, and the server URL under the `applicatio
                 serverURLString:@"https://your_server_url"];
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```objc
-[LCApplication setApplicationId:@"your-app-id"
-                      clientKey:@"your-app-key"
-                serverURLString:@"https://your_server_url"];
-```
-
-</Conditional>
 
 Before using the APIs provided by the SDK, make sure you have initialized your application with the App ID, App Key, and server URL.
 

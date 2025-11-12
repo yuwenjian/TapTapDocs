@@ -30,17 +30,9 @@ When only TapTap login is provided in the application, it is recommended to draw
 
 The design style of the login button can appropriately add style elements that match the game's temperament within the range allowed by the [Login Button Design Specification](/design/). In addition, TDS also provides you with design icons for TapTap login buttons in different scenarios to help you quickly implement the login process. Please click [Login Button Resources](/tap-download/#登录按钮素材) to download resources.
 
-<Conditional region="cn">
-
-<img src={useBaseUrl("https://img.tapimg.com/market/images/1a238adc8948fde63ae61c8231f4b439.png")} alt="" width="800" />
-
-</Conditional>
-
-<Conditional region="global">
 
 <img src={useBaseUrl("https://capacity-files.lcfile.com/nsJ4SHU9UnMRo2IVhqbXUL7QJRLqj6xT/login-feature01.png")} alt="" width="800" />
 
-</Conditional>
 
 ### Multiple Login Methods
 
@@ -62,47 +54,22 @@ This way, you can try to help users complete the login process without displayin
 
 The TapTap account service for mobile applications needs to be used in conjunction with the TapTap mobile client. TapSDK will automatically select the appropriate login process based on the installation status of the TapTap client on the user's device.
 
-<Conditional region="cn">
-
-[Click here](https://www.taptap.cn/mobile) to download the TapTap mobile client.
-
-</Conditional>
-
-<Conditional region="global">
 
 [Click here](https://www.taptap.io/mobile) to download the TapTap mobile client.
 
-</Conditional>
 
 ### Invoke TapTap Client for Authorized Login
 
 When the user clicks the TapTap login button, if TapSDK detects that the TapTap client is installed on the user's device, it will automatically invoke the TapTap client on the device and recognize the login information in the client for authorized login.
 
-<Conditional region="cn">
-
-<img src={useBaseUrl("https://img.tapimg.com/market/images/caf890d41f948c8241ddac1ac6854437.png")} alt="" width="800" />
-
-</Conditional>
-
-<Conditional region="global">
 
 <img src={useBaseUrl("https://img.tapimg.net/market/images/727e18242efc7e2baa0d53edb333a817.png")} alt="" width="300" />
 
-</Conditional>
 
 ### Open WebView for Authorized Login
 
-<Conditional region="cn">
-When the user clicks the TapTap login button, if TapSDK detects that the TapTap client is not installed on the user's device, it will open a WebView for the login process.
-
-<img src={useBaseUrl("https://img.tapimg.com/market/images/3473851ccf77b1ac7a64984572ef5cc1.png")} alt="" width="800" />
-
-</Conditional>
-
-<Conditional region="global">
 
 When the user clicks the TapTap login button, if TapSDK detects that the TapTap client is not installed on the user's device, it will prompt the user to download the TapTap client.
 
 <img src={useBaseUrl("https://img.tapimg.net/market/images/c6d5514533c2b8b42681c6eb861ae1da.png")} alt="" width="300" />
 
-</Conditional>

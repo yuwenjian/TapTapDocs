@@ -7,7 +7,7 @@ sidebar_position: 1
 import MultiLang from "/src/docComponents/MultiLang";
 import { Conditional } from "/src/docComponents/conditional";
 
-Multiplayer is a backend service specifically designed for multiplayer online games by <Conditional brand="tds">TDS</Conditional><Conditional brand="leancloud">LeanCloud</Conditional>. Developers don't need to build their own backend systems; they can easily implement features such as player matching and real-time battle message synchronization using cloud services.
+Multiplayer is a backend service specifically designed for multiplayer online games by TDS. Developers don't need to build their own backend systems; they can easily implement features such as player matching and real-time battle message synchronization using cloud services.
 
 ## Core Features
 
@@ -47,30 +47,6 @@ Here's a simple example code to help you quickly understand the overall process.
 <MultiLang kind="play">
 <>
 
-<Conditional brand="leancloud">
-
-```js
-const client = new Client({
-    // Set your APP ID
-    appId: {{appid}},
-    // Set your APP Key
-    appKey: {{appkey}},
-    // Set the Server (replace xxx.example.com with your custom API domain bound to your app)
-    playServer: 'https://xxx.example.com',
-    // Set the user id
-    userId: 'tarara',
-    // Set the game version; optional; default is 0.0.1; players with different versions won't match in the same room
-    gameVersion: '0.0.1'
-});
-
-client.connect().then(()=> {
-  // Connection successful
-}).catch(console.error);
-```
-
-</Conditional>
-
-<Conditional brand="tds">
 
 ```js
 const client = new Client({
@@ -89,7 +65,6 @@ client.connect().then(()=> {
 - You can find your game's `Client ID` and `Client Token` in **Developer Center > Your Game > Game Services > App Configuration**.
 - The API domain can be found in **App Configuration > Domain Configuration > API**. Refer to the documentation on [Domains](/v3/sdk/domain/guide/) for more information.
 
-</Conditional>
 
 </>
 <>

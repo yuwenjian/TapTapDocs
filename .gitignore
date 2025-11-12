@@ -10,6 +10,10 @@ package-lock.json
 .docusaurus
 .cache-loader
 
+# Test directories
+/tests/conditional-tags/cn/
+/tests/conditional-tags/hk/
+
 # Misc
 .DS_Store
 .env.local

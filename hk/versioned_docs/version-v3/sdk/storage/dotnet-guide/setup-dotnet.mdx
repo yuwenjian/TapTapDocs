@@ -60,7 +60,6 @@ import Path from "/src/docComponents/path";
 
 ## 初始化
 
-<Conditional brand="tds">
 
 :::info
 [TapSDK 初始化](/v3/sdk/start/quickstart/#初始化)时，会自动执行这一节的初始化方法。
@@ -68,7 +67,6 @@ import Path from "/src/docComponents/path";
 如果已经参考 **快速开始** 文档完成了 TapSDK 初始化，则**不需要**参考这里的初始化。
 :::
 
-</Conditional>
 
 导入模块：
 
@@ -82,21 +80,11 @@ using LeanCloud.Realtime;
 
 在使用服务前，先调用如下代码初始化 SDK：
 
-<Conditional brand="tds">
 
 ```cs
 LCApplication.Initialize("your-client-id", "your-client-token", "https://your_server_url");
 ```
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-```cs
-LCApplication.Initialize("your-app-id", "your-app-key", "https://your_server_url");
-```
-
-</Conditional>
 
 ### 应用凭证
 

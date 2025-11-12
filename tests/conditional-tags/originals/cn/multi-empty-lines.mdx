@@ -1,0 +1,51 @@
+# 多空行测试用例 - cn
+
+## 1. 标签周围的多个空行
+
+正常内容开始
+
+
+<Conditional brand="tds">
+
+
+这是 TDS 内容，周围有多个空行
+
+
+</Conditional>
+
+
+正常内容继续
+
+## 2. 标签内的多个空行
+
+<Conditional brand="leancloud">
+
+这是 LeanCloud 内容
+
+这里有多个空行
+
+
+
+这里是内容继续
+
+</Conditional>
+
+## 3. 连续标签之间的多个空行
+
+<Conditional region="cn">
+这是 CN 区域内容
+</Conditional>
+
+
+
+<Conditional region="global">
+这是全局区域内容
+</Conditional>
+
+## 预期处理结果
+
+处理后，应该：
+1. 保留 TDS 内容，但控制空行不超过 3 个连续空行
+2. 删除 LeanCloud 内容，包括其内部的空行
+3. 保留 CN 区域内容，控制标签之间的空行不超过 3 个连续空行
+4. 删除全局区域内容，保持文档结构清晰 

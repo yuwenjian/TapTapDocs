@@ -16,7 +16,7 @@ import v3SDKVersions from "/src/docComponents/v3SDKVersions";
 
 本文介绍了如何在 Unity 中使用推送通知功能。建议先阅读 [推送通知服务总览](/v3/sdk/push/guide/overview/) 了解相关概念。
 
-由于 Android 系统对于第三方推送管控越来越严格，所以目前只支持 iOS 及 <Conditional region="cn">Android 厂商（华为、小米、VIVO、OPPO、魅族）</Conditional><Conditional region="global">FCM </Conditional>推送。
+由于 Android 系统对于第三方推送管控越来越严格，所以目前只支持 iOS 及 FCM 推送。
 
 ## 准备工作
 
@@ -26,9 +26,9 @@ import v3SDKVersions from "/src/docComponents/v3SDKVersions";
 
 ### Android
 
-请参考 [Android 混合推送开发指南](/v3/sdk/push/guide/android-mixpush/)申请<Conditional region="cn">各厂商</Conditional><Conditional region="global"> FCM</Conditional> Android 推送权限。
+请参考 [Android 混合推送开发指南](/v3/sdk/push/guide/android-mixpush/)申请 FCM Android 推送权限。
 
-注意：这里只需要参考混合推送指南申请<Conditional region="cn">各厂商</Conditional><Conditional region="global"> FCM </Conditional>的推送权限，**不需要** 参考混合推送指南中 Android 相关配置的内容。
+注意：这里只需要参考混合推送指南申请 FCM 的推送权限，**不需要** 参考混合推送指南中 Android 相关配置的内容。
 
 ## 接入推送服务
 
@@ -42,7 +42,6 @@ import v3SDKVersions from "/src/docComponents/v3SDKVersions";
 
 因为涉及到 Android Gradle 配置，目前不提供 UPM 方式安装。
 
-<Conditional brand="tds">
 
 ### 导入 `LeanCloud-SDK-Realtime-Unity` 包：
 
@@ -66,7 +65,6 @@ import v3SDKVersions from "/src/docComponents/v3SDKVersions";
 
 2. 解压后的 `LeanCloud-SDK-Realtime-Unity.zip` 为 Plugins 文件夹，拖拽至 Unity 即可。
 
-</Conditional>
 
 ### 配置
 
@@ -76,58 +74,6 @@ import v3SDKVersions from "/src/docComponents/v3SDKVersions";
 
 #### Android
 
-<Conditional region="cn">
-
-##### 华为
-
-下载华为推送后台申请的 `agconnect-services.json`，放置在项目的 `Assets/LeanCloud/Push/Android/HuaWei/hms/` 下（在打包时会将其拷贝到华为要求的目录下）。
-
-##### VIVO
-
-将 VIVO 推送后台申请的 `app_id` 和 `api_key` 填入 `Assets/Plugins/Android/AndroidMenifest.xml` 中的 `meta-data` 的 `com.vivo.push.app_id` 和 `com.vivo.push.api_key`。
-
-##### 其他平台
-
-小米、OPPO、魅族的配置在初始化时传入。
-
-注意：`AndroidMenifest.xml` 中会用 `${applicationId}` 作为包名配置，如果 `applicationId` 需要划分渠道，则需要手动修改。
-
-### 初始化
-
-这里需要开发者根据平台及设备信息，进行不同厂商 SDK 的初始化。
-小米推送有能力在其他厂商下建立推送连接，可以作为缺省厂商使用。
-
-```cs
-using LeanCloud.Storage;
-using LeanCloud;
-using LeanCloud.Push;
-using System.Threading.Tasks;
-using LC.Newtonsoft.Json;
-
-LCApplication.Initialize("{{appid}}", "{{appkey}}", "https://please-replace-with-your-customized.domain.com");
-
-if (Application.platform == RuntimePlatform.IPhonePlayer) {
-    LCIOSPushManager.RegisterIOSPush(IOS_TEAM_ID);
-} else if (Application.platform == RuntimePlatform.Android) {
-    string deviceModel = SystemInfo.deviceModel.ToLower();
-    if (deviceModel.Contains("huawei")) {
-        LCHuaWeiPushManager.RegisterHuaWeiPush();
-    } else if (deviceModel.Contains("oppo")) {
-        LCOPPOPushManager.RegisterOPPOPush(OPPO_APP_KEY, OPPO_APP_SECRET);
-    } else if (deviceModel.Contains("vivo")) {
-        LCVIVOPushManager.RegisterVIVOPush();
-    } else if (deviceModel.Contains("meizu")) {
-        LCMeiZuPushManager.RegisterMeiZuPush(MEIZU_APP_ID, MEIZU_APP_KEY);
-    } else /*if (deviceModel.Contains("xiaomi"))*/ {
-        // 其他的厂商可以尝试注册小米推送
-        LCXiaoMiPushManager.RegisterXiaoMiPush(XIAOMI_APP_ID, XIAOMI_APP_KEY);
-    }
-}
-```
-
-</Conditional>
-
-<Conditional region="global">
 
 初始化 FCM 进行推送：
 
@@ -135,7 +81,6 @@ if (Application.platform == RuntimePlatform.IPhonePlayer) {
 LCFCMPushManager.RegisterFCMPush();
 ```
 
-</Conditional>
 
 ## Installation
 
@@ -221,17 +166,9 @@ Dictionary<string, object> launchData = await LCPushBridge.Instance.GetLaunchDat
 ## 其他
 ### 如何剔除某些厂商推送服务
 
-<Conditional region="cn">
-
-应用可能只计划支持部分手机厂商，或针对不同渠道分别打包，这时可以手动剔除不需要的厂商 SDK，以节省打包体积：
-
-</Conditional>
-
-<Conditional region="global">
 
 SDK 中包含了一些中国 Android 手机厂商的 SDK，国际版应用可以手动剔除以节省打包体积。
 
-</Conditional>
 
 - 删掉 `Assets/LeanCloud/Push/Android/xx`，`xx` 代表厂商，如 `HuaWei`、`XiaoMi` 等
 - 删除 `Assets/Plugins/Android/mainTemplate.gradle` 中的 `dependencies` 部分

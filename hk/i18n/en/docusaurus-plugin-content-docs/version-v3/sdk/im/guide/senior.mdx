@@ -894,33 +894,17 @@ After a conversation is muted, the current user will not get push notifications 
 
 ### Text Moderation
 
-<Conditional region="cn">
-
-You might consider filtering cuss words out from the messages sent into group chats by users. Instant Messaging offers a built-in text moderation function that supports this need. It works for group chats, chat rooms, and system conversations by default. You can also enable it for one-on-one chats by going to **Developer Center > Your game > Game Services > Cloud Services > Instant Messaging > Settings**.
-
-</Conditional>
-
-<Conditional region="global">
 
 Instant Messaging offers a built-in text moderation function that allows you to filter cuss words out from the messages sent by users. You can enable it for one-on-one chats by going to **Developer Center > Your game > Game Services > Cloud Services > Instant Messaging > Settings**.
 
-</Conditional>
 
 Matched keywords will be replaced with `***`.
 
 Text moderation will lead to message modifications at the system level, so the message sender will receive a `MESSAGE_UPDATE` event, which the clients can listen to. Please refer to the "Modify a Message" section of the previous chapter for code samples.
 
-<Conditional region="cn">
-
-Instant Messaging offers a set of keywords by default, but if you have upgraded to the Business Plan, you can customize the keywords. To do so, go to **Developer Center > Your game > Game Services > Cloud Services > Instant Messaging > Settings** and upload your keywords file to replace the default list. The uploaded file must be UTF-8 encoded with one keyword in each line. If you upload your custom word list, it will override the default one.
-
-</Conditional>
-
-<Conditional region="global">
 
 If you have upgraded to the Business Plan, you can customize the keywords. To do so, go to **Developer Center > Your game > Game Services > Cloud Services > Instant Messaging > Settings** and upload your keywords file. The uploaded file must be UTF-8 encoded with one keyword in each line. For now, the **Enable sensitive keyword filtering against group chats** option on **Developer Center > Your game > Game Services > Cloud Services > Instant Messaging > Settings** is always enabled, but if you don't upload a file of keywords, the text moderation function will not function in the end.
 
-</Conditional>
 
 Filtering rules for sensitive words: If the message is a rich media message type (the `_lctype` attribute has a value), only the contents of the `_lctext` field are filtered. If the message is not a rich media message type (the message does not have the `_lctype` attribute), then the entire message body is filtered.
 

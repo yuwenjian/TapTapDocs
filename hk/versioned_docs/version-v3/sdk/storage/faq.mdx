@@ -12,15 +12,10 @@ import Path from "/src/docComponents/path";
 
 ### API 调用次数有什么限制吗
 
-使用 <Conditional brand="leancloud">开发版</Conditional><Conditional brand="tds"> [标准版](https://developer.taptap.cn/product-intro/price)</Conditional>，每天有 API 读写请求三万次的免费额度。
+使用  [标准版](https://developer.taptap.cn/product-intro/price)，每天有 API 读写请求三万次的免费额度。
 
 推送服务免费使用，并不占用免费额度，推送消息接口的调用受频率限制，具体参考：[推送消息接口的限制](/v3/sdk/push/guide/rest/#推送消息接口) 文档。
 
-<Conditional brand="leancloud">
-
-默认情况下，商用版应用同一时刻最多可使用的工作线程数为 60，即同一时刻最多可以同时处理 60 个数据请求。**我们会根据应用运行状况以及运维需要调整该值**。如果需要提高这一上限，请 [提交工单](https://www.leanticket.cn) 进行申请。
-
-</Conditional>
 
 ### API 调用次数的计算
 
@@ -44,27 +39,14 @@ import Path from "/src/docComponents/path";
 
 调用一次 `saveAll` 或 `fetchAll` 来保存或获取 array 里面 100 个 对象，算 100 次 API 请求。
 
-<Conditional brand="leancloud">
-
-对于 [社交信息流](https://docs.leancloud.cn/sdk/other/openview/status_system/)，`create` 和 `update` 按照 Status 和 Follower/Followee 的对象数量来计费。
-
-</Conditional>
 
 对于 query 则是按照请求数来计费，与结果的大小无关。`query.count` 算 1 次 API 请求。collection fetch 也是按照请求次数来计费。
 
 ### 如何获取 API 的访问日志
 
-<Conditional brand="leancloud">
-
-进入 **<Path to="storage" /> > API 访问日志**，开启日志服务，稍后刷新页面，就可以看到从开启到当前时间产生的日志了。
-
-</Conditional>
-
-<Conditional brand="tds">
 
 开发者中心后台暂不支持查看 API 访问日志。
 
-</Conditional>
 
 ### 其他语言调用 REST API 如何对参数进行编码
 
@@ -105,7 +87,7 @@ REST API 文档使用 curl 作为示范，其中 `--data-urlencode` 表示要对
 
 原则：数据量少时，不建索引。多的时候请记住，建立索引后，写入时还需要更新索引，以此来换取更少的查询时间。所以，一般来说，写少读多就多建索引，写多读少就少建索引。
 
-索引可以在 **<Path to="storage" />** 中选择对应 Class 后进入「性能与索引」自助创建<Conditional brand="leancloud">，详见[控制台使用指南](/v3/sdk/start/dashboard/#给某个-class-数据建索引)</Conditional>。
+索引可以在 **<Path to="storage" />** 中选择对应 Class 后进入「性能与索引」自助创建。
 
 ### LeanCloud 查询支持 `Sum`、`Group By`、`Distinct` 这种函数吗？
 
@@ -151,7 +133,7 @@ REST API 文档使用 curl 作为示范，其中 `--data-urlencode` 表示要对
 
 ### 应用内搜索的关键字查询， 查出来的结果是两月前的数据，最新数据查询不到怎么办？
 
-这种情况可以在 **<Path to="storage" /> > 全文搜索** 尝试重建索引<Conditional brand="leancloud">，索引创建完后会有邮件提醒</Conditional>。
+这种情况可以在 **<Path to="storage" /> > 全文搜索** 尝试重建索引。
 
 一般来说当用户上传了新的词典，或者有批量删除过数据等情况都需要执行一次「重建索引」操作。当发现搜索与存储数据不一致时，也可以尝试重建索引来解决。
 
@@ -170,7 +152,7 @@ REST API 文档使用 curl 作为示范，其中 `--data-urlencode` 表示要对
 
 中国节点的文件存储服务自带 CDN 加速访问，但不包括海外 CDN 加速。
 
-<Conditional brand="leancloud">商用版应用</Conditional>可发工单申请开启海外 CDN 加速（开启后海外访问文件 http/https 流量费用分别上调为 0.40 元/GB、0.60 元/GB）。
+可发工单申请开启海外 CDN 加速（开启后海外访问文件 http/https 流量费用分别上调为 0.40 元/GB、0.60 元/GB）。
 
 国际版没有现成的 CDN 加速访问服务，需要用户自行配置。
 
@@ -267,7 +249,7 @@ AV.Cloud.useMasterKey(true);
 
 ### JavaScript SDK 会暴露 App Key 和 App Id，怎么保证安全性？
 
-首先请阅读 [**安全总览**](/v3/sdk/storage/guide/security/) 来了解数据存储服务完整的安全体系。<Conditional brand="leancloud">其中提到，可以使用「安全域名」，在没有域名的情况下，可以使用 [ACL](/v3/sdk/storage/guide/acl/)。</Conditional>
+首先请阅读 [**安全总览**](/v3/sdk/storage/guide/security/) 来了解数据存储服务完整的安全体系。
 
 理论上所有客户端都是不可信任的，所以需要在服务端对安全性进行设计。如果需要高级安全，可以使用 [ACL](/v3/sdk/storage/guide/acl/) 方式来管理，如果需要更高级的自定义方式，可以使用 [云引擎](/v3/sdk/engine/overview/)。
 
@@ -275,24 +257,9 @@ AV.Cloud.useMasterKey(true);
 
 ### 如何防止 DDoS 攻击，或者高频次的 CC 攻击？
 
-<Conditional brand="leancloud">
-
-无论是 DDoS 攻击，还是高频次的 CC 攻击，均需要在业务所请求的独立 IP 前架设高防资源。
-具体步骤如下：
-
-1. 在控制台绑定已备案的域名。使用数据存储与即时通讯服务需绑定 API 域名，使用云引擎服务需绑定云引擎域名。SDK 初始化的时候，指定 Server URL 为控制台绑定的 API 域名地址。绑定域名在控制台 > 应用 > 设置 > 域名绑定处操作。
-2. 绑定域名时将 DNS 解析设置为独立的 IP（设置 IP 地址为 A 记录）。独立 IP 在控制台个人中心 > 账号设置 > 独立 IP 处可以查看，API 与云引擎分别对应不同的 IP。商用版用户会免费赠送一个 API 独立 IP，购买的第二个 API 独立 IP 开始收费，云引擎没有免费 IP。每个 IP 每月收费 50 元。
-3. 在第三方购买高防资源，并使用上面新购的 IP 来回源。
-
-由于很多网络攻击的目的地都是特定 IP，如果独立 IP 已随业务公开，可以另外购买一个独立 IP 来做为高防资源的回源 IP，以避免高防资源因源 IP 不可用而失效。
-
-</Conditional>
-
-<Conditional brand="tds">
 
 详见 [TDS 云服务带高防吗](/v3/sdk/start/faq/#tds-云服务带高防吗)。
 
-</Conditional>
 
 ### 保存数据时报错 The key is too long，是什么问题？
 
@@ -302,8 +269,6 @@ AV.Cloud.useMasterKey(true);
 
 数据存储服务目前并不提供完整的事务功能，但提供了一些保证数据一致性的特性，可以解决大部分的一致性需求：
 
-<Conditional brand="tds">
-
 
 - 在单个对象的一次 save 操作中，对多个字段的更新操作是原子地完成的。
 - 使用 [increment](/v3/sdk/storage/guide/js/#更新计数器)（原子计数器）可以原子地更新数字字段。
@@ -311,16 +276,5 @@ AV.Cloud.useMasterKey(true);
 - [有条件更新对象](/v3/sdk/storage/guide/js/#有条件更新对象) 可以仅在满足某个查询条件时进行更新操作；在这个特性的基础上，你可以自己实现更加复杂的 [两阶段提交](http://www.howardliu.cn/translation-perform-two-phase-commits-in-mongodb/)。
 - 在云引擎上还可以借助 [LeanCache](/v3/sdk/engine/database/redis/) 来实现自定义的 [排他锁](https://github.com/leancloud/leanengine-nodejs-demos/blob/master/functions/redlock.js)。
 
-</Conditional>
-
-<Conditional brand="leancloud">
-
-- 在单个对象的一次 save 操作中，对多个字段的更新操作是原子地完成的。
-- 使用 [increment](/v3/sdk/storage/guide/js/#更新计数器)（原子计数器）可以原子地更新数字字段。
-- [唯一索引](/v3/sdk/start/dashboard/#给某个-class-数据建索引) 可以保证在一个字段上有同样值的对象只有一个。
-- [有条件更新对象](/v3/sdk/storage/guide/js/#有条件更新对象) 可以仅在满足某个查询条件时进行更新操作；在这个特性的基础上，你可以自己实现更加复杂的 [两阶段提交](http://www.howardliu.cn/translation-perform-two-phase-commits-in-mongodb/)。
-- 在云引擎上还可以借助 [LeanCache](/v3/sdk/engine/database/redis/) 来实现自定义的 [排他锁](https://github.com/leancloud/leanengine-nodejs-demos/blob/master/functions/redlock.js)。
-
-</Conditional>
 
 关于这个话题我们还录制了一期[公开课视频](https://www.bilibili.com/video/av12823801/)，其中有对上面这些特性的详细介绍，和解决常见场景的实例教程（包括实现两阶段提交）。

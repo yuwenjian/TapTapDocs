@@ -1,0 +1,102 @@
+# 嵌套标签测试用例 - cn
+
+## 1. 相同类型的嵌套
+
+### 1.1 品牌标签嵌套
+
+<Conditional brand="tds">
+这是外层 TDS 内容开始
+
+<Conditional brand="tds">
+这是内层 TDS 内容
+</Conditional>
+
+这是外层 TDS 内容结束
+</Conditional>
+
+<Conditional brand="leancloud">
+这是外层 LeanCloud 内容开始
+
+<Conditional brand="leancloud">
+这是内层 LeanCloud 内容
+</Conditional>
+
+这是外层 LeanCloud 内容结束
+</Conditional>
+
+### 1.2 区域标签嵌套
+
+<Conditional region="cn">
+这是外层 CN 区域内容开始
+
+<Conditional region="cn">
+这是内层 CN 区域内容
+</Conditional>
+
+这是外层 CN 区域内容结束
+</Conditional>
+
+<Conditional region="global">
+这是外层全局区域内容开始
+
+<Conditional region="global">
+这是内层全局区域内容
+</Conditional>
+
+这是外层全局区域内容结束
+</Conditional>
+
+## 2. 不同类型的嵌套
+
+### 2.1 品牌和区域嵌套
+
+<Conditional brand="tds">
+这是 TDS 内容开始
+
+<Conditional region="cn">
+这是 TDS 内嵌套的 CN 区域内容，应该保留
+</Conditional>
+
+<Conditional region="global">
+这是 TDS 内嵌套的全局区域内容，应该被删除
+</Conditional>
+
+这是 TDS 内容结束
+</Conditional>
+
+<Conditional region="cn">
+这是 CN 区域内容开始
+
+<Conditional brand="tds">
+这是 CN 区域内嵌套的 TDS 内容，应该保留
+</Conditional>
+
+<Conditional brand="leancloud">
+这是 CN 区域内嵌套的 LeanCloud 内容，应该被删除
+</Conditional>
+
+这是 CN 区域内容结束
+</Conditional>
+
+## 3. 多层嵌套
+
+<Conditional brand="tds">
+第一层 TDS 开始
+<Conditional region="cn">
+第二层 CN 开始
+<Conditional brand="tds">
+第三层 TDS 开始
+</Conditional>
+第二层 CN 结束
+</Conditional>
+第一层 TDS 结束
+</Conditional>
+
+## 预期处理结果
+
+处理后，应保留：
+1. 所有 TDS 内容（无标签）
+2. 所有 CN 区域内容（无标签）
+3. TDS 内嵌套的 CN 区域内容
+4. CN 区域内嵌套的 TDS 内容
+5. 多层嵌套中的所有内容，但移除标签 

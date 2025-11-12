@@ -16,17 +16,9 @@ import {Conditional} from '/src/docComponents/conditional';
 
 除了通过 iOS、Android SDK 做推送服务之外，你还可以通过 REST API 来发送推送请求。
 
-<Conditional brand="leancloud">
-
-使用推送服务前，需在 **应用 > 设置 > 安全中心** 开启推送服务，此开关有三分钟的延迟。
-
-</Conditional>
-
-<Conditional brand="tds">
 
 使用推送服务前，需在 **开发者中心 > 你的游戏 > 游戏服务 > 应用配置** 开启推送服务，此开关有三分钟的延迟。
 
-</Conditional>
 
 ## 基本概念
 
@@ -86,7 +78,7 @@ push-time| | 定时推送的发送时间
 ## Android 推送
 
 由于 Android 系统权限控制越来越严，推送服务自有通道的推送到达率受到影响。
-因此，建议商用版应用使用我们的「混合推送」方案，该方案对接了<Conditional region="cn">国内主流厂商</Conditional><Conditional region="global"> FCM </Conditional>的接口，让开发者通过统一的 API 完成推送任务。
+因此，建议商用版应用使用我们的「混合推送」方案，该方案对接了 FCM 的接口，让开发者通过统一的 API 完成推送任务。
 详见 [Android 混合推送指南](/v3/sdk/push/guide/android-mixpush/)。
 
 如果想要使用推送服务自有通道推送，请阅读 [Android 推送指南](/v3/sdk/push/guide/android/)。

@@ -58,40 +58,6 @@ After installing the CLI, you can run <Command suffix=" help" /> on the terminal
 <details>
 <summary>View the output of <Command suffix=" help" /></summary>
 
-<Conditional brand='leancloud'>
-
-```
-NAME:
-   lean - Command line tool to manage and deploy LeanEngine apps
-
-USAGE:
-   lean [global options] command [command options] [arguments...]
-
-VERSION:
-   1.0.0
-
-COMMANDS:
-     login    Log in to LeanCloud
-     switch   Change the associated LeanEngine app
-     info     Show information about the associated user and app
-     up       Start a development instance locally with debug console
-     new      Create a new LeanEngine project from official examples
-     deploy   Deploy the project to LeanEngine
-     publish  Publish the version of staging to production
-     db       Access to to LeanDB instances
-     file     Manage files ('_File' class in Data Storage)
-     logs     Show LeanEngine logs
-     debug    Start the debug console without running the project
-     env      Print custom environment variables on LeanEngine (secret variables not included)
-     cql      Enter CQL interactive shell (warn: CQL is deprecated)
-     help     Show usages of all subcommands
-
-GLOBAL OPTIONS:
-   --version, -v  print the version
-```
-
-</Conditional>
-<Conditional brand='tds'>
 
 ```
 NAME:
@@ -123,7 +89,6 @@ GLOBAL OPTIONS:
    --version, -v  print the version
 ```
 
-</Conditional>
 
 </details>
 
@@ -185,11 +150,9 @@ OPTIONS:
 
 The first thing you may want to do after installing the CLI is to log in to your account.
 
-<Conditional brand='tds'>
 
 Please go to the Developer Center, click “Create Game”, and then follow the instructions to enter your game’s information. After this, go to your game’s **Game Services > Cloud Services > Cloud Engine > Turn on now > Deploy projects > Deploy using CLI** and follow the instructions to log in to your account.
 
-</Conditional>
 
 To switch to a different account, run <Command suffix=" login" /> again.
 
@@ -442,7 +405,7 @@ You can switch to a different application with <Command suffix=" switch" /> and 
 ${CLI_BINARY} deploy --prod`}
 </CodeBlock>
 
-In the command above, `<REGION>` is the region of the application<Conditional brand="leancloud">, which can be set to `cn-n1` (China North), `cn-e1` (China East), or `us-w1` (International)</Conditional>.
+In the command above, `<REGION>` is the region of the application.
 `--prod` means to deploy to the production environment. To deploy to the staging environment, use <Command suffix=" deploy --staging" />.
 With the two commands mentioned above, you can write CI scripts to quickly deploy your project to multiple applications.
 

@@ -49,26 +49,6 @@ const Play = require("./play");
 
 Next we need to instantiate a client object for the Multiplayer SDK.
 
-<Conditional brand="leancloud">
-
-```javascript
-const client = new Client({
-  // Setting the APP ID
-  appId: "your-app-id",
-  // Setting the APP Key
-  appKey: "your-app-key",
-  // Setting up the Server (replace xxx.example.com with the custom API domain name your app is bound to)
-  playServer: 'https://xxx.example.com',
-  // Setting the user id
-  userId: 'tarara',
-  // Set game version number (optional, default 0.0.1)
-  gameVersion: '0.0.1'
-});
-```
-
-</Conditional>
-
-<Conditional brand="tds">
 
 ```js
 const client = new Client({
@@ -83,7 +63,6 @@ const client = new Client({
 - The `Client ID` and `Client Token` of the game can be viewed at **Developer Centre > Your Games > Game Services > Application Configuration**.
 - The API domain name is viewable at **Application Configuration > Domain Configuration > API**. Refer to the documentation for [domain name](/v3/sdk/domain/guide/) for more information.
 
-</Conditional>
 
 Here
 `userId` serves as a unique identifier for the client connecting to the server.

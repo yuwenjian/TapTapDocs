@@ -275,18 +275,6 @@ func application(_ application: UIApplication, didDiscardSceneSessions sceneSess
 
 ## SDK Initialization
 
-<Conditional region='cn'>
-
-:::info
-The game [**Applicable Regions**](/sdk/access/get-ready/#适用地区) is selected when enabling application configuration.
-
-* The applicable region for the [TapTap Developer Center](https://developer.taptap.cn/) is Mainland China.
-
-* For overseas games, please go to the [**TapTap.io Developer Center**](https://developer.taptap.io/) to enable game services, applicable to other countries or regions.
-
-:::
-
-</Conditional>
 
 TapTap login module depends on TapTapSDK initialization, please refer to [TapSDK Integration](/sdk/access/quickstart/#initialization) for details.
 
@@ -519,21 +507,6 @@ TapTapLogin.loginWithScopes(with: scopes) {[weak self] account, error, isCancel 
 
 The TapTap authorization login interface supports selecting different authorization scopes and supports any combination, but must include either `public_profile` or `basic_info`, otherwise `openid` and `unionid` cannot be obtained. The TapTap authorization login interface can pass an array of String types as parameters, and developers can add different permissions as elements of the array according to their business needs.
 
-<Conditional region='cn'>
-
-| Permission | Description
-|---|---|
-| `public_profile` | Obtain openid, unionid, user nickname, user avatar
-| `user_friends` | Obtain permission to access TapTap friend-related data
-| `basic_info` | Obtain openid and unionid
-
-:::tip
-If the game initiates a TapTap authorization login requesting only the `basic_info` permission, users can enjoy the feature of seamless login, i.e., users do not need to manually confirm authorization to automatically complete the login.
-:::
-
-</Conditional>
-
-<Conditional region='global'>
 
 | Permission | Description
 |---|---|---|
@@ -542,7 +515,6 @@ If the game initiates a TapTap authorization login requesting only the `basic_in
 | `basic_info` | Obtain openid and unionid
 | `email` | Obtain email and emailVerified data
 
-</Conditional>
 
 ### Obtaining User Information
 
@@ -552,7 +524,6 @@ The `Profile` class obtained here varies according to the authorization scopes r
 
 It may contain the following information:
 
-<Conditional region="global">
 
   | Parameter      | Description                                                                                                                         |
   | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -563,18 +534,6 @@ It may contain the following information:
   | `email`   | The email used by the user to register on the TapTap platform |
   | `emailVerified`   | Whether the email used by the user to register on the TapTap platform has been verified |
 
-</Conditional>
-
-<Conditional region="cn">
-
-  | Parameter      | Description                                                                                                                         |
-  | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
-  | `name`    | The player's nickname on the TapTap platform                                                                                                     |
-  | `avatar`  | The player's avatar URL on the TapTap platform                                                                                                 |
-  | `openid`  | A **unique user identifier** generated through user information and game information, each player's `openid` in each game is different                                   |
-  | `unionid` | A unique user identifier generated through user information and vendor information, `unionid` is the same for a player in all games under the same vendor, different under different vendors |
-
-</Conditional>
 
 `openid` and `unionid` are encoded using [standard Base64](https://datatracker.ietf.org/doc/html/rfc4648#section-4) (with Padding) and contain characters `A-Za-z0-9+/=`. The maximum length of `openid` and `unionid` is 50 characters.
 
@@ -717,17 +676,9 @@ TapTapLogin.logout()
 The SDK **supports QR code login by default**, extra configuration is needed for redirecting to browser login, refer to the following sections for details.
 :::
 
-<Conditional region='cn'>
-
-![PC Login](https://capacity-files.lcfile.com/BGyFDAQUNUrw9EuMcx8SyP7pek4BKz5u/taptap-login-pc.png)
-
-</Conditional>
-
-<Conditional region='global'>
 
 ![PC Login](https://capacity-files.lcfile.com/GI0d6OOdTq4Xaphumdiayqi16JBgbmMg/taptap-login-pc.png)
 
-</Conditional>
 
 ### Windows Platform
 

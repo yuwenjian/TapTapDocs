@@ -31,7 +31,7 @@ Cloud Engine automatically prepares runtime environments for the applications de
 
 Cloud Engine barely interferes in the processes of your application. You are free to use your preferred frameworks and libraries in your project and organize files and directories in your way. Cloud Engine’s load balancer forwards all the HTTP requests sent to the domains bound to your application. It’s up to you to design the HTTP API’s paths as well as requests’ and responses’ formats under the web framework used by your application.
 
-Cloud Engine is primarily optimized for hosting stateless HTTP services. Although your application has access to the disk, there’s no guarantee that the disk will keep the files created by your application persistently. For long-term data storage, use the <Conditional brand="tds">[Data Storage](/v3/sdk/storage/features)</Conditional><Conditional brand="leancloud">[Data Storage](/v3/sdk/storage/overview/)</Conditional> service or LeanDB’s hosted [Redis](/v3/sdk/engine/database/redis/) and [MySQL](/v3/sdk/engine/database/mysql/).
+Cloud Engine is primarily optimized for hosting stateless HTTP services. Although your application has access to the disk, there’s no guarantee that the disk will keep the files created by your application persistently. For long-term data storage, use the [Data Storage](/v3/sdk/storage/features) service or LeanDB’s hosted [Redis](/v3/sdk/engine/database/redis/) and [MySQL](/v3/sdk/engine/database/mysql/).
 
 
 <p>
@@ -87,7 +87,7 @@ You can change the time period for the graphs on the top-right corner of the pag
 
 ### Staging Environments vs Production Environments
 
-With the standard mode of Cloud Engine, you get a production environment and a staging environment for each group. The production environment is designed to take in and handle requests from actual users of your application. The staging environment provides almost the same environment as the production environment for you to test your application. They both have access to the same data from the Data Storage service, though a separate domain can be assigned to each environment. When invoking Cloud Functions or updating objects that may trigger hooks with <Conditional brand="tds">TDS</Conditional><Conditional brand="leancloud">LeanCloud</Conditional>’s client-side SDKs, you can specify the environment to which the requests should be sent (`X-LC-Prod`).
+With the standard mode of Cloud Engine, you get a production environment and a staging environment for each group. The production environment is designed to take in and handle requests from actual users of your application. The staging environment provides almost the same environment as the production environment for you to test your application. They both have access to the same data from the Data Storage service, though a separate domain can be assigned to each environment. When invoking Cloud Functions or updating objects that may trigger hooks with TDS’s client-side SDKs, you can specify the environment to which the requests should be sent (`X-LC-Prod`).
 
 While working on your application, you can first deploy your changes to the staging environment, test the changes with the data from the Data Storage service, and publish the changes to the production environment only if everything goes well. If you wish to have a testing environment with a separate data source, consider creating another application.
 
@@ -103,7 +103,7 @@ The CLI will display an interactive interface that asks you if you want to deplo
 
 ### Deploying With Git
 
-You can also deploy your project from a Git repository either hosted on platforms like [GitHub](https://github.com/)<Conditional region='cn'> and [Gitee](https://gitee.com/)</Conditional> or self-hosted with services like [GitLab](https://about.gitlab.com/install/). You can configure the address of your project’s Git repository on **<Path to="engine" /> > Manage deployment > Your group > Deploy > Deploy from Git**.
+You can also deploy your project from a Git repository either hosted on platforms like [GitHub](https://github.com/) or self-hosted with services like [GitLab](https://about.gitlab.com/install/). You can configure the address of your project’s Git repository on **<Path to="engine" /> > Manage deployment > Your group > Deploy > Deploy from Git**.
 
 If you have a private repository, you can provide the address with the SSH protocol (like `git@github.com:leancloud/node-js-getting-started.git`). Make sure to set up a deploy key for Cloud Engine with the service hosting the repository. If you have a public repository, we recommend that you provide the address with the HTTPS protocol.
 
@@ -173,11 +173,6 @@ Each application comes with a free trial instance with 0.5 CPU and 256 MB RAM. Y
 
 ### Standard Mode
 
-<Conditional brand='leancloud'>
-
-The billing of Cloud Engine doesn’t get affected by the plan (Developer/Business) you are using. Upgrading to or downgrading from the Business Plan won’t affect the charges incurred by your Cloud Engine instances.
-
-</Conditional>
 
 :::tip
 If you’re hosting business projects and already-launched products on Cloud Engine, we recommend that you upgrade to the standard mode and use at least two instances to enhance the availability of your application.
@@ -242,7 +237,7 @@ To share data among multiple instances with low latency, consider using LeanCach
 
 ### Billing
 
-The amount charged for your usage will be based on the multiplication of the selected quota and the number of instances. For each given day, the amount for the maximum number of instances that existed on this day will be charged on the next day. You can view the prices of the available quotas on the pricing page<Conditional brand='leancloud'> of the current region</Conditional>. The billing history can be found under <Conditional brand='leancloud'>_Consumption details_ on the dashboard</Conditional><Conditional brand='tds'>_Transactions_ on the Developer Center</Conditional>.
+The amount charged for your usage will be based on the multiplication of the selected quota and the number of instances. For each given day, the amount for the maximum number of instances that existed on this day will be charged on the next day. You can view the prices of the available quotas on the pricing page. The billing history can be found under _Transactions_ on the Developer Center.
 
 If you want to stop being charged, you can downgrade the quota of all the groups in your application to the _trial mode_. This will remove all the standard instances and only leave a free trial instance in one group. The final bill will be produced on the next day and you won’t be charged after that.
 

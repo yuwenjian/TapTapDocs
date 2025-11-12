@@ -17,7 +17,7 @@ import Languages from '../../sdk/_partials/languages.mdx';
 import { Conditional } from "/src/docComponents/conditional";
 
 :::tip
-Before integrating Billboard’s SDK into your game, please first **enable the service<Conditional region="cn"> and configure your domains</Conditional>** according to [Feature Introduction](../features/#feature-introduction).
+Before integrating Billboard’s SDK into your game, please first **enable the service** according to [Feature Introduction](../features/#feature-introduction).
 :::
 
 ## SDK Setup
@@ -132,38 +132,6 @@ TapBootstrap.Init(config);
 
 **Attention: The Android SDK has to be initialized in the main thread.**
 
-<Conditional region="cn">
-
-To initialize for China mainland:
-
-```java
-// highlight-start
-Set<Pair<String, String>> dimensionSet = new HashSet<>();
-dimensionSet.addAll(Arrays.asList(Pair.create("location", "CN"), Pair.create("platform", "TapTap")));
-String billboardServerUrl = "https://your-billboard-server-url"; // Developer Center > Your game > Game Services > Configuration > Domain > Billboard
-
-TapBillboardConfig billboardCnConfig = new TapBillboardConfig.Builder()
-        .withDimensionSet(dimensionSet)    // Optional
-        .withServerUrl(billboardServerUrl) // Required; the custom domain for Billboard
-        .withTemplate("navigate") // Optional; defaults to `navigate`
-        .build();
-// highlight-end
-
-TapConfig tapConfig = new TapConfig.Builder()
-        .withAppContext(gameMainActivity) // Required; provide the main `Activity` of the game
-        .withClientId("your_client_id") // Required; the Client ID obtained from the Developer Center
-        .withClientToken("your_client_token") // Required; the Client Token obtained from the Developer Center
-        .withServerUrl("https://your_server_url") // Required; can be found on Developer Center > Your game > Game Services > Basic Information > Domain > Cloud Services API
-        // highlight-next-line
-        .withBillboardConfig(billboardCnConfig) // Required
-        .withRegionType(TapRegionType.CN)
-        .build();
-TapBootstrap.init(gameMainActivity, tapConfig);
-```
-
-To initialize for other countries and regions:
-
-</Conditional>
 
 ```java
 // highlight-start
@@ -192,35 +160,6 @@ TapBootstrap.init(gameMainActivity, tapConfig);
 
 <>
 
-<Conditional region="cn">
-
-To initialize for China mainland:
-
-```objectivec
-// highlight-start
-NSMutableSet <NSArray *> *dimensionSet = [[NSMutableSet alloc] init];
-[dimensionSet addObject:[NSArray arrayWithObjects:@"platform", @"ios", nil]];
-[dimensionSet addObject:[NSArray arrayWithObjects:@"location", @"CN", nil]];
-
-TapBillboardConfig *billboardCnConfig = [TapBillboardConfig new];
-billboardCnConfig.templateType = @"navigate"; // Optional
-billboardCnConfig.diemensionSet = dimensionSet; // Optional
-billboardCnConfig.serverUrl = @"https://your-billboard-server-url"; // Developer Center > Your game > Game Services > Configuration > Domain > Billboard
-// highlight-end
-
-TapConfig *config = [TapConfig new];
-config.clientId = @"your_client_id"; // Required; the Client ID obtained from the Developer Center
-config.clientToken = @"your_client_token"; // Required; the Client Token obtained from the Developer Center
-config.region = TapSDKRegionTypeCN; // `TapSDKRegionTypeCN` means China mainland; `TapSDKRegionTypeIO` means other countries and regions
-config.serverURL = "https://your_server_url"; // Required; can be found on Developer Center > Your game > Game Services > Basic Information > Domain > Cloud Services API
-// highlight-next-line
-config.tapBillboardConfig = billboardCnConfig;
-[TapBootstrap initWithConfig:config];
-```
-
-To initialize for other countries and regions:
-
-</Conditional>
 
 ```objectivec
 // highlight-start
@@ -272,11 +211,6 @@ TapBillboard.init(tapConfig);
 
 ### Parameters
 
-<Conditional region="cn">
-
-* You will be providing both the API domain and the Billboard domain when initializing the SDK. See [Domain](/v3/sdk/domain/guide/) for more information. Please make sure you have added your domain on **Developer Center > Your game > Game Services > Configuration > Domain**.
-
-</Conditional>
 
 * See [Configure Properties](../features/#configure-properties) for more information about `dimensionSet`. Here we are using the two default properties: Platform and Region.
 
@@ -508,7 +442,7 @@ You will get an HTTP 400 error if something goes wrong, like:
 
 ### Base URL
 
-The Base URL for REST API requests (the `{{host}}` in the curl examples) is the<Conditional region='cn'> custom</Conditional> API domain of your app. You can update<Conditional region='cn'> or find</Conditional> it on the Developer Center.<Conditional region='cn'> See [Domain](/v3/sdk/storage/guide/setup-dotnet#domain) for more details.</Conditional>
+The Base URL for REST API requests (the `{{host}}` in the curl examples) is the API domain of your app. You can update it on the Developer Center.
 
 ### Obtaining the Template
 
