@@ -1,0 +1,388 @@
+---
+title: 游戏角色数据推送
+sidebar_label: 游戏角色数据推送
+sidebar_position: 2
+---
+
+## 功能说明
+
+游戏角色数据推送功能允许游戏方将已绑定角色的战绩数据推送到 TapTap 平台，用于在战绩落地页中展示。用户绑定角色后，游戏可以实时或定期推送角色的统计数据、列表数据等信息。
+
+:::info 接口实现方式
+- 本文档中的所有接口均为**游戏方主动调用 TapTap 平台接口**推送数据
+- 接口需要携带鉴权信息，所有接口都需要实现签名验证，详见[接口公共说明](/sdk/common/api)
+:::
+
+:::info 前置条件
+- 确保已完成[游戏角色账号绑定](/sdk/game-record/server-guide/role-bind)，用户能够成功绑定角色
+- 完成[页面搭建](/sdk/game-record/guide-page-editor)后，可在**开发者中心 > 你的游戏 > 游戏服务 > 数据查询 > 数据查询页面搭建 > 接口文档下载**获取完整字段请求示例
+:::
+
+---
+
+## 接口概览
+
+| 接口 | 数据模型 | 适用范围 | 对应页面模块 |
+|---------|---------|---------|------------|
+| [角色资料推送](#角色资料推送) | 每个角色一条记录 | 角色昵称、等级、头像 ID、展示 ID、区服、职业等基础展示属性 | **角色卡片区域**（战绩页顶部）<br/>例如：展示角色头像、昵称、等级、区服信息 |
+| [统计数据推送](#统计数据推送) | 一个角色一个模块一条记录 | 战力值、胜率、成就总数、段位、排名等汇总类单项数值数据 | **概览模块**、**数据看板模块**<br/>例如：总战力 99999、总胜场 500、世界排名 Top 100 |
+| [列表数据推送](#列表数据推送) | 一个角色一个模块多条记录 | 卡牌图鉴、角色收集、时装展示、对局历史、成就列表等集合类数据，支持自定义排序 | **表单模块**、**图鉴模块**<br/>例如：最近 10 场对局记录、已收集 50 张卡牌 |
+| [预览数据清理](#预览数据清理) |  | 清理预览环境（test_mode: true）的所有模块数据，用于重置测试数据，开发调试阶段使用 |  |
+
+:::tip 开发建议
+- 建议在接入初期将 `test_mode` 设置为 `true`，使用预览环境进行功能验证。
+预览环境与正式环境**完全隔离**，推送到预览环境的数据不会影响正式环境展示，适用于开发调试和联调阶段。
+- 验收通过后，设置 `test_mode: false` 推送数据到正式环境。
+- 推荐使用批量推送方式提升效率（每次请求支持多个角色）。
+- 注意接口频率限制：每秒推送角色数量不应超过 100 个。
+超过限制时，接口将返回错误（参考[错误响应示例](#错误响应示例)），1 小时后可重试。
+- 所有接口的成功响应格式统一，详见本文档末尾的[通用响应结构](#通用响应结构)。
+:::
+
+---
+
+## 角色资料推送
+
+推送角色的基础信息，包括昵称、等级、头像、区服、职业等展示属性。
+
+:::info 注意
+- **URL**：`/game-record/v1/upload-role-profile`
+- **Method**：`POST`
+:::
+
+### 请求参数
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| data | Array | 是 | 各角色的资料数据数组 |
+
+#### data 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| role_id | String | 是 | 角色唯一标识符，必须与绑定战绩时保持一致 |
+| role_name | String | 是 | 角色昵称 |
+| level | Integer | 是 | 角色等级 |
+| display_role_id | String | 否 | 用于战绩页面显示，未推送则显示 role_id |
+| avatar_id | String | 否 | 角色头像 ID |
+| zone | String | 否 | 区服 |
+| profession | String | 否 | 职业名称 |
+
+### 请求示例
+
+```json
+{
+  "data": [
+    {
+      "role_id": "12345",
+      "display_role_id": "123_45",
+      "role_name": "昵称1",
+      "level": 85,
+      "avatar_id": "1",
+      "zone": "华东一区",
+      "profession": "剑士"
+    },
+    {
+      "role_id": "4567",
+      "display_role_id": "45_67",
+      "role_name": "昵称2",
+      "level": 78,
+      "avatar_id": "2",
+      "zone": "华东二区",
+      "profession": "法师"
+    }
+  ]
+}
+```
+
+## 统计数据推送
+
+推送角色的统计汇总数据，用于战绩页面的核心信息展示。
+
+:::tip 重要说明
+以下仅为示例数据结构，实际请求中的 `type` 值、`data_key` 和 `data_value` 需要根据战绩页面配置而定，请在开发者中心获取完整的请求示例。
+:::
+
+:::info 注意
+- **URL**：`/game-record/v1/upload-data-board`
+- **Method**：`POST`
+:::
+
+### 数据模型说明
+
+- 一个 `role_id` + 一个 `type` = 一条数据记录
+- 适用于汇总类数据，如：战力值、胜率、成就总数、排名等
+- 支持增量/全量更新，相同 `role_id` + `type` 的数据会自动覆盖
+
+### 请求参数
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| test_mode | Boolean | 否 | 环境标识，默认 false<br/>• true = 预览环境，数据写入预览库，用于调试验证<br/>• false = 正式环境，数据写入正式库 |
+| type | String | 是 | 区分游戏下的不同模块，具体取值请参考页面搭建后生成的请求示例 |
+| data | Array | 是 | 各角色的统计数据数组 |
+
+#### data 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| role_id | String | 是 | 角色唯一标识符 |
+| role_data | Array | 是 | 统计信息数组，每项包含字段和值 |
+
+#### data.role_data 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| data_key | String | 是 | 统计字段对应的数据 key，具体取值请参考完整的请求示例 |
+| data_value | String | 是 | 统计数据的具体内容，具体取值请参考完整的请求示例 |
+
+### 请求示例
+
+```json
+{
+  "test_mode": true,
+  "type": "0my4cf38",
+  "data": [
+    {
+      "role_id": "12345",
+      "role_data": [
+        {"data_key": "login_days", "data_value": "41"},
+        {"data_key": "rare_items", "data_value": "88"},
+        {"data_key": "role_amount", "data_value": "29"}
+      ]
+    },
+    {
+      "role_id": "4567",
+      "role_data": [
+        {"data_key": "login_days", "data_value": "81"},
+        {"data_key": "rare_items", "data_value": "6"},
+        {"data_key": "role_amount", "data_value": "28"}
+      ]
+    }
+  ]
+}
+```
+
+## 列表数据推送
+
+推送角色的列表类数据，用于展示多条结构化记录。
+
+:::tip 重要说明
+- 以下仅为示例数据结构，实际请求中的 `type` 值、`data_key` 和 `data_value` 需要根据战绩页面配置而定，请在开发者中心获取完整的请求示例
+- 如果战绩页面不包含列表数据模块，则无需推送此类数据
+:::
+
+:::info 注意
+- **URL**：`/game-record/v1/upload-list-data`
+- **Method**：`POST`
+- **单次限制**：单次推送记录总数不应超过 2000 条
+:::
+
+### 数据模型说明
+
+- 一个 `role_id` + 一个 `type` = 多条数据记录
+- 适用于集合类数据，如：卡牌图鉴、角色收集、时装展示、对局历史等
+- 每条记录通过唯一 `id` 标识，相同 `role_id` + `type` + `id` 的数据会自动覆盖
+- 支持自定义排序规则，若需重置排序请重新推送该角色数据
+
+### 请求参数
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| test_mode | Boolean | 否 | 环境标识，默认 false<br/>• true = 预览环境，数据写入预览库，用于调试验证<br/>• false = 正式环境，数据写入正式库 |
+| type | String | 是 | 区分游戏下的不同模块，具体取值请参考完整的请求示例 |
+| data | Array | 是 | 各角色的列表数据数组 |
+
+#### data 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| role_id | String | 是 | 角色唯一标识符 |
+| role_data | Array | 是 | 角色的列表数据数组 |
+
+#### data.role_data 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| id | Integer | 是 | 数据记录唯一标识<br/>• 用途：标识该条记录（如对局记录 ID、收藏关系 ID）<br/>• 作用：配合 `role_id` + `type` 定位并更新数据 |
+| sn | Integer | 否 | 收藏物品编号<br/>• 用途：标识收藏物本身（如卡牌编号、武器编号、角色编号）<br/>• 适用：图鉴收集、装备收藏等场景 |
+| sort | Array | 否 | 多级排序规则，最多支持 3 级降序排序 |
+| data | Array | 是 | 每条列表记录对应的字段和值 |
+
+#### data.role_data.sort 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| sort_key | String | 是 | 排序字段名，尽量与 `data` 中的 `data_key` 对应 |
+| sort_value | Integer | 是 | 排序值，必须为数值类型 |
+
+#### data.role_data.data 数组元素结构
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| data_key | String | 是 | 列表字段对应的数据 key，具体取值请参考完整的请求示例 |
+| data_value | String | 是 | 列表字段对应的数据值<br/>注意：如果是数字类型或该字段为排序字段，请传数字类型数据 |
+
+### 请求示例
+
+```json
+{
+  "test_mode": true,
+  "type": "0my417my",
+  "data": [
+    {
+      "role_id": "12345",
+      "role_data": [
+        {
+          "id": 100,
+          "sn": 10,
+          "data": [
+            {"data_key": "image", "data_value": "67"},
+            {"data_key": "name", "data_value": "78"},
+            {"data_key": "level", "data_value": "86"},
+            {"data_key": "rarity", "data_value": "93"}
+          ],
+          "sort": [
+            {"sort_key": "rarity", "sort_value": 93},
+            {"sort_key": "level", "sort_value": 86}
+          ]
+        },
+        {
+          "id": 200,
+          "sn": 20,
+          "data": [
+            {"data_key": "image", "data_value": "46"},
+            {"data_key": "name", "data_value": "13"},
+            {"data_key": "level", "data_value": "86"},
+            {"data_key": "rarity", "data_value": "18"}
+          ],
+          "sort": [
+            {"sort_key": "rarity", "sort_value": 18},
+            {"sort_key": "level", "sort_value": 86}
+          ]
+        }
+      ]
+    },
+    {
+      "role_id": "4567",
+      "role_data": [
+        {
+          "id": 300,
+          "sn": 30,
+          "data": [
+            {"data_key": "image", "data_value": "22"},
+            {"data_key": "name", "data_value": "45"},
+            {"data_key": "level", "data_value": "72"},
+            {"data_key": "rarity", "data_value": "88"}
+          ],
+          "sort": [
+            {"sort_key": "rarity", "sort_value": 88},
+            {"sort_key": "level", "sort_value": 72}
+          ]
+        },
+        {
+          "id": 400,
+          "sn": 40,
+          "data": [
+            {"data_key": "image", "data_value": "33"},
+            {"data_key": "name", "data_value": "56"},
+            {"data_key": "level", "data_value": "65"},
+            {"data_key": "rarity", "data_value": "77"}
+          ],
+          "sort": [
+            {"sort_key": "rarity", "sort_value": 77},
+            {"sort_key": "level", "sort_value": 65}
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## 预览数据清理
+
+批量清理指定角色的预览环境数据，便于重复验证。
+
+:::info 注意
+- **URL**：`/game-record/v1/clear-test-data`
+- **Method**：`POST`
+- **请求限制**：单次请求 `role_ids` 数组上限 100 个
+:::
+
+### 使用场景
+
+- 预览阶段需要重置数据重新验证
+- 验收完成后清理预览环境
+- 修正错误的预览数据
+
+### 清理范围
+
+- 自动清理所有模块的预览数据（统计数据和列表数据）
+- 仅清理预览环境（`test_mode: true`）的数据
+
+### 请求参数
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| role_ids | Array | 是 | 需要清理预览数据的角色 ID 列表（字符串数组） |
+
+### 请求示例
+
+```json
+{
+  "role_ids": ["12345", "4567"]
+}
+```
+
+## 通用响应结构
+
+所有响应均为 JSON 格式。
+
+### 响应字段
+
+| 字段 | 类型 | 描述 |
+| --- | --- | --- |
+| success | Boolean | 请求是否成功 |
+| now | Integer | 当前服务器接收请求的 unix 秒级时间戳 |
+| data | Object | 响应数据对象，成功时为空对象，失败时包含 msg 字段 |
+| data.msg | String | 错误消息（仅失败时返回） |
+
+### 成功响应示例
+
+:::info 注意
+**条件**：请求参数合法，并且验签通过
+**状态码**：`200 OK`
+:::
+
+```json
+{
+  "success": true,
+  "now": 1722928846,
+  "data": {}
+}
+```
+
+### 错误响应示例
+
+```json
+{
+  "data": {
+    "msg": "操作过于频繁，请 59 分钟后重试。"
+  },
+  "now": 1762849371,
+  "success": false
+}
+```
+
+## 错误码
+
+| 错误码 | 描述 |
+| --- | --- |
+| 400 | 请求参数错误 |
+| 401 | 未授权访问 |
+| 403 | 请求受限 |
+| 500 | 服务器内部错误 |
+
+如有疑问，请联系平台技术支持。
+
