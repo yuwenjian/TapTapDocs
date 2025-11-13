@@ -1,0 +1,449 @@
+---
+title: 游戏角色账号绑定
+sidebar_label: 游戏角色账号绑定
+sidebar_position: 1
+---
+
+## 功能说明
+
+游戏角色账号绑定功能允许 TapTap 用户将自己的游戏角色与 TapTap 账号关联。绑定后，用户可以在 TapTap 上查看和分享游戏战绩数据。
+
+:::info 接口实现方式
+- 本文档中的所有接口均为**游戏方实现，TapTap 服务器调用**
+- 接口需部署在游戏服务器，并在 **开发者中心 > 你的游戏 > 游戏服务 > 数据查询 > 账号绑定配置** 中配置完整地址
+- 所有接口都需要实现签名验证，详见[接口公共说明](/sdk/common/api)
+:::
+
+:::info 接口 URL 说明
+- 文档中的 `{game_domain}` 为游戏方提供的服务器域名（如 `https://api.yourgame.com`）
+- 接口 path（如 `/game-record/v1/send-code-by-phone`）仅供参考，游戏方可自定义
+- 在开发者中心配置时，需要配置**完整的 URL 地址**
+:::
+
+---
+
+## 绑定方式概览
+
+| 接入方式 | 适用场景及接入建议 | 需要实现的接口 |
+|---------|------------------|--------------|
+| 手机号验证码 | **适用场景**：游戏账号使用手机号注册<br/>**接入建议**：实现 60 秒发送频率限制 | [发送验证码接口（手机号）](#发送验证码接口手机号)<br/>[验证验证码并获取角色列表（手机号）](#验证验证码并获取角色列表手机号) |
+| UID 验证码 | **适用场景**：游戏账号使用自定义 UID，未绑定手机号<br/>**接入建议**：验证码通过游戏内邮件或通知系统发送 | [发送验证码接口（UID）](#发送验证码接口uid)<br/>[验证验证码并获取角色列表（UID）](#验证验证码并获取角色列表uid) |
+| TapTap 账号体系 | **适用场景**：游戏已接入 TapTap 登录，账号系统存储了 open_id 或 union_id | [获取角色列表接口](#获取角色列表接口) |
+| DeepLink 跳转 | **适用场景**：游戏有原生客户端，希望在游戏内完成授权<br/>**接入建议**：需要客户端处理 DeepLink 并生成临时授权码（code），code 必须一次性 | [获取角色列表接口](#获取角色列表接口-1)<br/>需要客户端处理 DeepLink |
+| WebLink 跳转 | **适用场景**：游戏有 H5 登录页面，或需要跨平台支持（iOS/Android/Web）<br/>**接入建议**：基于 OAuth2.0 流程，需开发 H5 授权页面并实现 code 换 token 机制 | [获取令牌接口](#获取令牌接口)<br/>[获取角色列表接口](#获取角色列表接口-2)<br/>需要开发 H5 授权页面 |
+
+:::tip 通用接口
+无论选择哪种绑定方式，都必须额外实现 **[绑定/解绑通知接口](#绑定解绑后通知接口)**，用于接收 TapTap 的绑定状态变更通知。
+:::
+
+---
+
+## 游戏内账号（手机号或 UID）登录绑定
+
+用户在 TapTap 客户端输入已知游戏账号信息（手机号/UID），通过验证码校验，最终完成角色绑定。
+
+<img
+  src="https://img.tapimg.com/market/images/e648901503211d98fd345172650d6a27.jpeg"
+  alt=""
+/>
+
+### 发送验证码接口（手机号）
+
+该接口用于向用户手机号发送验证码。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/send-code-by-phone`
+- **Method**：`POST`
+:::
+
+:::tip 说明
+TapTap 平台不会对验证码发送频率进行限制，**发送频控应由游戏侧负责实现**。建议每个手机号的发送间隔为 **60 秒**，以配合 TapTap 网页前端倒计时逻辑，保障一致的用户体验。
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| phone_num | String | 是 | 手机号码 |
+
+**成功响应**
+
+参见[通用响应结构](#通用响应结构)
+
+### 验证验证码并获取角色列表（手机号）
+
+验证用户输入的验证码，并返回该账号下的角色列表。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/verify-and-get-roles-by-phone`
+- **Method**：`POST`
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| phone_num | String | 是 | 手机号码 |
+| code | String | 是 | 验证码 |
+
+**成功响应**
+
+参见[角色列表响应结构](#角色列表响应结构)
+
+### 发送验证码接口（UID）
+
+该接口用于向用户游戏内账号发送验证码。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/send-code-by-uid`
+- **Method**：`POST`
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| uid | String | 是 | 用户的游戏 UID |
+
+**成功响应**
+
+参见[通用响应结构](#通用响应结构)
+
+### 验证验证码并获取角色列表（UID）
+
+验证用户输入的验证码，并返回该账号下的角色列表。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/verify-and-get-roles-by-uid`
+- **Method**：`POST`
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| uid | String | 是 | 用户的游戏 UID |
+| code | String | 是 | 验证码 |
+
+**成功响应**
+
+参见[角色列表响应结构](#角色列表响应结构)
+
+## TapTap 账号体系登录绑定
+
+使用 TapTap 账号体系，无需再输入账号，只需同意授权，选择角色完成绑定。
+
+<img
+  src="https://img.tapimg.com/market/images/d94183fd47d2f1e5bdce3416c784b6c3.jpeg"
+  alt=""
+/>
+
+### 获取角色列表接口
+
+该接口用于通过 TapTap 账号信息获取该用户在游戏中的角色列表。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/get-roles`
+- **Method**：`GET`
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| open_id | String | 是 | TapTap 登录后提供的 openid，标识用户在该游戏下的唯一标识 |
+| union_id | String | 是 | TapTap 登录后提供的 unionid，标识用户在该厂商下的唯一标识 |
+
+**成功响应**
+
+参见[角色列表响应结构](#角色列表响应结构)
+
+## DeepLink 跳转到游戏客户端授权绑定
+
+通过特定 DeepLink 跳转到游戏客户端，授权生成 code 回传给 TapTap，完成角色绑定。
+
+<img
+  src="https://img.tapimg.com/market/images/5175ab8e43b83fb167d7b612a3c879c8.jpeg"
+  alt=""
+/>
+
+### DeepLink 配置说明
+
+开发者需提供 DeepLink 跳转链接。TapTap 将在跳转链接后拼接 `redirect_uri` 参数，用于游戏完成授权后跳转回 TapTap。
+
+**redirect_uri 说明**
+
+- `redirect_uri` 是 TapTap 提供给游戏的 DeepLink 地址，用于游戏在完成用户授权后回跳至 TapTap，继续完成角色绑定流程
+- `redirect_uri` 的格式示例：
+
+```
+taptap://taptap.com/to?url=<URL_ENCODED_WEB_URL>&fullscreen=1&hide_navbar=1...
+```
+
+其中 `url` 参数的值是 URL 编码后的 Web 页面地址，示例格式：
+
+```
+https://www.taptap.cn/game-record/bind?app_id=123456&is_third_redirect=1&code=${code}
+```
+
+**游戏侧处理流程**
+
+1. 生成一个临时授权码 `code`
+2. 替换掉 Web URL 中的 `${code}` 占位符
+3. 最后将整个 redirect_uri 进行跳转
+
+**示例**
+
+未替换 code 之前的 redirect_uri：
+
+```
+taptap://taptap.com/to?url=https%3A%2F%2Fwww.taptap.cn%2Fgame-record%2Fbind%3Fapp_id%3D123456%26is_third_redirect%3D1%26code%3D%24%7Bcode%7D&fullscreen=1&hide_navbar=1
+```
+
+替换 `${code}` 后：
+
+```
+taptap://taptap.com/to?url=https%3A%2F%2Fwww.taptap.cn%2Fgame-record%2Fbind%3Fapp_id%3D123456%26is_third_redirect%3D1%26code%3Dabc123xyz&fullscreen=1&hide_navbar=1
+```
+
+:::tip 重要提示
+- `code` 是游戏生成的临时授权凭证，用于 TapTap 后续调用游戏提供的接口查询该用户的角色信息
+- `code` 应该是一次性的、时效性的，并且与授权用户强关联，防止被篡改或重用
+- 游戏内完成的授权流程并不代表绑定已完成，最终的绑定确认操作需由 TapTap 平台端完成
+:::
+
+### 获取角色列表接口
+
+TapTap 使用游戏返回的 code 来获取角色列表。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/get-roles-by-code`
+- **Method**：`GET`
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| code | String | 是 | 游戏内通过 redirect_uri 携带回的 code 值 |
+
+**成功响应**
+
+参见[角色列表响应结构](#角色列表响应结构)
+
+## WebLink 跳转到游戏登录页绑定
+
+通过 WebLink 跳转至游戏 H5 登录页，授权后回跳 TapTap 完成角色绑定。
+
+<img
+  src="https://img.tapimg.com/market/images/c24d70cb2426e9319c0014c2a91d8770.jpeg"
+  alt=""
+/>
+
+### WebLink 配置说明
+
+开发者需提供 WebLink 跳转链接。TapTap 在发起 WebLink 跳转时，将附带 `redirect_uri` 参数，用于游戏完成授权后跳转回 TapTap。
+
+:::info 注意
+若配置的链接中已包含 `redirect_uri` 参数，则会被覆盖
+:::
+
+**redirect_uri 说明**
+
+- `redirect_uri` 是由 TapTap 提供的跳转地址
+- 游戏完成授权后，需临时生成一个 `code`，并将该 `code` 作为参数追加至 `redirect_uri`
+- `redirect_uri` 页面地址 URL Decode 后的示例格式：
+
+```
+https://www.taptap.cn/game-record/bind?app_id=123456&is_third_redirect=1&from=setting
+```
+
+**游戏侧处理流程**
+
+1. 生成一个临时授权码 `code`
+2. 将 `code` 作为参数加入 `redirect_uri`，即：
+
+```
+https://www.taptap.cn/game-record/bind?app_id=123456&is_third_redirect=1&from=setting&code=111111
+```
+
+3. 跳转回 TapTap 的绑定页面
+
+:::tip 重要提示
+- `code` 是游戏生成的临时授权凭证，用于 TapTap 后续调用游戏提供的接口以换取令牌 `token`
+- `code` 应该是一次性的、时效性的，并且与授权用户强关联，防止被篡改或重用
+- WebLink 里完成的授权流程并不代表绑定已完成，最终的绑定确认操作需由 TapTap 平台端完成
+- TapTap 侧提供的 `redirect_uri` 并不固定，会根据实际业务场景增加或减少其中的部分参数
+:::
+
+### 获取令牌接口
+
+TapTap 使用游戏返回的 code 来换取访问令牌。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/get-token`
+- **Method**：`GET`
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| code | String | 是 | 游戏内通过 redirect_uri 携带回的 code 值 |
+| redirect_uri | String | 是 | 第一步访问 weblink 时携带的参数，用于兼容 OAuth2.0 流程 |
+
+**成功响应**
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "access_token": "123456"
+  }
+}
+```
+
+**响应字段说明**
+
+| 字段 | 类型 | 描述 |
+| --- | --- | --- |
+| code | Integer | 错误码，0 为成功，参见[错误码](#错误码) |
+| msg | String | 错误码对应的消息 |
+| data.access_token | String | 访问令牌 |
+
+### 获取角色列表接口
+
+TapTap 使用 access_token 来获取角色列表。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/get-roles-by-token`
+- **Method**：`GET`
+:::
+
+:::tip 说明
+TapTap 会在请求中将前一步获取到的 `access_token` 放在请求 Header 中：`Authorization: Bearer <access_token>`
+:::
+
+**成功响应**
+
+参见[角色列表响应结构](#角色列表响应结构)
+
+## 绑定/解绑后通知接口
+
+TapTap 在用户完成角色的绑定或解绑操作后，将调用本接口以通知游戏方角色的绑定状态变更。游戏方可据此将相关角色加入或移出数据推送名单。
+
+:::info 注意
+- **URL**：`{game_domain}/game-record/v1/bind-notify`
+- **Method**：`POST`
+:::
+
+:::tip 接口幂等性说明
+- TapTap 可能会对同一角色的绑定或解绑操作进行重复调用（例如多个 TapTap 用户绑定了同一个角色）
+- 游戏方在接收到重复请求时，应保证接口幂等性，即：
+  - 已绑定的角色再次收到绑定通知时，应仍返回成功
+  - 已解绑的角色再次收到解绑通知时，应忽略处理并返回成功
+- 不建议将此类重复请求返回错误，以避免影响用户绑定流程的稳定性
+:::
+
+**业务参数**
+
+| 字段 | 类型 | 必须 | 描述 |
+| --- | --- | --- | --- |
+| role_id | String | 是 | 角色的唯一标识，为获取角色列表接口返回的 data[].role_id 值 |
+| bind | Boolean | 是 | true 为绑定，false 为解绑 |
+
+**成功响应**
+
+参见[通用响应结构](#通用响应结构)
+
+:::tip 建议
+为了保证用户体验，在绑定通知接口调用后，需要尽快推送对应玩家的数据至 TapTap。
+:::
+
+## 通用响应结构
+
+**通用响应字段**
+
+| 字段 | 类型 | 描述 |
+| --- | --- | --- |
+| code | Integer | 错误码，0 为成功，参见[错误码](#错误码) |
+| msg | String | 错误码对应的消息 |
+
+**示例**
+
+```json
+{
+  "code": 0,
+  "msg": "ok"
+}
+```
+
+## 角色列表响应结构
+
+**响应字段**
+
+| 字段 | 类型 | 描述 |
+| --- | --- | --- |
+| code | Integer | 错误码，0 为成功，参见[错误码](#错误码) |
+| msg | String | 错误码对应的消息 |
+| data | Array\<Role\> | 角色列表 |
+
+**示例**
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": [
+    {
+      "role_id": "123",
+      "display_role_id": "123",
+      "nickname": "昵称",
+      "level": "50",
+      "profession": "战士",
+      "zone": "天空岛"
+    },
+    {
+      "role_id": "456",
+      "display_role_id": "456",
+      "nickname": "昵称2",
+      "level": "50",
+      "profession": "法师",
+      "zone": "二服"
+    }
+  ]
+}
+```
+
+**Role 角色结构**
+
+| 字段 | 类型 | 是否必选 | 描述 |
+| --- | --- | --- | --- |
+| role_id | String | 是 | 角色在游戏下的唯一标识，用于建立绑定关系和关联后续上报的战绩数据 |
+| display_role_id | String | 否 | 可展示出来的角色 ID，不传则不展示角色 ID |
+| nickname | String | 是 | 角色昵称 |
+| level | String | 否 | 等级 |
+| profession | String | 否 | 角色职业 |
+| zone | String | 否 | 区服名称 |
+
+## 错误码
+
+| 错误码 | 含义 |
+| --- | --- |
+| 0 | 成功 |
+| 1000 | 请求缺少必要参数 |
+| 1001 | 请求参数非法 |
+| 1002 | 签名校验失败 |
+| 1003 | code 过期 |
+| 1004 | 账号不存在 |
+| 1005 | 角色不存在 |
+| 1010 | 验证码发送频率过快（如小于 60 秒） |
+| 1011 | 手机号非法 |
+| 1020 | 验证码错误 |
+| 1021 | 验证码过期 |
+| 1030 | 绑定/解绑通知失败 |
+| 1999 | 系统错误 |
+
+如有疑问，请联系平台技术支持。
+
