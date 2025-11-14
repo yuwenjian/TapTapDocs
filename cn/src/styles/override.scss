@@ -16,6 +16,7 @@
   --ifm-global-shadow-md: var(--tap-box-shadow-3);
   --ifm-hr-border-color: var(--tap-grey2);
   --ifm-leading: 1em;
+  --ifm-menu-color: var(--tap-grey6);
   --ifm-menu-color-background-active: #EDFCFB;
   --ifm-menu-color-background-hover: #fafafa;
   --ifm-menu-link-padding-horizontal: 19px;
@@ -33,40 +34,57 @@
   --docusaurus-highlighted-code-line-bg: #303641;
 }
 
-.table-of-contents {
-  @include tap-font-14;
-  position: relative;
-
-  ul {
-    @include tap-font-12;
-  }
-
-  strong {
-    @include tap-font-regular;
-  }
-
-  &__link--active {
-    &:before {
-      content: "";
-      position: absolute;
-      left: -1px;
-      margin-top: 0.25em;
-      width: 2px;
-      height: 1em;
-      background-color: var(--ifm-color-primary);
-    }
-  }
+// 文档容器样式优化
+.theme-doc-markdown {
+  max-width: 100%;
 }
 
-.pagination-nav {
-  padding-top: 2.4rem;
+// 文档内容区域优化
+.container {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
 
-  &__sublabel {
-    color: var(--tap-grey5);
+// 侧边栏样式优化
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--tap-grey2);
+}
+
+// 代码块容器优化
+.prism-code {
+  border-radius: var(--tap-border-radius-base);
+}
+
+// 警告框和提示框样式优化
+.alert {
+  border-radius: var(--tap-border-radius-base);
+  border-left-width: 4px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+
+  &--info {
+    background-color: #e8f4f8;
+    border-left-color: #17a2b8;
   }
 
-  &__label {
-    margin-top: 4px;
-    color: var(--tap-grey6);
+  &--warning {
+    background-color: #fff3cd;
+    border-left-color: #ffc107;
   }
+
+  &--danger {
+    background-color: #f8d7da;
+    border-left-color: #dc3545;
+  }
+
+  &--success {
+    background-color: #e8f5e9;
+    border-left-color: #4caf50;
+  }
+
+  // 信息块中的代码使用同色系深色背景
+  &--info code { background-color: rgba(23, 162, 184, 0.15) !important; }
+  &--warning code { background-color: rgba(255, 193, 7, 0.2) !important; }
+  &--danger code { background-color: rgba(220, 53, 69, 0.15) !important; }
+  &--success code { background-color: rgba(76, 175, 80, 0.15) !important; }
 }
