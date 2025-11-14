@@ -40,30 +40,478 @@ html {
 }
 
 .markdown {
+  // 标题样式
   > header > h1 {
-    @include tap-font-24;
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem !important;
+    @include tap-font-30;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem !important;
+    font-weight: var(--tap-font-bold);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--tap-grey2);
+    color: var(--tap-grey7);
+
+    code {
+      font-weight: var(--tap-font-bold);
+    }
   }
 
   > h2 {
-    @include tap-font-20;
-  }
-
-  > h3 {
-    @include tap-font-16;
-  }
-
-  > header > h1,
-  > h2,
-  > h3,
-  > h4,
-  > h5,
-  > h6 {
+    @include tap-font-24;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: var(--tap-font-bold);
     color: var(--tap-grey7);
+
+    code {
+      font-weight: var(--tap-font-bold);
+    }
+  }
+
+  > h3,
+  [role="tabpanel"] h3 {
+    @include tap-font-20;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: var(--tap-font-medium-win);
+    color: var(--tap-grey7);
+
+    code {
+      font-weight: var(--tap-font-medium-win);
+    }
+  }
+
+  > h4,
+  [role="tabpanel"] h4 {
+    @include tap-font-18;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: var(--tap-font-medium-win);
+    color: var(--tap-grey7);
+
+    code {
+      font-weight: var(--tap-font-medium-win);
+    }
+  }
+
+  > h5,
+  [role="tabpanel"] h5 {
+    @include tap-font-16;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: var(--tap-font-medium-win);
+    color: var(--tap-grey7);
+
+    code {
+      font-weight: var(--tap-font-medium-win);
+    }
+  }
+
+  > h6,
+  [role="tabpanel"] h6 {
+    @include tap-font-14;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: var(--tap-font-medium-win);
+    color: var(--tap-grey7);
+
+    code {
+      font-weight: var(--tap-font-medium-win);
+    }
+  }
+
+  // 段落样式
+  > p,
+  [role="tabpanel"] p {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+    color: var(--tap-grey7);
+  }
+
+  // 列表样式
+  > ul,
+  > ol,
+  [role="tabpanel"] ul,
+  [role="tabpanel"] ol {
+    margin-top: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+    line-height: 1.7;
+
+    li {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--tap-grey7);
+
+      p {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
+
+      ul,
+      ol {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  > ul,
+  [role="tabpanel"] ul {
+    list-style-type: disc;
+
+    ul {
+      list-style-type: circle;
+
+      ul {
+        list-style-type: square;
+      }
+    }
+  }
+
+  > ol,
+  [role="tabpanel"] ol {
+    list-style-type: decimal;
+
+    ol {
+      list-style-type: lower-alpha;
+
+      ol {
+        list-style-type: lower-roman;
+      }
+    }
+  }
+
+  // 链接样式
+  a,
+  [role="tabpanel"] a {
+    color: var(--ifm-color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    padding: 0 0.15em;
+    margin: 0;
+    font-weight: var(--tap-font-medium);
+
+    // 链接内的所有元素继承链接颜色
+    * {
+      color: inherit !important;
+    }
+
+    strong {
+      font-weight: var(--tap-font-medium-win);
+    }
+
+    &:hover {
+      color: var(--ifm-color-primary-dark);
+      text-decoration: underline;
+    }
+
+    &:active {
+      color: var(--ifm-color-primary-darker);
+    }
+  }
+
+  // 代码样式
+  code,
+  [role="tabpanel"] code {
+    background-color: var(--tap-code-bg);
+    border: none;
+    border-radius: 4px;
+    color: var(--tap-grey7);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-weight: var(--tap-font-regular);
+    padding: 0.2rem 0.4rem;
+    font-size: 0.875em;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  pre,
+  [role="tabpanel"] pre {
+    background-color: var(--tap-code-block-bg);
+    border: 1px solid var(--tap-code-border);
+    border-radius: var(--tap-border-radius-base);
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+    line-height: 1.6;
+
+    code {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      font-size: 1em;
+      color: inherit;
+    }
+  }
+
+  // 引用块样式
+  blockquote,
+  [role="tabpanel"] blockquote {
+    border-left: 4px solid var(--ifm-color-primary);
+    background-color: var(--tap-grey0);
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    border-radius: 0 var(--tap-border-radius-base) var(--tap-border-radius-base) 0;
+    color: var(--tap-grey6);
+
+    p {
+      margin-bottom: 0.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // 表格样式
+  table {
+    width: 100% !important;
+    table-layout: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.5rem 0;
+    border: 1px solid var(--tap-grey2);
+    border-radius: var(--tap-border-radius-base);
+    overflow: hidden;
+    box-shadow: var(--tap-box-shadow-1);
+    background-color: var(--tap-white);
+    min-width: 100%;
+    max-width: 100%;
+    display: table;
+    box-sizing: border-box;
+
+    // th 和 td 的共同样式
+    th,
+    td {
+      min-width: 10em;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
+      color: var(--tap-grey7);
+      font-size: 1em;
+    }
+
+    thead {
+      background-color: var(--tap-grey1);
+
+      th {
+        padding: 0.875rem 1.25rem;
+        text-align: center;
+        font-weight: var(--tap-font-medium-win);
+        border-bottom: 1px solid var(--tap-grey2);
+        letter-spacing: 0.01em;
+
+        &:first-child {
+          padding-left: 1.5rem;
+        }
+
+        &:last-child {
+          padding-right: 1.5rem;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid var(--tap-grey2);
+        transition: background-color 0.2s ease;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: var(--tap-grey0);
+        }
+
+        // 斑马纹效果
+        &:nth-child(even) {
+          background-color: var(--tap-table-stripe-bg);
+
+          &:hover {
+            background-color: var(--tap-grey0);
+          }
+        }
+      }
+
+      td {
+        padding: 1rem 1.25rem;
+        line-height: 1.7;
+        vertical-align: top;
+        font-weight: var(--tap-font-regular);
+
+        &:first-child {
+          padding-left: 1.5rem;
+        }
+
+        &:last-child {
+          padding-right: 1.5rem;
+        }
+
+        // 表格中的代码样式
+        code {
+          padding: 0.15rem 0.4rem;
+          white-space: normal;
+          word-break: break-all;
+          overflow-wrap: break-word;
+        }
+
+        // 表格中的链接样式
+        a {
+          color: var(--ifm-color-primary);
+          text-decoration: none;
+          font-weight: var(--tap-font-regular);
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        // 表格中的列表样式
+        ul,
+        ol {
+          margin: 0.5rem 0;
+          padding-left: 1.25rem;
+
+          li {
+            margin: 0.25rem 0;
+          }
+        }
+      }
+    }
+
+    // 响应式：小屏幕时允许横向滚动
+    @media (max-width: 768px) {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  // 图片样式
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--tap-border-radius-base);
+    margin: 1.5rem 0;
+    box-shadow: var(--tap-box-shadow-1);
+  }
+
+  // 分隔线样式
+  hr {
+    border: none;
+    border-top: 1px solid var(--tap-grey2);
+    margin: 2rem 0;
+  }
+
+  // 强调文本样式
+  strong,
+  [role="tabpanel"] strong {
+    font-weight: var(--tap-font-medium-win);
+    color: var(--tap-grey7);
+  }
+
+  em,
+  [role="tabpanel"] em {
+    font-style: italic;
+    color: var(--tap-grey7);
+  }
+
+  // 删除线样式
+  del,
+  [role="tabpanel"] del {
+    text-decoration: line-through;
+    color: var(--tap-grey5);
+  }
+
+  // 行内代码在段落和列表中的样式
+  p code,
+  li code {
+    word-break: break-word;
   }
 }
 
-.breadcrumbs__link > svg {
-  top: 3.5px;
+.breadcrumbs {
+  @include tap-font-14;
+
+  &__link {
+    font-size: inherit;
+    color: var(--tap-grey6);
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &__item--active &__link {
+    color: var(--tap-grey6);
+    cursor: default;
+    background-color: transparent;
+  }
+
+  &__link > svg {
+    top: 3.5px;
+  }
+}
+
+.table-of-contents {
+  @include tap-font-14;
+  position: relative;
+
+  li {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+  }
+
+  &__link {
+    color: var(--tap-grey6);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    display: block;
+  }
+
+  strong {
+    @include tap-font-regular;
+  }
+
+  code {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    word-break: normal;
+  }
+
+  &__link--active {
+    &:before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      margin-top: 0.25em;
+      width: 2px;
+      height: 1em;
+      background-color: var(--ifm-color-primary);
+    }
+  }
+}
+
+.pagination-nav {
+  padding-top: 2.4rem;
+
+  &__sublabel {
+    color: var(--tap-grey5);
+  }
+
+  &__label {
+    margin-top: 4px;
+    color: var(--tap-grey6);
+  }
 }
