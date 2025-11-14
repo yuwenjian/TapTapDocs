@@ -1,0 +1,119 @@
+---
+title: 常见问题
+sidebar_label: 常见问题
+sidebar_position: 3
+---
+
+## 为什么调用 open 方法没有反应？
+
+请检查以下几点：
+
+1. **SDK 是否已正确初始化**
+   - 确认已调用 `TapTapSDK.init()` 方法完成初始化
+   - 查看日志中是否有"SDK未初始化"的提示
+
+2. **URL 格式是否正确**
+   - URL 必须以 `http://` 或 `https://` 开头
+   - URL 不能为空或 null
+
+3. **权限配置是否完整**
+   - Android: 检查 `AndroidManifest.xml` 中是否添加了 `<queries>` 配置
+   - iOS: 检查 `info.plist` 中是否添加了 `taptap` 到 LSApplicationQueriesSchemes
+
+## 如何获取 REP 平台的链接？
+
+访问 [TapTap REP 资源置换平台](https://rep.taptap.cn/)，登录后可以：
+
+1. 在平台上生成游戏详情页的专属链接
+2. 创建活动页面并获取链接
+3. 获取用于分享等场景的特殊效果链接
+
+生成的链接可以用于跟踪效果数据，并兑换流量资源。
+
+## 为什么在 Android 11 以上设备检测不到 TapTap 客户端？
+
+Android 11（API 30）以后需要在 `AndroidManifest.xml` 中添加包可见性配置：
+
+```xml
+<queries>
+  <package android:name="com.taptap" />
+</queries>
+```
+
+如果已添加配置但仍然无法检测，请确认：
+- 配置添加在正确的位置（`<manifest>` 标签内，`<application>` 标签外）
+- 重新编译并安装应用
+
+## 打开链接后为什么显示的页面不正确？
+
+请检查：
+
+1. **链接是否正确**
+   - 确认 URL 是从 REP 平台获取或是正确的 TapTap 页面链接
+   - 在浏览器中直接访问该 URL，确认页面可以正常访问
+
+2. **TapTap 客户端版本**
+   - 确保设备上的 TapTap 客户端是最新版本
+   - 旧版本客户端可能不支持某些新功能
+
+## errorCode 返回 100003 是什么意思？
+
+errorCode 100003 表示"客户端配置错误"，通常是 SDK 未初始化导致的。
+
+解决方法：
+1. 确认已在应用启动时调用 `TapTapSDK.init()` 初始化 SDK
+2. 确认初始化成功后再调用 `TapTapRep.open()` 方法
+3. 检查初始化参数（clientId、clientToken）是否正确
+
+## iOS 平台调用后没有跳转到 TapTap 应用？
+
+请检查：
+
+1. **info.plist 配置**
+   ```xml
+   <key>LSApplicationQueriesSchemes</key>
+   <array>
+       <string>taptap</string>
+   </array>
+   ```
+
+2. **TapTap 客户端是否安装**
+   - 可以通过 `TapTapRep.isTapTapInstalled` 属性检查
+   - 未安装时会自动降级为浏览器打开
+
+3. **iOS 版本**
+   - 确保 iOS 版本支持 URL Scheme 跳转功能
+
+## Unity 项目集成后编译失败？
+
+常见原因和解决方法：
+
+1. **依赖冲突**
+   - 确保 TapSDK 各模块版本一致
+   - 清理项目缓存：删除 `Library` 文件夹后重新编译
+
+2. **Android 配置**
+   - 确认 `AndroidManifest.xml` 合并正确
+   - 检查是否有自定义的 AndroidManifest 覆盖了 SDK 的配置
+
+3. **iOS 配置**
+   - 确认 Podfile 配置正确
+   - 运行 `pod install` 更新依赖
+
+## 可以在 WebView 中打开链接吗？
+
+REP SDK 设计用于：
+- 优先唤起 TapTap 客户端
+- 未安装时使用系统浏览器
+
+如果需要在应用内 WebView 中打开，建议：
+1. 直接使用 WebView 加载 URL，不调用 REP SDK
+2. 但这样无法享受 REP 平台的流量统计和置换服务
+
+## 如何判断是通过客户端还是浏览器打开的？
+
+SDK 会自动根据设备情况选择打开方式：
+- 已安装 TapTap 客户端：使用客户端打开
+- 未安装：使用系统浏览器打开
+
+回调的 `errorCode` 为 0 表示成功打开，但不区分打开方式。如需判断，可以在 iOS 上使用 `TapTapRep.isTapTapInstalled` 属性提前检查。
