@@ -1,204 +1,272 @@
-@import "font";
-@import "variable";
-@import "override";
+/**
+ * Docusaurus/Infima 自定义样式
+ * 
+ * 按照 Docusaurus 和 Infima 的规范，覆盖品牌色和字体相关的 CSS 变量
+ * 其他样式由 Infima 默认提供
+ */
 
-html {
-  @include tap-font-14;
-  font-family: var(--tap-font-family);
-  color: var(--tap-grey6);
+:root {
+  /* 默认字色 */
+  --ifm-color-content: #1d2127; /* rgb(29, 33, 39) */
+  
+  /* 品牌主色 */
+  --ifm-color-primary: #06c4b0;
+  --ifm-color-primary-dark: #13b1b9;
+  --ifm-color-primary-darker: #12a7af;
+  --ifm-color-primary-darkest: #0f8a90;
+  --ifm-color-primary-light: #17d9e3;
+  --ifm-color-primary-lighter: #1ddee8;
+  --ifm-color-primary-lightest: #3ce3eb;
+
+  /* 字体设置 */
+  /* 基础字体：用于正文、标题等 */
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", SimSun, sans-serif;
+  
+  /* 等宽字体：用于代码块 */
+  --ifm-font-family-monospace: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas',
+    'source-code-pro', monospace;
+
+  /* 字体大小设置 */
+  /* 基础字体大小：用于正文（Infima 默认值 100% = 16px） */
+  // --ifm-font-size-base: 100%; /* Infima 默认值，无需覆盖 */
+  
+  /* 标题字体大小：全局设置 */
+  --ifm-h1-font-size: 2rem;      /* 32px (基于 16px) */
+  --ifm-h2-font-size: 1.625rem;  /* 26px */
+  --ifm-h3-font-size: 1.375rem; /* 22px */
+  --ifm-h4-font-size: 1.25rem;   /* 20px */
+  --ifm-h5-font-size: 1.125rem;  /* 18px */
+  --ifm-h6-font-size: 1rem;      /* 16px */
+  
+  /* 14px 字体大小：用于非重点内容（自定义变量） */
+  --tap-font-size-secondary: 0.875rem;  /* 14px */
+
+  /* 字体粗细设置 */
+  --ifm-font-weight-normal: 400;
+  --ifm-font-weight-semibold: 500;
+  --ifm-font-weight-bold: 700;
+  
+  /* 自定义字体粗细 */
+  --tap-font-weight-medium-win: 600;
+
+  /* 行高设置 */
+  /* 正文行高（Infima 默认值） */
+  // --ifm-line-height-base: 1.65; /* Infima 默认值，无需覆盖 */
+  
+  /* 标题行高（Infima 默认值） */
+  // --ifm-heading-line-height: 1.25; /* Infima 默认值，无需覆盖 */
+
+  /* 导航栏（Navbar）样式设置 */
+  /* 导航栏高度 */
+  --ifm-navbar-height: 3.5rem; /* 56px */
+  
+  /* 导航栏水平内边距 */
+  --ifm-navbar-padding-horizontal: 1.5rem; /* 24px */
+  
+  /* 导航栏链接颜色 */
+  --ifm-navbar-link-color: #52575d;
+
+  /* 导航栏次要元素颜色（自定义变量） */
+  --tap-navbar-muted-color: #868c92; /* 用于导航栏切换按钮、图标等 */
+
+  /* 左侧菜单（侧边栏）样式设置 */
+  /* 菜单项字色 */
+  --ifm-menu-color: #1d2127; /* 覆盖 Infima 默认值 #606770，使用与默认字色一致 */
+  
+  /* 菜单项背景色 */
+  --ifm-menu-color-background-active: #edfcfb; /* 激活状态的背景色 */
+  --ifm-menu-color-background-hover: #fafafa; /* 悬停状态的背景色 */
+  
+  /* 菜单项内边距 */
+  --ifm-menu-link-padding-horizontal: 1.1875rem; /* 水平内边距 (19px) */
+  --ifm-menu-link-padding-vertical: 0.4375rem; /* 垂直内边距 (7px) */
+  
+  /* 子菜单图标：使用 16x16 的 SVG */
+  --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M5.705 9.705L8 7.415L10.295 9.705L11 9L8 6L5 9L5.705 9.705Z" fill="rgba(0,0,0,0.5)" /></svg>');
+
+  /* 表格样式设置 */
+  /* 表格边框颜色 */
+  --ifm-table-border-color: #ebeff0;
+  
+  /* 表格背景色：白色背景 */
+  --ifm-table-background: #ffffff;
+  
+  /* 表格斑马纹背景色：使用浅灰色，提高可读性 */
+  --ifm-table-stripe-background: #fafbfc;
+  
+  /* 表头样式：使用浅灰色背景，与数据行区分 */
+  --ifm-table-head-background: #f5f5f5;
+  --ifm-table-head-color: inherit;
+  --ifm-table-head-font-weight: var(--tap-font-weight-medium-win);
+  
+  /* 表格 hover 背景色（自定义变量） */
+  --tap-table-hover-background: #fafafa;
+
+  /* 表格边框圆角（自定义变量） */
+  --tap-table-border-radius: 4px;
+  
+  /* 表格间距（自定义变量） */
+  --tap-table-margin-vertical: 1.5rem; /* 24px */
+  
+  /* 表格阴影（自定义变量） */
+  --tap-table-box-shadow: 0px 1px 5px rgba(45, 47, 51, 0.1);
+
+  /* 代码样式设置 */
+  /* 行内代码背景色 */
+  --ifm-code-background: #f4f4f4;
+  
+  /* 行内代码文字颜色（自定义变量） */
+  --tap-code-color: #1d2127;
+  
+  /* 行内代码边框圆角 */
+  --ifm-code-border-radius: 4px;
+  
+  /* 行内代码内边距 */
+  --ifm-code-padding-vertical: 0.2rem; /* 3.2px */
+  --ifm-code-padding-horizontal: 0.4rem; /* 6.4px */
+  
+  /* 行内代码字体大小 */
+  --ifm-code-font-size: 0.875em; /* 87.5% */
+  
+  /* 行内代码行高（自定义变量） */
+  --tap-code-line-height: 1.5;
+
+  /* 代码块样式设置 */
+  /* 代码块背景色 */
+  --ifm-pre-background: #f6f6f6;
+  
+  /* 代码块边框颜色（自定义变量） */
+  --tap-pre-border-color: #e0e0e0;
+  
+  /* 代码块边框圆角 */
+  --ifm-pre-border-radius: 4px;
+  
+  /* 代码块内边距 */
+  --ifm-pre-padding: 1.25rem; /* 20px */
+
+  /* 代码块上下边距（自定义变量） */
+  --tap-pre-margin-vertical: 1.25rem; /* 20px */
+
+  /* 代码块行高 */
+  --ifm-pre-line-height: 1.6;
+
+  /* 图片样式设置 */
+  /* 图片边框圆角 */
+  --tap-image-border-radius: 4px;
+  
+  /* 媒体元素（图片、视频）间距（自定义变量） */
+  --tap-media-margin-vertical: 1.5rem; /* 24px */
+  
+  /* 媒体元素（图片、视频）阴影（自定义变量） */
+  --tap-media-box-shadow: 0px 1px 5px rgba(45, 47, 51, 0.1);
+  
+  /* 响应式视频最小高度（自定义变量） */
+  --tap-video-min-height: 25rem; /* 400px */
+
+  /* 右侧菜单（TOC/目录）样式设置 */
+  /* TOC 链接字色 */
+  --ifm-toc-link-color: #1d2127; /* 覆盖 Infima 默认值 #525860，使用与默认字色一致 */
+
+  /* 滚动条样式设置 */
+  /* 滚动条宽度：6px（比默认的 7px 更窄） */
+  --ifm-scrollbar-size: 6px;
+  
+  /* 滚动条滑块颜色：浅灰色（比默认的 #c0c0c0 更浅） */
+  --ifm-scrollbar-thumb-background-color: #e4e7e8;
+  
+  /* 滚动条滑块悬停颜色：与普通状态一致 */
+  --ifm-scrollbar-thumb-hover-background-color: #e4e7e8;
+  
+  /* 滚动条轨道背景色：透明 */
+  --ifm-scrollbar-track-background-color: transparent;
+
+  /* 滚动条边框圆角（自定义变量） */
+  --tap-scrollbar-border-radius: 4px;
 }
 
+/* 
+ * 滚动条样式自定义
+ * 
+ * 全局应用滚动条样式，使用 Infima 的 CSS 变量
+ */
 ::-webkit-scrollbar {
   width: var(--ifm-scrollbar-size);
   height: var(--ifm-scrollbar-size);
-
-  &-thumb {
-    border-radius: var(--tap-border-radius-base);
-    background: var(--ifm-scrollbar-thumb-background-color);
-  }
-
-  &-track {
-    border-radius: var(--tap-border-radius-base);
-  }
 }
 
-.navbar__toggle {
-  color: var(--tap-grey5);
+::-webkit-scrollbar-thumb {
+  border-radius: var(--tap-scrollbar-border-radius);
+  background: var(--ifm-scrollbar-thumb-background-color);
 }
 
-.navbar__link {
-  font-weight: var(--tap-font-regular);
-
-  &:after {
-    color: var(--tap-grey5);
-  }
+::-webkit-scrollbar-track {
+  border-radius: var(--tap-scrollbar-border-radius);
+  background: var(--ifm-scrollbar-track-background-color);
 }
 
-.dropdown__link {
-  @include tap-font-14;
-  font-weight: var(--tap-font-regular);
-}
-
+/* 
+ * 覆盖 Infima 的 Markdown 标题大小设置，统一使用全局设置
+ * 
+ * 注意：Infima 默认在 .markdown 中只覆盖 h1、h2、h3 的字体大小
+ * - h1:first-child: 覆盖 Infima 的 3rem，设置为 2rem（与全局一致）
+ * - h2: 覆盖 Infima 的 2rem，设置为 1.625rem（与全局一致）
+ * - h3: 覆盖 Infima 的 1.5rem，设置为 1.375rem（与全局一致）
+ * - h4、h5、h6: 使用全局设置，没有特殊覆盖
+ * 
+ * 这是有意的设计选择：统一整个站点的标题大小，保持视觉一致性。
+ */
 .markdown {
-  // 标题样式
-  > header > h1 {
-    @include tap-font-30;
-    margin-top: 1.5rem;
-    margin-bottom: 2rem !important;
-    font-weight: var(--tap-font-bold);
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--tap-grey2);
-    color: var(--tap-grey7);
+  & h1:first-child {
+    --ifm-h1-font-size: 2rem; /* 覆盖 Infima 的 3rem，统一为 32px */
+    
+    /* h1 上边距：使用垂直节奏系统 */
+    /* 自定义 h1 上边距倍数，用于调整与上方元素（如版本 badge）的间距 */
+    margin-top: calc(
+      var(--ifm-heading-vertical-rhythm-top) * var(--ifm-leading)
+    );
+    
+    /* h1 下划线 */
+    border-bottom: 1px solid var(--ifm-color-emphasis-300);
+    padding-bottom: 0.5rem;
+  }
 
+  & > h2 {
+    --ifm-h2-font-size: 1.625rem; /* 覆盖 Infima 的 2rem，统一为 26px */
+  }
+
+  & > h3 {
+    --ifm-h3-font-size: 1.375rem; /* 覆盖 Infima 的 1.5rem，统一为 22px */
+  }
+
+  /* h1-h6 内的 code 标签继承标题样式 */
+  h1, h2, h3, h4, h5, h6 {
     code {
-      font-weight: var(--tap-font-bold);
+      background-color: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+      color: inherit;
+      font-weight: inherit;
+      font-size: inherit;
+      line-height: inherit;
     }
   }
 
-  > h2 {
-    @include tap-font-24;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    font-weight: var(--tap-font-bold);
-    color: var(--tap-grey7);
-
-    code {
-      font-weight: var(--tap-font-bold);
-    }
-  }
-
-  > h3,
-  [role="tabpanel"] h3 {
-    @include tap-font-20;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-    font-weight: var(--tap-font-medium-win);
-    color: var(--tap-grey7);
-
-    code {
-      font-weight: var(--tap-font-medium-win);
-    }
-  }
-
-  > h4,
-  [role="tabpanel"] h4 {
-    @include tap-font-18;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-    font-weight: var(--tap-font-medium-win);
-    color: var(--tap-grey7);
-
-    code {
-      font-weight: var(--tap-font-medium-win);
-    }
-  }
-
-  > h5,
-  [role="tabpanel"] h5 {
-    @include tap-font-16;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    font-weight: var(--tap-font-medium-win);
-    color: var(--tap-grey7);
-
-    code {
-      font-weight: var(--tap-font-medium-win);
-    }
-  }
-
-  > h6,
-  [role="tabpanel"] h6 {
-    @include tap-font-14;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    font-weight: var(--tap-font-medium-win);
-    color: var(--tap-grey7);
-
-    code {
-      font-weight: var(--tap-font-medium-win);
-    }
-  }
-
-  // 段落样式
-  > p,
-  [role="tabpanel"] p {
-    margin-top: 0;
-    margin-bottom: 1.25rem;
-    line-height: 1.7;
-    color: var(--tap-grey7);
-  }
-
-  // 列表样式
-  > ul,
-  > ol,
-  [role="tabpanel"] ul,
-  [role="tabpanel"] ol {
-    margin-top: 0.5rem;
-    margin-bottom: 1.25rem;
-    padding-left: 1.5rem;
-    line-height: 1.7;
-
-    li {
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
-      color: var(--tap-grey7);
-
-      p {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
-      }
-
-      ul,
-      ol {
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-    }
-  }
-
-  > ul,
-  [role="tabpanel"] ul {
-    list-style-type: disc;
-
-    ul {
-      list-style-type: circle;
-
-      ul {
-        list-style-type: square;
-      }
-    }
-  }
-
-  > ol,
-  [role="tabpanel"] ol {
-    list-style-type: decimal;
-
-    ol {
-      list-style-type: lower-alpha;
-
-      ol {
-        list-style-type: lower-roman;
-      }
-    }
-  }
-
-  // 链接样式
-  a,
-  [role="tabpanel"] a {
+  /* 链接样式 */
+  a {
     color: var(--ifm-color-primary);
     text-decoration: none;
     transition: color 0.2s ease;
     padding: 0 0.15em;
     margin: 0;
-    font-weight: var(--tap-font-medium);
+    font-weight: var(--ifm-font-weight-semibold);
 
-    // 链接内的所有元素继承链接颜色
+    /* 链接内的所有元素继承链接颜色 */
     * {
       color: inherit !important;
-    }
-
-    strong {
-      font-weight: var(--tap-font-medium-win);
     }
 
     &:hover {
@@ -211,31 +279,28 @@ html {
     }
   }
 
-  // 代码样式
-  code,
-  [role="tabpanel"] code {
-    background-color: var(--tap-code-bg);
-    border: none;
-    border-radius: 4px;
-    color: var(--tap-grey7);
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-    font-weight: var(--tap-font-regular);
-    padding: 0.2rem 0.4rem;
-    font-size: 0.875em;
-    line-height: 1.5;
+  /* 行内代码样式 */
+  code {
+    background-color: var(--ifm-code-background);
+    border: none; /* 去掉 Infima 默认的边框 */
+    border-radius: var(--ifm-code-border-radius);
+    color: var(--tap-code-color);
+    padding: var(--ifm-code-padding-vertical) var(--ifm-code-padding-horizontal);
+    font-size: var(--ifm-code-font-size);
+    line-height: var(--tap-code-line-height);
     word-break: break-word;
   }
 
-  pre,
-  [role="tabpanel"] pre {
-    background-color: var(--tap-code-block-bg);
-    border: 1px solid var(--tap-code-border);
-    border-radius: var(--tap-border-radius-base);
-    padding: 1.25rem;
-    margin-top: 1.25rem;
-    margin-bottom: 1.25rem;
+  /* 代码块样式 */
+  pre {
+    background-color: var(--ifm-pre-background);
+    border: 1px solid var(--tap-pre-border-color);
+    border-radius: var(--ifm-pre-border-radius);
+    padding: var(--ifm-pre-padding);
+    margin-top: var(--tap-pre-margin-vertical);
+    margin-bottom: var(--tap-pre-margin-vertical);
     overflow-x: auto;
-    line-height: 1.6;
+    line-height: var(--ifm-pre-line-height);
 
     code {
       background-color: transparent;
@@ -246,250 +311,207 @@ html {
     }
   }
 
-  // 引用块样式
-  blockquote,
-  [role="tabpanel"] blockquote {
-    border-left: 4px solid var(--ifm-color-primary);
-    background-color: var(--tap-grey0);
-    padding: 1rem 1.5rem;
-    margin: 1rem 0;
-    border-radius: 0 var(--tap-border-radius-base) var(--tap-border-radius-base) 0;
-    color: var(--tap-grey6);
-
-    p {
-      margin-bottom: 0.5rem;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
+  /* 图片样式 */
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--tap-image-border-radius);
+    margin: var(--tap-media-margin-vertical) 0;
+    box-shadow: var(--tap-media-box-shadow);
   }
 
-  // 表格样式
+  /* 视频样式 */
+  video {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--tap-image-border-radius);
+    margin: var(--tap-media-margin-vertical) 0;
+    box-shadow: var(--tap-media-box-shadow);
+    display: block;
+  }
+
+  /* iframe 视频样式（如 YouTube、Bilibili 等） */
+  iframe {
+    max-width: 100%;
+    border-radius: var(--tap-image-border-radius);
+    margin: var(--tap-media-margin-vertical) 0;
+    box-shadow: var(--tap-media-box-shadow);
+    border: none;
+    display: block;
+  }
+
+  /* 响应式视频容器（16:9 比例） */
+  /* 针对常见的视频平台 iframe，保持 16:9 宽高比 */
+  iframe[src*="youtube"],
+  iframe[src*="youtu.be"],
+  iframe[src*="bilibili"],
+  iframe[src*="vimeo"] {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    height: auto;
+    min-height: var(--tap-video-min-height); /* 最小高度，确保在小屏幕上也有合适的显示 */
+  }
+
+  /* 表格样式优化 */
   table {
     width: 100% !important;
     table-layout: auto;
     border-collapse: separate;
     border-spacing: 0;
-    margin: 1.5rem 0;
-    border: 1px solid var(--tap-grey2);
-    border-radius: var(--tap-border-radius-base);
+    margin: var(--tap-table-margin-vertical) 0;
+    border: 1px solid var(--ifm-table-border-color);
+    border-radius: var(--tap-table-border-radius);
     overflow: hidden;
-    box-shadow: var(--tap-box-shadow-1);
-    background-color: var(--tap-white);
+    box-shadow: var(--tap-table-box-shadow);
+    background-color: var(--ifm-table-background);
     min-width: 100%;
     max-width: 100%;
     display: table;
     box-sizing: border-box;
-
-    // th 和 td 的共同样式
+    
+    /* th 和 td 的共同样式 */
     th,
     td {
+      font-size: var(--tap-font-size-secondary);
       min-width: 10em;
       overflow-wrap: break-word;
       word-break: break-word;
       white-space: normal;
-      color: var(--tap-grey7);
-      font-size: 1em;
     }
-
+    
+    /* 表头样式：浅灰色背景，文字靠左 */
     thead {
-      background-color: var(--tap-grey1);
-
+      background-color: var(--ifm-table-head-background);
+      
       th {
-        padding: 0.875rem 1.25rem;
-        text-align: center;
-        font-weight: var(--tap-font-medium-win);
-        border-bottom: 1px solid var(--tap-grey2);
+        padding: 0.875rem 1.25rem; /* 14px 20px */
+        text-align: left;
+        font-weight: var(--ifm-table-head-font-weight);
+        border-bottom: 1px solid var(--ifm-table-border-color);
         letter-spacing: 0.01em;
-
+        color: var(--ifm-table-head-color);
+        
         &:first-child {
-          padding-left: 1.5rem;
+          padding-left: 1.5rem; /* 24px */
         }
-
+        
         &:last-child {
-          padding-right: 1.5rem;
+          padding-right: 1.5rem; /* 24px */
         }
       }
     }
-
+    
+    /* 表格行样式：启用斑马纹和 hover 效果 */
     tbody {
       tr {
-        border-bottom: 1px solid var(--tap-grey2);
+        border-bottom: 1px solid var(--ifm-table-border-color);
         transition: background-color 0.2s ease;
-
+        background-color: var(--ifm-table-background);
+        
         &:last-child {
           border-bottom: none;
         }
-
+        
         &:hover {
-          background-color: var(--tap-grey0);
+          background-color: var(--tap-table-hover-background);
         }
-
-        // 斑马纹效果
+        
+        /* 偶数行使用浅灰色背景（斑马纹） */
         &:nth-child(even) {
-          background-color: var(--tap-table-stripe-bg);
-
+          background-color: var(--ifm-table-stripe-background);
+          
           &:hover {
-            background-color: var(--tap-grey0);
+            background-color: var(--tap-table-hover-background);
           }
         }
       }
-
+      
       td {
-        padding: 1rem 1.25rem;
-        line-height: 1.7;
+        padding: 1rem 1.25rem; /* 16px 20px */
         vertical-align: top;
-        font-weight: var(--tap-font-regular);
-
+        
         &:first-child {
-          padding-left: 1.5rem;
+          padding-left: 1.5rem; /* 24px */
         }
-
+        
         &:last-child {
-          padding-right: 1.5rem;
+          padding-right: 1.5rem; /* 24px */
         }
-
-        // 表格中的代码样式
+        
+        /* 表格中的代码样式 */
         code {
           padding: 0.15rem 0.4rem;
           white-space: normal;
           word-break: break-all;
           overflow-wrap: break-word;
         }
-
-        // 表格中的链接样式
+        
+        /* 表格中的链接样式 */
         a {
           color: var(--ifm-color-primary);
           text-decoration: none;
-          font-weight: var(--tap-font-regular);
-
+          font-weight: var(--ifm-font-weight-normal);
+          
           &:hover {
             text-decoration: underline;
           }
         }
-
-        // 表格中的列表样式
+        
+        /* 表格中的列表样式 */
         ul,
         ol {
           margin: 0.5rem 0;
           padding-left: 1.25rem;
-
+          
           li {
             margin: 0.25rem 0;
           }
         }
       }
     }
-
-    // 响应式：小屏幕时允许横向滚动
+    
+    /* 响应式：小屏幕时允许横向滚动 */
     @media (max-width: 768px) {
       display: block;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
   }
-
-  // 图片样式
-  img {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--tap-border-radius-base);
-    margin: 1.5rem 0;
-    box-shadow: var(--tap-box-shadow-1);
-  }
-
-  // 分隔线样式
-  hr {
-    border: none;
-    border-top: 1px solid var(--tap-grey2);
-    margin: 2rem 0;
-  }
-
-  // 强调文本样式
-  strong,
-  [role="tabpanel"] strong {
-    font-weight: var(--tap-font-medium-win);
-    color: var(--tap-grey7);
-  }
-
-  em,
-  [role="tabpanel"] em {
-    font-style: italic;
-    color: var(--tap-grey7);
-  }
-
-  // 删除线样式
-  del,
-  [role="tabpanel"] del {
-    text-decoration: line-through;
-    color: var(--tap-grey5);
-  }
-
-  // 行内代码在段落和列表中的样式
-  p code,
-  li code {
-    word-break: break-word;
-  }
 }
 
-.breadcrumbs {
-  @include tap-font-14;
-
-  &__link {
-    font-size: inherit;
-    color: var(--tap-grey6);
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
-
-  &__item--active &__link {
-    color: var(--tap-grey6);
-    cursor: default;
-    background-color: transparent;
-  }
-
-  &__link > svg {
-    top: 3.5px;
-  }
+/* 
+ * 左侧菜单（侧边栏）样式自定义
+ * 
+ * 设置菜单字体大小为 14px，与右侧 TOC 保持一致
+ * 注意：其他菜单样式（如背景色、内边距、图标等）通过 CSS 变量在 :root 中定义
+ */
+.menu {
+  font-size: var(--tap-font-size-secondary);
 }
 
+/* 
+ * 右侧菜单（目录/TOC）样式自定义
+ * 
+ * 1. 主菜单项：14px（与左侧菜单保持一致）
+ * 2. 子菜单项：14px（与主菜单项保持一致）
+ * 3. 使用 rem 单位保持响应式
+ * 4. 通过 CSS 变量控制颜色和内边距
+ */
 .table-of-contents {
-  @include tap-font-14;
+  /* 主菜单项字体大小：14px */
+  font-size: var(--tap-font-size-secondary);
+  line-height: 1.375rem; /* 22px */
+  font-weight: var(--ifm-font-weight-semibold); /* 500 */
   position: relative;
 
-  li {
-    margin-top: 0.15rem;
-    margin-bottom: 0.15rem;
+  /* 子菜单项字体大小：14px */
+  ul {
+    font-size: var(--tap-font-size-secondary);
+    line-height: 1.375rem; /* 22px */
+    font-weight: var(--ifm-font-weight-normal); /* 400 */
   }
 
-  &__link {
-    color: var(--tap-grey6);
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-    display: block;
-  }
-
-  strong {
-    @include tap-font-regular;
-  }
-
-  code {
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    margin: 0;
-    font-size: inherit;
-    font-family: inherit;
-    font-weight: inherit;
-    line-height: inherit;
-    color: inherit;
-    word-break: normal;
-  }
-
+  /* 激活状态的链接指示器 */
   &__link--active {
     &:before {
       content: "";
@@ -501,17 +523,112 @@ html {
       background-color: var(--ifm-color-primary);
     }
   }
+
+  /* code 元素样式：与普通文字保持一致，不显示特殊样式 */
+  code {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
 }
 
+/* 
+ * 面包屑样式自定义
+ * 
+ * 1. 字体大小：14px（与左侧菜单和右侧 TOC 保持一致）
+ * 2. 行高：22px
+ * 3. 链接颜色：使用项目灰色变量
+ * 4. 激活状态：与普通链接颜色一致，无背景色
+ */
+.breadcrumbs {
+  font-size: var(--tap-font-size-secondary);
+  line-height: 1.375rem; /* 22px */
+
+  &__link {
+    font-size: inherit;
+    color: var(--ifm-navbar-link-color);
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    /* 面包屑分隔符图标位置调整 */
+    > svg {
+      top: 3.5px;
+    }
+  }
+
+  /* 激活状态：与普通链接样式一致 */
+  &__item--active &__link {
+    color: var(--ifm-navbar-link-color);
+    cursor: default;
+    background-color: transparent;
+  }
+}
+
+/* 
+ * 导航栏（Navbar）样式自定义
+ * 
+ * 1. 导航栏切换按钮颜色：使用灰色
+ * 2. 导航栏链接字号：14px，字重：400（常规字重）
+ * 3. 下拉菜单链接：14px，行高 22px，字重 400
+ */
+.navbar__toggle {
+  color: var(--tap-navbar-muted-color);
+}
+
+.navbar__link {
+  font-size: var(--tap-font-size-secondary);
+  font-weight: var(--ifm-font-weight-normal);
+
+  &:after {
+    color: var(--tap-navbar-muted-color);
+  }
+}
+
+.dropdown__link {
+  font-size: var(--tap-font-size-secondary);
+  line-height: 1.375rem; /* 22px */
+  font-weight: var(--ifm-font-weight-normal);
+}
+
+/* 
+ * 分页导航（Pagination）样式自定义
+ * 
+ * 1. 上边距：2.4rem
+ * 2. 字号：14px（与导航栏、菜单保持一致）
+ * 3. 子标签颜色：灰色
+ * 4. 标签颜色：深灰色，上边距 4px
+ */
 .pagination-nav {
   padding-top: 2.4rem;
 
   &__sublabel {
-    color: var(--tap-grey5);
+    font-size: var(--tap-font-size-secondary);
+    color: var(--tap-navbar-muted-color);
   }
 
   &__label {
-    margin-top: 4px;
-    color: var(--tap-grey6);
+    font-size: var(--tap-font-size-secondary);
+    margin-top: 0.25rem; /* 4px */
+    color: var(--ifm-navbar-link-color);
   }
 }
+
+/* 
+ * Admonition（警告框）样式自定义
+ * 
+ * 只调整标题字号，不影响其他使用 --ifm-h5-font-size 的地方
+ * 注意：Docusaurus 使用 CSS Modules，类名会被哈希化，使用属性选择器匹配
+ */
+.theme-admonition [class*="admonitionHeading"] {
+  font-size: var(--tap-font-size-secondary);
+}
+
