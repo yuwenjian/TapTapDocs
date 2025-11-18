@@ -87,7 +87,9 @@ const UnityRelease = ({
             ))}
           </select>
 
-        <ReactMarkdown children={content} />
+        <div className="markdown">
+          <ReactMarkdown children={content} />
+        </div>
       </div>
     );
   };
