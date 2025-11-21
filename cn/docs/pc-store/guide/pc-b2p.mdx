@@ -1,0 +1,298 @@
+---
+title: PC 买断制游戏文档指引
+sidebar_position: 3
+---
+
+
+## 一、了解 TapTap PC
+
+截止目前，TapTap PC 潜在人群规模约 2400 万左右，随着 PC 游戏市场的持续增长与跨平台体验需求的提升，TapTap 依托成熟的移动端社区生态与技术积累，逐步向 PC 领域延伸，旨在为玩家打造全场景覆盖的一站式游戏平台。对于开发者而言，TapTap PC 提供了更广阔的分发渠道， PC 买断制同样采取"零分成"的合作模式及优质创作者内容，共同驱动 PC 生态繁荣发展。
+
+## 二、成为开发者
+
+在 TapTap 开放平台完成注册、入驻（认证）申请通过之后，即可成为 TapTap 开放平台的开发者。
+
+[开发者入驻流程](/store/)
+
+## 三、有版号买断制入驻流程
+
+### 3.1 买断制入驻流程简介
+
+买断制游戏的上架流程与普通游戏本质差异不大，开发者需要完成开发者入驻 --- 创建游戏商店页 --- 游戏测试 --- 正式上线等流程。
+
+**需要特别注意的是：**
+
+付费游戏涉及结算的问题，需要在游戏上线前提前联系对接的商务同学签署**付费合同（ Tap 不分成，只收取 1% 的手续费）**。
+
+游戏上线前期需要根据游戏具体类型对应接入的正版验证 SDK，若游戏有 DLC，则可以阅读 [DLC 商品文档](/store/operation/buyout/dlc-products/)查阅需要准备的 DLC 商品物料。
+
+### 3.2 支持多种付费解锁形式
+
+Tap 站内支持两种形式的付费游戏：买断制游戏以及免费下载（付费解锁章节）游戏，简称 DLC 章节解锁游戏。
+
+| 类型                 | 基本定义                                                                                                                                 | 接入 SDK                                                                                              | 示例                     |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|--------------------------|
+| **一次性买断**       | 一次性买断的游戏是指玩家一次性支付固定费用来购买游戏，之后可以无限制地游玩游戏，不需要再支付额外的费用。                                 | 正版验证：TapTap 的正版验证服务适用于买断制游戏，用于检测用户开始游戏时是否完成付费，是否具备下载资格及 DLC 解锁资格 | ![gameadmin](https://img.tapimg.com/market/images/80eff719bb823804ecc26288e4ba0f1c.png)               |
+| **买断制+DLC 章节解锁** | 用户付费下载游戏包体后可以游玩全部内容，但还需付费才可解锁更多曲包、皮肤、附加章节等额外内容。                                           | 正版验证：TapTap 的正版验证服务适用于买断制游戏，用于检测用户开始游戏时是否完成付费，是否具备下载资格及 DLC 解锁资格；DLC：当游戏需开放新章节、新主线等付费的 DLC 内容时，同样可使用 DLC 服务完成用户的解锁资格验证 | ![gameadmin](https://img.tapimg.com/market/images/ec5ccf2c86ad6a3316aa7cde7ee88763.png)               |
+| **免费下载+DLC 章节解锁** | 免费下载（付费解锁章节）的游戏是一种混合了免费游戏和付费内容的商业模式，玩家可以免费体验部分游戏内容，后续仍需付费才能解锁完整版内容。   | DLC：当游戏需开放新章节、新主线等付费的 DLC 内容时，同样可使用 DLC 服务完成用户的解锁资格验证         | 敬请期待                 |
+
+### 3.3 如何上架买断制游戏
+
+#### 3.3.1 前期准备
+
+当您的游戏已经准备好上架，则可以阅读 [PC 游戏上架指南](/pc-store/guide/document-guide/)，帮助大家了解上架需要的信息、物料、资质等内容。
+
+若您的游戏有 DLC，则可以阅读 [DLC 商品文档](/store/operation/buyout/dlc-products/)查阅需要准备的 DLC 商品物料。
+
+#### 3.3.2 SDK 如何接入
+
+开放付费下载，请根据 [开发者帮助文档](/sdk/access/pc-quickstart/#%E5%90%AF%E5%8A%A8%E6%A0%A1%E9%AA%8C) 接入启动校验
+
+若游戏还需开放 DLC 解锁，请根据 [正版验证开发指南](/sdk/copyright-verification/guide/) 接入 DLC 正版验证
+
+Unity请查看[TapTap PC 端集成](/sdk/access/pc-quickstart/)
+C++请查看：[PC C++ SDK 接入概览](/pc/cpp-sdk/overview/)
+
+
+#### 3.3.3 前期准备工作
+
+接入启动校验，并配置启动校验测试白名单
+
+前往开发者中心 > 商店 > 买断制游戏配置付费下载和 DLC，并添加买断制游戏白名单
+
+![gameadmin](https://img.tapimg.com/market/images/bee2eaf4a06edc8f389cca66409c7034.png)
+
+#### 3.3.4 SDK 测试
+
+根据开发者中心 > 游戏服务 > 启动校验的测试指引，拉起 PC 启动器
+
+在测试游戏详情页创建并支付付费下载和 DLC 的 0.01 元订单
+
+> **注意：正式上线前请确保商品都已审核通过配置上架。**
+
+#### 3.4 玩家测试功能支持
+
+若您的游戏需要在上线前，通过玩家测试来帮助游戏更加完善，则可以使用 TapTap 的测试功能进行开测。
+
+[TapTap PC 测试计划能力介绍](/pc-store/guide/pc-test/)
+
+#### 3.5 正式上线
+
+当您的游戏已经准备好正式上线时，请将游戏包体提交审核，并设置定时上线的时间。
+
+<b>确保已经设置财务主体：</b>前往厂商设置 >> 财务与管理 >> 财务主体功能，设置财务主体，该财务主体将用于收款。
+
+<b>确保已设置首发定价：</b>在开发者中心 >> 商店 >> 买断制游戏功能，开启付费下载并设置价格。
+
+#### 3.6 如何结算
+
+TapTap 与游戏的结算周期为月结，结算方式为对公打款。您可前往厂商设置 >> 财务与管理 >> 财务对账功能查看已生成的对账单，并确认对账单后联系 TapTap 工作人员并完成结算。
+
+#### 3.7 折扣活动
+
+TapTap 支持两种折扣方式：
+
+**限时打折**：在限定时间内面向全部用户打折，最低可设置 0.01 元。您可前往开发者中心 >> 商店 >> 买断制游戏功能设置。
+
+**发放优惠券**：优惠券仅限少量已获取优惠券的用户可用，详细请查看 [折扣与优惠券](/store/operation/buyout/discounts-coupons/)。需注意，**折扣和优惠券可叠加使用**。
+
+具体请前往商店 >> 买断制游戏 >> 折扣与优惠券按需配置
+
+![gameadmin](https://img.tapimg.com/market/images/1b1fb550af1ffdf5152d37210943f725.png)
+
+#### 3.8 预购功能
+
+TapTap 平台现已支持买断制游戏在开发者后台配置游戏预购功能。必须接入正版验证SDK才可以开启预购功能。
+
+若开发者有需要，可以在「开发者中心 - 商店 - 买断制游戏 - 付费下载设置」中开启预购功能。开启后，可支持玩家提前购买游戏，将游戏入库。建议预购周期不要超过一年。
+
+![gameadmin](https://img.tapimg.com/market/images/ffdd8f65caa6dea4e18d0ae50777ed8a.png)
+
+同时，预购游戏用户将自动转化为游戏预约用户，支持预购后自动下载功能，进一步提升玩家体验和转化效率。预购销量也将计入热卖榜排名，助力游戏获取更多曝光。
+
+**预购结算流程**：预购的金额将会在游戏正式上线后的次月进行结算历史所有的预购金额。
+
+**预购退款规则**：游戏首发后 5 个工作日内，玩家游戏时长少于 2 小时可退款。
+
+
+## 四、上架 CDKEY 商品售卖
+
+### 4.1 功能介绍
+
+TapTap 已开放上架 CDKEY 商品售卖，开发者可以入驻 TapTap 后，在平台开放 PC 游戏售卖。
+
+需注意，TapTap 不分成，只收取 1% 的手续费。目前 TapTap 已支持 Steam、游戏官网、EPIC 等平台售卖。
+
+### 4.2 前置准备工作
+
+**① 签署合同**
+
+PC 游戏入驻开放 CDKEY 售卖需签署分销合同，请提前发送邮件至 cooperation@taptap.com 联系 TapTap 工作人员，咨询相关事项，以便完成合同的签署。
+
+**② 创建 TapTap 开发者账号**
+
+PC 游戏的开发者也和手机游戏开发者相同，需入驻 TapTap 后，方可上架游戏并开放 PC 游戏售卖。
+
+创建开发者账号需：
+
+同意开发者协议：《[TapTap 平台开发者协议](/agreement/)》
+
+创建开发者账号，详细请查阅文档：《[新建和管理开发者账号](/store/release/register/account-management/)》
+
+### 4.3 上架游戏
+
+TapTap 对 PC 游戏的物料审核标准和手机游戏类似，具体如下：
+
+提前按照《[游戏物料要求](/store/release/publish/material/)》准备物料
+
+因 PC 游戏专区展示需求，PC 游戏**需额外上传游戏封面图**，尺寸：460*215 px，格式：.jpg / .png。
+
+物料审核细则请查阅：《[TapTap 游戏审核规范细则](/store/release/publish/agree/)》
+
+最终按照文档：《[新建和管理游戏](/store/release/publish/create-game/)》录入游戏
+
+在录入游戏时，游戏平台选择请参考：
+
+如果游戏将在 TapTap 开放下载，请选择「电脑端」。
+
+如果游戏仅上架 Steam，请选择「Steam」。
+
+若两者都上架，请同时勾选。
+
+### 4.4 上架 CDKEY 商品
+
+**① 联系 TapTap 工作人员配置白名单**
+
+因项目目前处于试运营阶段，开发者需**在游戏资料提交审核后**同步 TapTap 工作人员，以便开通游戏的 CDKEY 售卖能力。
+
+**② 发布商品操作演示**
+
+<div>
+  <video
+    src="https://capacity-files.lcfile.com/0XSxojISneL98oLXVtADPPtviyvnY8o6/chuangjianshangping.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+点击发布商品后，TapTap 工作人员将在 1 个工作日内完成商品资料审核。
+
+**③ 用户端效果演示**
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/dbS1PWMj7yqmq9RFiIdESDmwXC0WTFSE/honghuduanxianshi.mp4"
+    controls
+    muted
+    preload="auto"
+    width="30%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+### 4.5 管理价格
+
+商品审核通过后，TapTap 将自动同步 STEAM 价格和打折。
+
+<div>
+  <video
+    src="https://capacity-files.lcfile.com/2hMAkGq1BBQtCr1a9Q0dqW7aQYyS8gAw/shezhizhekou.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+### 4.6 管理库存
+
+**① 库存概念**
+
+库存分为可售库存和 CDKEY 库存：
+
+- **可售库存**
+  - 仅需要输入数字，请填写您预期开放售卖的数量
+  - 用户下单后，扣除库存数量
+  - 预售情况下可用
+
+- **CDKEY 库存**
+  - 需上传 CDKEY 明文
+  - CDKEY 充足时，系统自动为付款成功的用户发送 CDKEY
+  - CDKEY 不足时，付款成功的用户订单将停留在"待发货"状态，直到您补充 CDKEY 库存
+
+**② 补充库存操作演示**
+
+可售库存可增删。
+
+<div>
+  <video
+    src="https://capacity-files.lcfile.com/CKjRyJ3DtNXojkbmXXbxbdvXLIRMp2T9/xiugaikucun.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+CDKEY 库存可上传。上传后，不支持删除 CDKEY。如果您有部分 CDKEY 不再售卖，请操作强制失效。
+
+<div>
+  <video
+    src="https://capacity-files.lcfile.com/7yQ28SB3jNovDT1H0wYAzQq8ftEpXGGF/cdkeykucun.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+> 如果 CDKEY 开放预售，请将可发货时间设置为未来时间。
+
+| 上传 CDKEY 无需过审，所以上传完成后，请再次检查 CDKEY 显示是否正确。 |
+|----------------------------------------------------------------------|
+| 常见的上传 CDKEY 错误有：                                            |
+| - 增加表头，导致表头被识别为 CDKEY。导入的表格无需表头。             |
+| - 第一列为序号或者其他内容，导致 CDKEY 识别错误。需保证第一列即 CDKEY 明文。 |
+
+### 4.7 财务结算
+
+PC 游戏售卖的款项结算采用月结（自然月）的方式。
+
+每个月开发者可前往开发者中心 - 全部游戏 - 财务与管理下载对应结算单，核算无误后在结算单上盖章并寄回。TapTap 财务核对结算单后将对公打款。
+
+### 4.8 常见问题
+
+**① 如何定时上架游戏？**
+
+在首次创建商品和每次更新商品时，均可以设置本次创建和更新的定时生效时间。
+
+如果您的游戏为首次上架，请按照下方视频演示操作，选择上架状态后，设置定时生效时间即可，游戏将在审核通过后定时上架。
+
+<div>
+  <video
+    src="https://capacity-files.lcfile.com/ON9wRofLaqOlEQpGgywQEVhSJOMGCS95/dingshishengxiao.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>

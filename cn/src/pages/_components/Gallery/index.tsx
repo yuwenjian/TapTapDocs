@@ -27,27 +27,27 @@ const Gallery = ({ brand, entries, title, cardSize = 'narrow', showFilter = fals
         <div className={styles.title}>
           {/* @ts-ignore */}
           {
-            (brand === "leancloud")?<div>
-                 <Logo noLabel noLink size={brand === "leancloud" ? 1.3 : 1.6} />
-                   
-            </div>:  
-            (currentLocale === "en" )?
-            <img src={useBaseUrl("/img/logo_en.png")} width="450" ></img>
-           :
-           <img src={useBaseUrl("/img/Local.png")} width="334" ></img>
-         
+            (brand === "leancloud") ? <div>
+              <Logo noLabel noLink size={brand === "leancloud" ? 1.3 : 1.6} />
+
+            </div> :
+              (currentLocale === "en") ?
+                <img src={useBaseUrl("/img/logo_en.png")} width="450" ></img>
+                :
+                <img src={useBaseUrl("/img/Local.png")} width="334" ></img>
+
           }
-          {brand === "leancloud" ?  <Translate
+          {brand === "leancloud" ? <Translate
             id={`tds-home-${title}`}
           >
-            {brand === "leancloud" ?title:""}
-          </Translate>:<div></div>}
+            {brand === "leancloud" ? title : ""}
+          </Translate> : <div></div>}
 
-        
+
         </div>
 
         {brand === "tds" && (
-          <Link className={styles.cta} to="store">
+          <Link className={styles.cta} to="/docs/store/standardies-operation/">
             <Translate
               id="tds-home-入门指南"
             >
@@ -100,7 +100,7 @@ const Gallery = ({ brand, entries, title, cardSize = 'narrow', showFilter = fals
                       className={styles.entryAction}
                       href={link.href}
                       rel="nofollow noopener"
-                      target={link.noblank ? '' :'_blank'}
+                      target={link.noblank ? '' : '_blank'}
                       key={link.label}
                     >
                       <Translate
