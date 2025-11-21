@@ -1,0 +1,127 @@
+---
+title: PC 游戏如何在后台传包
+sidebar_position: 6
+---
+
+
+## 一、包体收录规范
+
+TapTap 目前支持开发者上传 PC 纯净包，即不含本身的游戏启动器以及其他第三方启动器。
+
+纯净包定义（以下 2 种均可）：
+
+- 打开游戏，进入游戏后，游戏内可以有热更，但是没有「下载/安装/获取」文案  
+- 打开启动界面，无需再下载/安装游戏，可以直接启动游戏，游戏内可以有热更，但是没有「下载/安装/获取」文案
+
+游戏包体上传规范：
+
+| **包体类型**     | **包体表现**                                                                                                   | **包体通常大小（仅供参考）** | **收录标准**                                                  |
+|------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------|---------------------------------------------------------------|
+| **启动器安装包** | 打开启动器安装界面 A，界面有「下载 / 安装 / 更新 / 获取」等文案<br/>点击界面 A 的按钮下载安装<br/>再次打开出现启动界面 B，界面有「下载 / 安装 / 更新 / 获取」等文案<br/>点击界面 B 的按钮下载安装<br/>进入游戏 | 50M 以下                    | 不支持收录                                                    |
+| **启动器**       | 打开出现启动界面，界面有「下载 / 安装 / 更新 / 获取」等文案<br/>点击界面的按钮下载安装<br/>进入游戏                                                                 | 50M 到 300M                 | 不建议上传，若无法剥离启动器，请先与对接运营/商务沟通后再传包 |
+| **纯净包**       | 【情况1】打开游戏，进入游戏后，游戏内可以有热更，但是没有「下载/安装/获取」文案<br/>【情况2】打开启动界面，无需再下载/安装游戏，可以直接启动游戏，游戏内可以有热更，但是没有「下载/安装/获取」文案 | 通常比较大                  | 推荐上传                                                      |
+
+## 二、如何打包
+
+**步骤一：准备压缩包**（TapTap 后台支持上传 7z、zip 包，大小不限）
+
+在 Windows 上，将游戏文件（通常是包含多个文件或文件夹的整个游戏目录）压缩成一个压缩包（.zip 或 .7z 二选一）
+
+不要解压这个压缩包，接下来整个过程都在压缩包内操作。
+
+**步骤二：浏览压缩包**
+
+使用常用的压缩软件（如 7-Zip, WinZip 等）打开这个游戏压缩包，并浏览里面的内容。
+
+**步骤三：定位启动程序**
+
+在压缩包内浏览，找到游戏真正的启动程序。这通常是一个 .exe 文件，文件名可能包含游戏名称、Start 等字样，或者就是游戏主程序的名字（如 TapTapgame.exe）。
+
+右键点击这个 .exe 文件。
+
+**步骤四：查看文件属性**
+
+在右键菜单中选择 属性，打开该文件的属性窗口。
+
+**步骤五：拼接完整相对路径**
+
+如下表所示，查询符合游戏当前的情况。
+
+<table style={{display: "table", tableLayout: "fixed", width: "100%", textAlign: "center" }}>
+  <tbody>
+    <tr>
+      <td style={{ width: "10%"}}>情况 1</td>
+      <td>
+        <img src="https://img.tapimg.com/market/images/fca3c91c7047624297f804276fa9a6c4.png"/>
+      </td>
+      <td>
+      <p style={{ textAlign: "start"}}>1. 当属性点开，【位置】显示为根目录/的情况，请把图中序号1和序号2展示的内容作拼接，即为：TapTap PC/TapTap.exe <br/>
+      2. 获取这个路径后，请把这个路径填写在启动配置项里的可执行文件</p>
+      <img src="https://img.tapimg.com/market/images/79cd26395d46f8c6425ba866dcb3dbba.png"/>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ width: "10%"}}>情况 2</td>
+      <td>
+        <img src="https://img.tapimg.com/market/images/eeb3f66a1478ffcb0bcefa2181ecef0e.png"/>
+      </td>
+      <td>
+        <p style={{ textAlign: "start"}}>1. 当属性点开，【位置】显示为存档根目录的字样，则仅需要把图中的序号1内容填写在后台的启动配置项里的可执行文件即可</p>
+      <img src="https://img.tapimg.com/market/images/79cd26395d46f8c6425ba866dcb3dbba.png"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+## 三、如何传包
+
+前往开发者中心 >> 商店 >> PC 包体管理 >> 包体管理，点击「上传包体」，选择包体文件，并填写启动项配置。
+
+<div>
+  <video
+    src="https://capacity-files.lcfile.com/yYkPQnOGmD2zPhYH1TgO2337AiA6Cjmh/chuanbao.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+> 如果您的游戏有依赖库，请同时将依赖库的安装文件放置于游戏目录内一并上传，并在 PC 包体管理 >> 基础配置选择对应的库及库的启动项配置，TapTap 将在用户点击下载安装游戏时，帮助游戏完成依赖库的安装。
+
+## 四、完成包体自测
+
+前往开发者中心 >> 商店 >> 版本发布 >> 测试 >> 内部测试，创建测试计划，并为测试用户发放测试资格。
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/NYcvGNKD1e3Ds7j4iBqvfBEq5mkzGiWr/fasongceshizige.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+测试用户在 Windows 电脑本地下载 TapTap PC 版并登录测试账号后，点击「立即自测」或复制自测链接至浏览器。
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/vXRnLA7Q3ap1Ql813DLnjPUeR6WHMksb/dianjizice.mp4"
+    controls
+    muted
+    preload="auto"
+    width="100%"
+    height="100%"
+  >
+    Video not supported.
+  </video>
+</div>

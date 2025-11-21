@@ -21,8 +21,8 @@ type Entry = {
 export const getEntries = (brand: string): Entry[] => {
   const ENTRIES_TDS: Entry[] = [
     {
-      title: "游戏商店",
-      description: "有关如何上架游戏、开放测试和参与平台活动",
+      title: "移动端游戏",
+      description: "有关移动端游戏如何上架、开放测试和参与平台活动，了解更多平台的通用运营技能",
       links: [
         {
           label: "查看更多",
@@ -30,26 +30,18 @@ export const getEntries = (brand: string): Entry[] => {
         },
       ],
     },
+
     {
-      title: "游戏服务",
-      description: "TDS 为游戏开发提供的全套 SDK 服务",
+      title: "PC 端游戏",
+      description: "依托移动端优势拓展 PC 平台，为开发者提供“零分成“分发渠道及增长",
       links: [
         {
           label: "查看更多",
-          to: "/sdk/",
+          to: "/pc-store",
         },
       ],
     },
-    {
-      title: "社区运营指南",
-      description: "TapTap 为开发者提供的社区新手攻略",
-      links: [
-        {
-          label: "查看更多",
-          to: "/community/",
-        },
-      ],
-    },
+
     {
       title: "小游戏",
       description: "小游戏无需下载安装即可使用，实现了客户端“点开即玩”的优质用户体验",
@@ -62,16 +54,38 @@ export const getEntries = (brand: string): Entry[] => {
       ],
     },
     {
-      title: "资源下载",
-      description: "TapTap 相关品牌元素及开发工具包下载",
+      title: "游戏服务",
+      description: "TapSDK 为游戏开发提供的全套服务",
       links: [
         {
-          label: "设计资源",
-          to: "/design/",
+          label: "查看更多",
+          to: "/sdk",
         },
         {
-          label: "SDK",
-          to: "/tap-download/",
+          label: "SDK 工具包",
+          href: "https://developer.taptap.cn/docs/tap-download/",
+          noblank: true,
+        },
+      ],
+    },
+    {
+      title: "品牌资源",
+      description: "TapTap 相关品牌元素下载",
+      links: [
+        {
+          label: "品牌素材库",
+          to: "/design",
+        },
+      ],
+    },
+
+    {
+      title: "更多信息",
+      description: "了解 TapTap 平台使用协议",
+      links: [
+        {
+          label: "查看更多",
+          to: "/agreement",
         },
       ],
     },

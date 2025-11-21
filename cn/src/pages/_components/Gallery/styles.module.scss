@@ -80,7 +80,7 @@ $entry-cell-height: 240px;
   gap: 16px;
 
   &.narrow {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   &.medium {
@@ -92,6 +92,7 @@ $entry-cell-height: 240px;
   }
 
   @media only screen and (max-width: 1279px) {
+
     &.narrow,
     &.medium,
     &.wide {
@@ -100,6 +101,7 @@ $entry-cell-height: 240px;
   }
 
   @media only screen and (max-width: 661px) {
+
     &.narrow,
     &.medium,
     &.wide {
