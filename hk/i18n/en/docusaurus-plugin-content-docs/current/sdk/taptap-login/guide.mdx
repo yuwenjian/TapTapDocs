@@ -508,12 +508,12 @@ TapTapLogin.loginWithScopes(with: scopes) {[weak self] account, error, isCancel 
 The TapTap authorization login interface supports selecting different authorization scopes and supports any combination, but must include either `public_profile` or `basic_info`, otherwise `openid` and `unionid` cannot be obtained. The TapTap authorization login interface can pass an array of String types as parameters, and developers can add different permissions as elements of the array according to their business needs.
 
 
-| Permission | Description
-|---|---|---|
-| `public_profile` | Obtain openid, unionid, user nickname, user avatar
-| `user_friends` | Obtain permission to access TapTap friend-related data
-| `basic_info` | Obtain openid and unionid
-| `email` | Obtain email and emailVerified data
+| Scope | Description |
+|---|--- |
+| `public_profile` | Obtain openid, unionid, user nickname, user avatar |
+| `user_friends` | Obtain permission to access TapTap friend-related data |
+| `basic_info` | Obtain openid and unionid |
+| `email` | Obtain email and emailVerified data |
 
 
 ### Obtaining User Information
