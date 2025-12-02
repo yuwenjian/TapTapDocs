@@ -657,12 +657,12 @@ NSArray *scopes = @[@"public_profile"];
 TapTap 授权登录接口支持选择不同的授权范围且支持任意组合，但必须包含 `public_profile` 和 `basic_info` 中的一个，不然无法获得 openId 和 unionId。TapTap 授权登录接口可以传递 String 类型的数组作为参数，开发者可以根据自己业务需求添加不同的权限为数组的元素。
 
 
-| 权限 | 说明
-|---|---|---|
-| `public_profile` | 获得 openId、unionId、用户昵称、用户头像
-| `user_friends` | 获得访问 TapTap 好友相关数据的权限
-| `basic_info` | 获得 openId 和 unionId
-| `email` | 获得 email 和 emailVerified 数据
+| 权限 | 说明 |
+|---|--- |
+| `public_profile` | 获得 openId、unionId、用户昵称、用户头像 |
+| `user_friends` | 获得访问 TapTap 好友相关数据的权限 |
+| `basic_info` | 获得 openId 和 unionId |
+| `email` | 获得 email 和 emailVerified 数据 |
 
 
 ### 获取用户信息
