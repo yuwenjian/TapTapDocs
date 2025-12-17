@@ -32,7 +32,7 @@ export const getEntries = (brand: string): Entry[] => {
     },
 
     {
-      title: "PC 端游戏",
+      title: "PC 端 & 模拟器 游戏",
       description: "依托移动端优势拓展 PC 平台，为开发者提供“零分成“分发渠道及增长",
       links: [
         {
