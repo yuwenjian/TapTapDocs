@@ -1,0 +1,654 @@
+---
+title: 房间管理
+sidebar_label: 房间管理
+sidebar_position: 3
+slug: /sdk/tap-online-battle/guide/room
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import MultiLang from "/src/docComponents/MultiLang";
+
+
+## 核心流程
+
+<p style={{ textAlign: "center" }}>
+  <img
+    src={useBaseUrl("/img/online-battle/room.png")}
+    alt="TapTap"
+    style={{ width: "100%", maxWidth: "600px" }}
+  />
+</p>
+
+### 概念说明
+
+- 房间: 玩家联机的虚拟空间，每个房间有唯一的房间 ID
+- 房主: 创建房间的玩家，拥有特殊权限(踢人、修改房间属性)
+- 监听回调：当有玩家进入或离开房间时，SDK 会通过回调通知其他玩家
+
+### 房间信息
+
+当通过不同方式进入房间后，SDK 会返回房间内具体信息，包括房间属性和房间内所有玩家属性，具体参数如下：
+
+| 参数名 | 类型 | 说明 |
+| ---------------------- | ---------------------- | ---------------------- |
+| id | string | 房间 ID  | 
+| name | string |房间名称，如果创建或更新时未设置，默认为空字符串 |
+| type | string |房间类型 |
+| ownerId | string |房主 ID ，当原房主离开房间且房间内有其他玩家时，该值会变更为房间内其他玩家|
+| status| int | 0-未开始帧同步，1-帧同步中 |
+| customProperties | string |自定义房间属性 | 
+| maxPlayerCount | int | 房间最大支持人数 | 
+| players | List | 房间内玩家信息集合 |
+| createTime | string |房间创建时间，1970 年开始的秒数 |
+
+其中玩家信息如下：
+
+| 参数名 | 类型 | 说明 |
+| ---------------------- | ---------------------- | ---------------------- | 
+| id | string | 玩家 ID |
+| status |  int | 玩家状态：0-离线、1-在线 |
+| customStatus | int | 自定义玩家状态，开发者可随意设置任何值，意义由开发者自行判断 | 
+| customProperties | string | 自定义玩家属性，开发者可以随意设置任何数据，最大为 2048 字节 | 
+
+## 进入房间
+
+进入房间有三种不同的方式，创建房间、匹配房间以及获取房间列表后加入指定房间等，通过创建房间加入时会自动成为房主。
+
+### 创建房间
+
+在创建和匹配房间时，需要设置房间配置（必选）和玩家配置（可选），具体参数如下：
+
+#### 房间配置
+
+| 参数名 | 类型 | 说明 | 是否必选 |
+| ---------------------- | ---------------------- | ---------------------- | ---------------------- |
+| maxPlayerCount | int | 房间最大支持人数，取值范围为 1 ~ 20 | 是 |
+| type | string | 房间类型，最大 32 字节 | 是 |
+| name | string | 房间名称，最大 64 字节，当匹配房间时，无需设置该参数 | 否 |
+| customProperties | string | 自定义房间属性，最大 2048 字节 | 否 | 
+| matchParams | Dictionary | 房间匹配参数，最大支持 3 个 K/V 对, K/V 取值由开发者决定，K 最大 32 字节，V 最大 64 字节 | 否 |
+
+#### 玩家配置
+
+| 参数名 | 类型 | 说明 | 是否必选 |
+| ---------------------- | ---------------------- | ---------------------- |---------------------- |
+| customStatus |  int | 自定义玩家状态，开发者可随意设置任何值，意义由开发者自行判断 | 否 |
+| customProperties |  string | 自定义玩家属性，开发者可以随意设置任何数据，最大为 2048 字节 | 否 |：
+
+请求成功后，会返回对应房间的具体[信息](#房间信息)，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+// 定义匹配参数
+Dictionary<string, string> matchParams = null;
+// 定义房间配置
+var config = new CreateRoomConfig()
+{
+    // 房间配置
+    roomConfig = new RoomConfig()
+    {
+        maxPlayerCount = roomMaxPlayerCount, // 房间最大支持人数，取值范围为[1, 20]，必填
+        type = roomType, // 房间类型，最大32字节，必填
+        name = roomName, // 房间名称，最大64个字节，选填
+        customProperties = roomProperty, // 自定义房间属性，最大2048字节，选填
+        matchParams = matchParams, // 房间匹配参数，选填，最大支持3个K/V对, K/V取值由开发者决定，K最大32字节，V最大64字节
+    },
+    // 玩家配置
+    playerConfig = new PlayerConfig() 
+    {
+        customStatus = playerCustomStatus, // 自定义玩家状态，整型，选填
+        customProperties = playerProperty, // 自定义玩家属性，选填
+    },
+};
+try
+{
+    RoomInfo data = await TapTapOnlineBattle.CreateRoom(config);
+    LogMessage(" 创建房间成功 " + JsonConvert.SerializeObject(data));
+}
+catch (TapException e)
+{
+    LogMessage($"创建房间 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 匹配房间
+
+匹配房间时使用的[配置参数](#房间配置)和创建房间一致，当没有满足条件的房间存在时，会自动创建一个新房间，
+匹配成功后返回对应的[房间信息](#房间信息)。
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+// 定义匹配参数
+Dictionary<string, string> matchParams = null;
+// 定义房间配置
+var config = new MatchRoomConfig()
+{
+    // 房间配置
+    roomConfig = new RoomConfig()
+    {
+        maxPlayerCount = roomMaxPlayerCount,  // 房间最大支持人数，取值范围为[1, 20]，必填
+        type = roomType, // 房间类型，最大32字节，必填
+        customProperties = roomProperty, // 自定义房间属性，最大2048字节，选填
+        matchParams = matchParams, // 房间匹配参数，选填，最大支持3个K/V对, K/V取值由开发者决定，K最大32字节，V最大64字节
+    },
+    // 玩家配置
+    playerConfig = new PlayerConfig()
+    {
+        customStatus = playerCustomStatus, // 自定义玩家状态，整型，选填
+        customProperties = playerProperty, // 自定义玩家属性，选填
+    },
+};
+try
+{
+    RoomInfo data = await TapTapOnlineBattle.MatchRoom(config);
+    LogMessage(" 匹配房间成功 " + JsonConvert.SerializeObject(data));
+    // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知 
+}
+catch (TapException e)
+{
+    LogMessage($"匹配房间 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+如果此时是加入已存在的房间，房间内其他玩家会通过 SDK 的 `OnPlayerEntered` 回调收到通知：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 玩家进入房间
+    /// </summary>
+    /// <param name="roomId"> 房间ID </param>
+    /// <param name="playerInfo"> 玩家信息 </param>
+    public void OnPlayerEntered(string roomId, TapSDK.OnlineBattle.PlayerInfo playerInfo)
+    {
+        LogMessage(
+            $"receive OnPlayerEntered {roomId}:{JsonConvert.SerializeObject(playerInfo)}"
+        );
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 获取房间列表
+
+开发者可通过具体房间类型获取对应房间列表数据，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    RoomListData data = await TapTapOnlineBattle.GetRoomList(
+        roomType, // 房间类型 
+        offset, // 请求偏移量，默认为 0 
+        limit // 请求获取的房间数量，默认为 20
+    );
+    LogMessage(" 查询房间列表成功 " + JsonConvert.SerializeObject(data));
+}
+catch (TapException e)
+{
+    LogMessage($"查询房间列表 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+首次请求时，请求参数中 `offset` 传 0 即可。拉取下一页房间列表时，请传递上一次请求结果中的 `offset` 字段的值。
+返回结果 `RoomListData` 包含三个字段 ：
+- `offset`：用于请求下一页房间列表的 `offset` 值
+- `hasMore`：表示是否还有更多房间，true 表示有更多房间，false 表示没有
+- `rooms`: 房间列表数据，包含对应类型房间的信息集合
+
+`rooms` 中各房间信息字段如下：
+
+| 参数名 | 类型 | 说明 | 
+| ---------------------- | ---------------------- |---------------------- |
+| id | string | 房间 ID  | 
+| name | string | 房间名称，如果创建或更新时未设置，默认为空字符串 |
+| type | string | 房间类型 |
+| status | int | 0-未开始帧同步，1-帧同步中 |
+| customProperties | string | 自定义房间属性 | 
+| maxPlayerCount | int | 房间最大支持人数 | 
+| createTime | string | 房间创建时间，1970 年开始的秒数 |
+
+### 加入房间
+
+使用目标房间的房间 ID 可加入对应房间，成功后，会返回包含所有玩家的具体[房间信息](#房间信息)。示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+// 玩家配置
+var playerConfig = new PlayerConfig()
+{
+    customStatus = joinPlayerStatus, // 自定义玩家状态，整形，选填。开发者可随意设置任何值，意义由开发者自行判断
+    customProperties = joinPlayerProperty, // 自定义玩家属性，选填。开发者可以随意设置任何数据，最大长度为2048字节
+};
+try
+{
+    RoomInfo data = await TapTapOnlineBattle.JoinRoom(
+        joinRoomId, // 房间ID 
+        playerConfig //  玩家配置，选填
+    );
+    LogMessage(" 加入房间成功 " + JsonConvert.SerializeObject(data));
+    // 其他玩家会通过 OnPlayerEntered 回调收到通知
+}
+catch (TapException e)
+{
+    LogMessage($"加入房间 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+加入成功后其他玩家也会通过 `OnPlayerEntered` 回调收到通知：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 玩家进入房间
+    /// </summary>
+    /// <param name="roomId"> 房间ID </param>
+    /// <param name="playerInfo"> 玩家信息 </param>
+    public void OnPlayerEntered(string roomId, TapSDK.OnlineBattle.PlayerInfo playerInfo)
+    {
+        LogMessage(
+            $"receive OnPlayerEntered {roomId}:{JsonConvert.SerializeObject(playerInfo)}"
+        );
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+## 管理房间
+
+### 更新房间信息
+
+只有房主可更新当前房间信息，包含名称和自定义属性等，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    await TapTapOnlineBattle.UpdateRoomProperties(
+        updateRoomName, // 房间名称
+        updateRoomProperty // 房间自定义属性，最大支持 2048 字节
+    );
+    LogMessage(" 更新房间属性 成功 ");
+    // 所有玩家会通过 OnRoomPropertiesChanged 回调收到通知
+}
+catch (TapException e)
+{
+    LogMessage($"更新房间属性 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+更新成功后所有玩家会通过 SDK 的 `OnRoomPropertiesChanged` 回调收到通知：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 房间属性变更
+    /// </summary>
+    /// <param name="id"> 房间 ID </param>
+    /// <param name="name"> 房间名称 </param>
+    /// <param name="customProperties"> 房间自定义属性 </param>
+    public void OnRoomPropertiesChanged(string id, string name, string customProperties)
+    {
+        LogMessage($"receive OnRoomPropertiesChanged {id}:{name}:{customProperties}");
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 更新玩家自定义状态
+
+每个玩家均可更新自身的当前自定义状态，用于标识玩家在房间或对战过程中的关键状态，例如未就绪、已就绪等，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    // updatePlayerStatus 玩家自定义状态，例如 0 未就绪 1 已就绪
+    await TapTapOnlineBattle.UpdatePlayerCustomStatus(updatePlayerStatus);
+    LogMessage(" 更新玩家状态 成功 ");
+    // 房间内玩家会通过 OnPlayerCustomStatusChanged 回调收到通知
+}
+catch (TapException e)
+{
+    LogMessage($"更新玩家状态 error {e.Code}  {e.Message}");
+}
+```
+
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+更新成功后，房间内玩家会通过 SDK 的 `OnPlayerCustomStatusChanged` 回调收到通知：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 玩家更新自定义状态
+    /// </summary>
+    /// <param name="playerId"> 更新了自定义状态的玩家ID </param>
+    /// <param name="status"> 新的状态 </param>
+    public void OnPlayerCustomStatusChanged(string playerId, int status)
+    {
+        LogMessage($"receive OnPlayerCustomStatusChanged {playerId}:{status}");
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 更新玩家自定义属性
+
+每个玩家均可更新自身的自定义属性数据，可用于设置玩家的基础用户信息、游戏等级等数据，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    await TapTapOnlineBattle.UpdatePlayerCustomProperties(
+        updatePlayerProperty // 玩家属性，最大支持 2048 字节
+    );
+    LogMessage(" 更新玩家属性 成功 ");
+    // 房间内玩家会通过 OnPlayerCustomPropertiesChanged 回调收到通知
+}
+catch (TapException e)
+{
+    LogMessage($"更新玩家属性 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+更新成功后，房间内玩家会通过 SDK 的 `OnPlayerCustomPropertiesChanged` 回调收到通知：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 玩家更新自定义属性
+    /// </summary>
+    /// <param name="playerId"> 更新了自定义属性的玩家ID </param>
+    /// <param name="properties"> 新的属性值 </param>
+    public void OnPlayerCustomPropertiesChanged(string playerId, string properties)
+    {
+        LogMessage($"receive OnPlayerCustomPropertiesChanged {playerId}:{properties}");
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 离开房间
+
+当房间内玩家需要离开当前房间时，可调用如下接口：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    await TapTapOnlineBattle.LeaveRoom();
+    LogMessage(" 离开房间成功 ");
+    // 房间内其他玩家通过 OnPlayerLeft 收到通知
+}
+catch (TapException e)
+{
+    LogMessage($"离开房间 error {e.Code}  {e.Message}");
+}
+```
+
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+调用成功后，房间内其他玩家通过 SDK 的 `OnPlayerLeft` 收到通知，如果离开的玩家是房主，则会重新指定房间内其他玩家为房主。
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 玩家离开房间
+    /// </summary>
+    /// <param name="roomId"> 房间ID </param>
+    /// <param name="roomOwnerId"> 房主ID。如果离开的是房主，则roomOwnerId为新房主ID；反之，为原房主ID</param>
+    /// <param name="playerId"> 离开房间的玩家ID </param>
+    public void OnPlayerLeft(string roomId, string roomOwnerId, string playerId)
+    {
+        LogMessage($"receive OnPlayerLeft {roomId}:{roomOwnerId}:{playerId}");
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 踢出玩家
+
+当房主需要将玩家踢出房间时，可调用如下接口：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    // kickPlayerId 玩家 ID
+    await TapTapOnlineBattle.KickRoomPlayer(kickPlayerId);
+    LogMessage(" 踢出玩家 成功 ");
+}
+catch (TapException e)
+{
+    LogMessage($"踢出玩家 error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+调用成功后，对应玩家会通过 SDK 的 `OnPlayerKicked` 回调收到通知：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+    /// <summary>
+    /// 玩家被踢出
+    /// </summary>
+    /// <param name="roomId"> 被踢玩家所属房间ID </param>
+    /// <param name="playerId"> 被踢玩家ID </param>
+    public void OnPlayerKicked(string roomId, string playerId)
+    {
+        LogMessage($"receive OnPlayerKicked {roomId}:{playerId}");
+    }
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>

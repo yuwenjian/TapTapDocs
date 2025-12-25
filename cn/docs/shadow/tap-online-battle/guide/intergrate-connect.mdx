@@ -1,0 +1,399 @@
+---
+title: 集成 SDK 与连接管理
+sidebar_label: 集成 SDK 与连接管理
+sidebar_position: 2
+slug: /sdk/tap-online-battle/guide/integrate-connect
+---
+
+import MultiLang from "/src/docComponents/MultiLang";
+import CodeBlock from "@theme/CodeBlock";
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+import UnitySDKInstallation from "..//../_partials/unity-sdk-installation.mdx";
+
+### 集成 SDK
+
+多人联机 SDK 依赖 [TapTap 登录 SDK](/sdk/taptap-login/guide/) ，接入前需确保已接入
+
+<MultiLang kind="alone_unity">
+
+<>
+
+:::info Unity SDK 获取方式
+Unity SDK 支持通过 **Unity Package Manager**（NPMJS/GitHub）和**本地文件导入**两种方式集成，详细的集成步骤请参考 [Unity SDK 集成文档](/sdk/access/quickstart/#项目配置)。
+:::
+
+#### 远程依赖示例
+
+**NPMJS 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.onlinebattle":"${v4SDKVersions.taptap.shadow}"
+  }`}
+</CodeBlock>
+
+**GitHub 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.onlinebattle":"https://github.com/taptap/tapsdk-unity-dist.git?path=/OnlineBattle#${v4SDKVersions.taptap.shadow}"
+  }`}
+</CodeBlock>
+
+#### 本地文件导入
+
+在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
+- `TapSDK_OnlineBattle.unitypackage`（TapTapSDK 多人联机模块，必选）
+
+</>
+
+<>
+
+:::info Android SDK 获取方式
+Android SDK 通过 Maven 远程依赖方式集成。
+:::
+
+1. 在项目根目录的 `build.gradle` 中添加仓库地址：
+
+<CodeBlock language="groovy">
+{
+`allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}`}
+</CodeBlock>
+
+2. 在 app module 的 `build.gradle` 中添加对应依赖：
+
+<CodeBlock language="groovy">
+{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-battle:${v4SDKVersions.taptap.android}'
+}`}
+</CodeBlock>
+
+</>
+
+</MultiLang>
+
+### 权限声明
+
+该模块依赖权限如下：
+
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于正常网络访问 | 用户首次使用该功能时会申请权限 |
+
+### 初始化
+
+在调用任何业务接口之前，开发者需先调用初始化接口完成应用信息的配置，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.Core;
+
+// 核心配置 详细参数参考 [入门指南#快速开始]
+TapTapSdkOptions coreOptions = new TapTapSdkOptions
+{
+   // 客户端 ID，开发者后台获取
+   clientId = clientId,
+   // 客户端令牌，开发者后台获取
+   clientToken = clientToken,
+};
+// TapSDK 初始化
+TapTapSDK.Init(coreOptions);
+```
+
+</>
+
+<>
+
+```java
+import com.taptap.sdk.core.TapTapRegion;
+import com.taptap.sdk.core.TapTapSdk;
+import com.taptap.sdk.core.TapTapSdkOptions;
+
+/* 必选配置 */
+// 开发者中心对应 Client ID
+String clientId = "";
+// 开发者中心对应 Client Token
+String clientToken = "";
+// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+boolean enableLog = BuildConfig.DEBUG;
+
+TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+    clientId, // 游戏 Client ID
+    clientToken, // 游戏 Client Token
+    TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+);
+tapSdkOptions.setEnableLog(enableLog);
+// 初始化 TapSDK
+TapTapSdk.init(context, tapSdkOptions);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapSdk
+import com.taptap.sdk.core.TapTapSdkOptions
+import com.taptap.sdk.core.TapTapRegion
+import com.taptap.sdk.core.TapTapLanguage
+
+TapTapSdk.init(
+    context = context,
+    sdkOptions = TapTapSdkOptions(
+        clientId = clientId,
+        clientToken = clientToken,
+        region = TapTapRegion.CN,
+        preferredLanguage = TapTapLanguage.ZH_HANS,
+        enableLog = false
+    ),
+)
+```
+</>
+
+</MultiLang>
+
+`TapTapSdkOptions` 详细参数参考 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+
+### 注册回调
+
+通过实现 SDK 回调 `ITapOnlineBattleCallback` 来接收玩家、房间信息及同步消息回调，渲染对应场景游戏页面，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+public class OnlineBattlePanel : DemoBaseController, ITapOnlineBattleCallback
+{
+    /// 注册回调
+    public void RegisterCallback()
+    {
+        TapTapOnlineBattle.RegisterOnlineBattleCallback(this);
+    }
+
+    #region SDK 回调实现
+
+    /// <summary>
+    /// 收到玩家自定义消息
+    /// </summary>
+    /// <param name="playerId"> 消息发送者玩家ID </param>
+    /// <param name="msg"> 自定义消息，格式由开发者决定，必须是utf8字符串，最大2048字节 </param>
+    public void OnCustomMessageReceived(string playerId, string msg)
+    {
+        // TODO: 解析 msg，渲染对战状态或其他信息
+    }
+
+    /// <summary>
+    /// 与服务端连接断开，建议当错误码为网络异常时进行重连
+    /// </summary>
+    /// <param name="code"> 错误码，参考 <see cref="TapOnlineBattleConstant"/> </param>
+    /// <param name="msg"> 错误信息 </param>
+    public void OnDisconnected(int code, string msg)
+    {
+        // 当错误码为网络异常时进行重连
+    }
+
+    /// <summary>
+    /// 玩家更新自定义属性
+    /// </summary>
+    /// <param name="playerId"> 更新了自定义属性的玩家ID </param>
+    /// <param name="properties"> 新的属性值 </param>
+    public void OnPlayerCustomPropertiesChanged(string playerId, string properties)
+    {
+        LogMessage($"receive OnPlayerCustomPropertiesChanged {playerId}:{properties}");
+    }
+
+    /// <summary>
+    /// 玩家更新自定义状态
+    /// </summary>
+    /// <param name="playerId"> 更新了自定义状态的玩家ID </param>
+    /// <param name="status"> 新的状态 </param>
+    public void OnPlayerCustomStatusChanged(string playerId, int status)
+    {
+        LogMessage($"receive OnPlayerCustomStatusChanged {playerId}:{status}");
+    }
+
+    /// <summary>
+    /// 玩家进入房间
+    /// </summary>
+    /// <param name="roomId"> 房间ID </param>
+    /// <param name="playerInfo"> 玩家信息 </param>
+    public void OnPlayerEntered(string roomId, TapSDK.OnlineBattle.PlayerInfo playerInfo)
+    {
+        LogMessage(
+            $"receive OnPlayerEntered {roomId}:{JsonConvert.SerializeObject(playerInfo)}"
+        );
+    }
+
+    /// <summary>
+    /// 玩家被踢出
+    /// </summary>
+    /// <param name="roomId"> 被踢玩家所属房间ID </param>
+    /// <param name="playerId"> 被踢玩家ID </param>
+    public void OnPlayerKicked(string roomId, string playerId)
+    {
+        LogMessage($"receive OnPlayerKicked {roomId}:{playerId}");
+    }
+
+    /// <summary>
+    /// 玩家离开房间
+    /// </summary>
+    /// <param name="roomId"> 房间ID </param>
+    /// <param name="roomOwnerId"> 房主ID。如果离开的是房主，则roomOwnerId为新房主ID；反之，为原房主ID</param>
+    /// <param name="playerId"> 离开房间的玩家ID </param>
+    public void OnPlayerLeft(string roomId, string roomOwnerId, string playerId)
+    {
+        LogMessage($"receive OnPlayerLeft {roomId}:{roomOwnerId}:{playerId}");
+    }
+
+    /// <summary>
+    /// 玩家离线
+    /// </summary>
+    /// <param name="roomId"> 房间ID </param>
+    /// <param name="roomOwnerId"> 房主ID。如果离线的是房主，则roomOwnerId为新房主ID；反之，为原房主ID</param>
+    /// <param name="playerId"> 离线玩家ID </param>
+    public void OnPlayerOffline(string roomId, string roomOwnerId, string playerId)
+    {
+        LogMessage($"receive OnPlayerOffline {roomId}:{roomOwnerId}:{playerId}");
+    }
+
+    /// <summary>
+    /// 房间属性变更
+    /// </summary>
+    /// <param name="id"> 房间 ID </param>
+    /// <param name="name"> 房间名称 </param>
+    /// <param name="customProperties"> 房间自定义属性 </param>
+    public void OnRoomPropertiesChanged(string id, string name, string customProperties)
+    {
+        LogMessage($"receive OnRoomPropertiesChanged {id}:{name}:{customProperties}");
+    }
+
+    /// <summary>
+    /// 开始帧同步
+    /// </summary>
+    /// <param name="frameSyncInfo"> 帧同步基础信息 </param>
+    public void OnFrameSyncStarted(FrameSyncInfo frameSyncInfo)
+    {
+        LogMessage($"receive OnFrameSyncStarted {JsonConvert.SerializeObject(frameSyncInfo)}");
+    }
+
+    /// <summary>
+    /// 收到帧同步数据回调
+    /// </summary>
+    /// <param name="frameData"> 帧数据 </param>
+    public void OnFrameReceived(FrameData frameData)
+    {
+        if (frameData != null && frameData.inputs != null && frameData.inputs.Count > 0)
+        {
+            LogMessage($"receive OnFrameReceived {JsonConvert.SerializeObject(frameData)}");
+        }
+    }
+
+    /// <summary>
+    /// 停止帧同步
+    /// </summary>
+    /// <param name="roomId"> 房间 ID </param>
+    /// <param name="frameSyncId"> 帧同步 ID，房间内唯一 </param>
+    /// <param name="reason"> 原因 0：房主主动结束，1：因30分钟超时结束 </param>
+    public void OnFrameSyncStopped(string roomId, int frameSyncId, int reason)
+    {
+        LogMessage($"receive OnFrameSyncStopped {roomId}:{frameSyncId}:{reason}");
+    }
+
+    /// <summary>
+    /// 对战服务端异常，开发者需要退出对战、房间、队伍等状态，此时处于 connect 之后的状态
+    /// </summary>
+    public void OnBattleServiceError()
+    {
+        LogMessage("receive OnBattleServiceError");
+    }
+
+    #endregion
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 建立连接
+
+当玩家登录成功后，需建立连接后才能调用其他主要 API 业务接口，连接成功时会返回用户 ID 。示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    string playerId = await TapTapOnlineBattle.Connect();
+    LogMessage("Connect success " + playerId);
+}
+catch (TapException e)
+{
+    LogMessage($"Connect error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+### 断开连接
+
+当用户不再需要使用对战服务时，可调用该接口断开连接。当用户登出、重新登录时， SDK 会自动调用该接口断开连接。
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+try
+{
+    await TapTapOnlineBattle.Disconnect();
+    LogMessage(" Disconnect success ");
+}
+catch (TapException e)
+{
+    LogMessage($"Disconnect error {e.Code}  {e.Message}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
