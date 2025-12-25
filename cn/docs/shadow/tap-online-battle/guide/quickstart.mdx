@@ -1,0 +1,538 @@
+---
+title: 快速入门
+sidebar_label: 快速入门
+sidebar_position: 1
+slug: /sdk/tap-online-battle/guide/quickstart
+---
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import MultiLang from "/src/docComponents/MultiLang";
+
+
+## 业务流程简介
+
+主要业务模块及流程如下图，开发者可根据该图了解不同功能接口调用时机：
+
+<p style={{ textAlign: "center" }}>
+  <img
+    src={useBaseUrl("/img/online-battle/battle.png")}
+    alt="TapTap"
+    style={{ width: "200%", maxWidth: "600px" }}
+  />
+</p>
+
+
+## 实现多人游戏
+
+通过模拟一个简单的 Unity 象棋游戏项目，在不同游戏页面中调用对应 SDK 接口 ，让开发者快速了解接入流程。
+
+该项目中主要游戏页面及流程如下：
+
+```
+游戏启动页面 -> 登录页面 -> 游戏大厅页 -> 房间列表及房间内页面 -> 象棋对战页面
+```
+
+### 游戏启动与登录页面
+
+在游戏启动页面，调用 SDK 初始化接口，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.Core;
+
+// 核心配置
+TapTapSdkOptions coreOptions = new TapTapSdkOptions
+{
+   // 客户端 ID，开发者后台获取
+   clientId = clientId,
+   // 客户端令牌，开发者后台获取
+   clientToken = clientToken,
+};
+// TapSDK 初始化
+TapTapSDK.Init(coreOptions);
+```
+
+</>
+
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+在游戏登录页面，当玩家点击登录按钮后，调用 SDK 登录接口，获取用户信息：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.Login;
+
+try
+{
+    // 定义授权范围
+    List<string> scopes = new List<string>
+    {
+        TapTapLogin.TAP_LOGIN_SCOPE_PUBLIC_PROFILE
+    };
+    // 发起 Tap 登录
+    var userInfo = await TapTapLogin.Instance.LoginWithScopes(scopes.ToArray());
+    Debug.Log($"登录成功，当前用户 ID：{userInfo.unionId}");
+    // TODO: 进入游戏大厅页面
+}
+catch (TaskCanceledException)
+{
+    Debug.Log("用户取消登录");
+}
+catch (Exception exception)
+{
+    Debug.Log($"登录失败，出现异常：{exception}");
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+### 游戏大厅页
+
+进入大厅后，先注册全局 SDK 回调，然后调用建立连接接口，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+/// 大厅页面，实现 SDK 回调接口
+public class LobbyPanel : MonoBehaviour , ITapOnlineBattleCallback
+{
+
+    /// 注册回调
+    public async void RegisterCallback()
+    {
+        TapTapOnlineBattle.RegisterOnlineBattleCallback(this);
+    }
+
+    /// 建立连接
+    public async void Connect()
+    {
+        try
+        {
+            string playerId = await TapTapOnlineBattle.Connect();
+            LogMessage("Connect success " + playerId);
+        }
+        catch (TapException e)
+        {
+            LogMessage($"Connect error {e.Code}  {e.Message}");
+        }
+    }
+
+    public void OnPlayerEntered(string roomId, TapSDK.OnlineBattle.PlayerInfo playerInfo)
+    {
+        // 有玩家进入房间，根据 playerInfo 渲染房间内玩家 UI
+    }
+
+
+    public void OnPlayerLeft(string roomId, string roomOwnerId, string playerId)
+    {
+        // 有玩家离开房间，根据 playerID 移除房间内玩家 UI
+    }
+
+    public void OnRoomPropertiesChanged(string id, string name, string customProperties)
+    {
+        // 房主修改了房间属性，根据数据修改房间内页面 UI
+    }
+
+    public void OnCustomMessageReceived(string playerId, string msg)
+    {
+        // 收到玩家操作，根据 msg 中玩家操作数据渲染对战页面棋盘 UI
+    }
+
+    public void OnPlayerCustomStatusChanged(string playerId, int status)
+    {
+        // 玩家更改了对战就绪状态，更新房间内 UI
+    }
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+根据玩家选择，调用匹配房间或搜索房间列表来加入房间：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+/// 匹配房间
+public async void MatchRoom(){
+    Dictionary<string, string> matchParams; // 匹配参数
+    // TODO: 设置具体匹配参数
+    var config = new MatchRoomConfig()
+    {
+        roomConfig = new RoomConfig()
+        {
+            maxPlayerCount = roomMaxPlayerCount, // 最大玩家数量
+            type = roomType, // 房间类型
+            matchParams = matchParams, // 匹配参数
+        }
+        playerConfig = new PlayerConfig()
+        {
+            customStatus = playerCustomStatus, //  玩家状态，自定义： 0 未就绪 1 已就绪
+            customProperties = playerProperty, // 玩家属性，设置昵称、头像等
+        },
+    };
+    try
+    {
+        RoomInfo data = await TapTapOnlineBattle.MatchRoom(config);
+        LogMessage(" 匹配房间成功 " + JsonConvert.SerializeObject(data));
+        // TODO: 跳转到房间内页面
+    }
+    catch (TapException e)
+    {
+        LogMessage($"匹配房间失败 error {e.Code}  {e.Message}");
+    }
+}
+
+// 获取房间列表数据
+public async void GetRoomList()
+{
+    try
+    {
+        RoomListData data = await TapTapOnlineBattle.GetRoomList(
+            queryRoomType, // 房间类型
+        );
+        LogMessage(" 查询房间列表成功 " + JsonConvert.SerializeObject(data));
+        // TODO: 跳转到房间列表页面，展示可选房间数据
+    }
+    catch (TapException e)
+    {
+        LogMessage($"查询房间列表 error {e.Code}  {e.Message}");
+    }
+}
+
+// 根据房间 ID 加入房间，当玩家在房间列表选择房间后，调用该方法加入房间
+public async void JoinRoom()
+{
+    /// 当前玩家信息配置
+    var playerConfig = new PlayerConfig()
+    {
+        customStatus = joinPlayerStatus, // 玩家状态，自定义： 0 未就绪 1 已就绪
+        customProperties = joinPlayerProperty, // 玩家信息，例如头像、昵称等
+    };
+    try
+    {
+        RoomInfo data = await TapTapOnlineBattle.JoinRoom(
+            joinRoomId, // 房间 ID
+            playerConfig
+        );
+        LogMessage(" 加入房间成功 " + JsonConvert.SerializeObject(data));
+        // TODO: 跳转到房间内页面, 根据 RoomInfo 的 players 字段获取所有玩家信息
+    }
+    catch (TapException e)
+    {
+        LogMessage($"加入房间 error {e.Code}  {e.Message}");
+    }
+}
+
+```
+
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+### 房间内页面
+
+当玩家进入房间后，通过点击 UI 更新状态为对战就绪，开发者调用以下接口：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+public async void UpdatePlayerStatus()
+{
+    try
+    {
+        // 自定义玩家状态，0 对战未就绪  1 对战已就绪
+        await TapTapOnlineBattle.UpdatePlayerCustomStatus(1);
+        LogMessage(" 更新玩家状态 成功 ");
+        // 房间内其他玩家通过 OnPlayerCustomStatusChanged回调 收到该变更通知
+        // TODO: 更新玩家 UI 状态
+    }
+    catch (TapException e)
+    {
+        LogMessage($"更新玩家状态 error {e.Code}  {e.Message}");
+    }
+}
+```
+
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+当所有玩家状态就绪后，任意玩家可选择开始游戏，进入象棋对战页面，准备同步数据。
+
+### 象棋对战页面
+
+当玩家 1 操作棋盘后，可通过发送自定义消息同步给其他玩家，示例如下：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+/// <summary>
+/// 发送玩家数据
+/// </summary>
+/// <param name="x"> 棋子横坐标 </param>
+/// <param name="y"> 棋子纵坐标 </param>
+/// <param name="data"> 棋子数据 </param>
+public async void SendPlayData(int x, int y, string data)
+{
+    try
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>
+        {
+            { "x", x },
+            { "y", y },
+            { "data", data },
+        };
+        string playData = JsonConvert.SerializeObject(sendData);
+        await TapTapOnlineBattle.SendCustomMessage(
+            playData,
+            0
+        );
+        LogMessage(" 发送消息 成功 ");
+        // 其他玩家根据回调 OnCustomMessageReceived 接收数据
+    }
+    catch (TapException e)
+    {
+        LogMessage($"发送自定义消息 error {e.Code}  {e.Message}");
+    }
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+当对战结束后，返回到房间内页面，玩家可选择继续或退出房间
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+public async void LeaveRoom()
+{
+    try
+    {
+        await TapTapOnlineBattle.LeaveRoom();
+        LogMessage(" 离开房间成功 ");
+        // TODO: 切换到大厅页面
+    }
+    catch (TapException e)
+    {
+        LogMessage($"离开房间 error {e.Code}  {e.Message}");
+    }
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+## 高级功能
+
+### 帧数据同步
+
+针对 MOBA 或 FPS 等高实时性竞技游戏，可选择使用帧数据的方式来同步玩家行为，相比于使用自定义消息来实现状态同步，
+主要区别在房间内和对战页面的处理：
+
+#### 1. 房间内页面
+
+当所有玩家状态就绪后，只有 **房主** 可选择开始游戏，此时调用 SDK 开始帧同步接口：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+public async void StartFrameSync()
+{
+    try
+    {
+        await TapTapOnlineBattle.StartFrameSync();
+        LogMessage(" 开始帧同步 成功 ");
+        // 所有玩家都会收到 OnFrameSyncStarted 的回调
+    }
+    catch (TapException e)
+    {
+        LogMessage($"开始帧同步 error {e.Code}  {e.Message}");
+    }
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+</MultiLang>
+
+#### 2. 对战页面
+
+当玩家操作时，例如连续移动角色位置，通过发送帧数据进行同步：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+/// <summary>
+/// 发送玩家数据
+/// </summary>
+/// <param name="x"> 移动横坐标 </param>
+/// <param name="y"> 移动纵坐标 </param>
+/// <param name="data"> 角色其他数据 </param>
+public async void SendPlayerData(int x, int y, string data)
+{
+    try
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>
+        {
+            { "x", x },
+            { "y", y },
+            { "data", data },
+        };
+        string playData = JsonConvert.SerializeObject(sendData);
+        await TapTapOnlineBattle.SendFrameInput(playData);
+        LogMessage(" 发送玩家 Input 数据 成功 ");
+        // 所有玩家会通过 OnFrameReceived 回调收到玩家数据
+    }
+    catch (TapException e)
+    {
+        LogMessage($"发送玩家 Input 数据 error {e.Code}  {e.Message}");
+    }
+}
+```
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>
+
+当对战结束后，需调用停止帧数据同步接口，结束玩家数据同步：
+
+<MultiLang kind="alone_unity">
+
+<>
+
+```cs
+using TapSDK.OnlineBattle;
+
+public async void StopFrameSync()
+{
+    try
+    {
+        await TapTapOnlineBattle.StopFrameSync();
+        LogMessage(" 停止帧同步 成功 ");
+        // 所有玩家会通过 OnFrameSyncStopped 收到回调
+    }
+    catch (TapException e)
+    {
+        LogMessage($"停止帧同步 error {e.Code}  {e.Message}");
+    }
+}
+
+```
+
+</>
+<>
+
+```java
+
+```
+
+</>
+
+
+</MultiLang>

@@ -1,0 +1,76 @@
+---
+title: 常见问题
+sidebar_label: 常见问题
+sidebar_position: 3
+slug: /sdk/tap-online-battle/faq
+---
+### Q1: 如何判断自己是不是房主?
+
+使用当前用户的用户 ID 判断是否和房间信息中的 房主 ID 一致
+
+### Q2: 房主离开后会怎样?
+
+系统会自动选择一个新的房主。建议监听 OnPlayerLeft 事件来更新 UI。
+
+### Q3: 如何获取房间内所有玩家?
+
+通过房间信息中的 players 字段读取玩家信息，示例如下：
+
+```cs
+foreach (var player in roomInfo.players)
+{
+    Debug.Log($"玩家ID:{player.id}");
+    Debug.Log($"准备状态:{(player.customStatus == 1 ? "已准备" : "未准备")}");
+
+    if (player.id == currentRoom.ownerId)
+    {
+        Debug.Log("这是房主");
+    }
+}
+```
+### Q4：发送自定义消息有大小限制吗？
+单个消息不超过 2KB。如果需要传输大量数据（如地图数据），建议分批发送或存储在服务器上，只传输 ID。
+
+### Q5：自己发的自定义消息自己会收到吗？
+不会。发送者不会收到自己发送的消息。建议在发送成功回调中立即在本地处理操作，提升响应速度。
+
+### Q6：如何处理玩家恶意刷屏？
+- 客户端限制：控制发送频率
+- 服务器限制：已有每秒 15 次的频率限制
+- 房主权限：房主可以踢出恶意玩家
+
+### Q7：如何实现"准备"机制？
+开发者可通过修改玩家自定义状态值来设置玩家游戏状态
+
+```cs
+// 设置自己为准备状态
+try
+{
+     // updatePlayerStatus  0=未准备，1=准备
+    await TapTapOnlineBattle.UpdatePlayerCustomStatus(updatePlayerStatus);
+    LogMessage(" 更新玩家状态 成功 ");
+}
+catch (TapException e)
+{
+    LogMessage($"更新玩家状态 error {e.Code}  {e.Message}");
+}
+
+// 检查所有玩家是否都准备好了
+bool AllPlayersReady()
+{
+    foreach (var player in roomInfo.players)
+    {
+        if (player.customStatus != 1)
+            return false;
+    }
+    return true;
+}
+
+// 如果都准备好了，开始游戏
+if (AllPlayersReady())
+{
+    // 玩家可以根据自己游戏逻辑，房主通过 UpdateRoomProperties 或 SendCustomMessage 通知其他玩家游戏开始
+    // 方式一：使用 UpdateRoomProperties 更新房间状态
+    // 方式二：使用 SendCustomMessage 发送游戏开始消息
+}
+```
