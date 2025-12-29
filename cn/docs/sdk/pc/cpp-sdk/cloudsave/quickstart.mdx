@@ -1,0 +1,439 @@
+---
+title: 快速接入
+sidebar_label: 快速接入
+sidebar_position: 1
+slug: /pc/cpp-sdk/cloudsave/quickstart
+---
+
+## 功能概述
+
+- 支持玩家将游戏存档保存到至 TapTap 云端。玩家可从任意设备读取存档继续游戏，避免因存档丢失导致玩家流失。
+- 更详细的功能介绍请参考<a href="../../../../sdk/tap-cloudsave/features/" target="_blank">云存档功能介绍</a>。
+
+### 使用限制
+
+- 单个存档数据文件最大 10MB，单个封面文件最大 512KB。
+- 单个玩家在单个游戏下，最多 100 个云存档，总容量 100MB。
+- 创建/更新云存档最小间隔 1 分钟，1 分钟内多次调用会导致报错。
+- 不允许并发创建/更新云存档，同时执行多个创建/更新请求会导致报错。
+
+## 集成步骤
+
+- 本文档以 **C++** 为例演示云存档功能集成步骤，其他语言可参考相应的 DLL 调用方式。
+- 在集成云存档之前，请先阅读[快速开始](/pc/cpp-sdk/quickstart)了解基本的集成流程，并完成 SDK 初始化与启动校验。
+
+### 1. 创建云存档
+
+:::warning 初始化要求
+调用任何云存档 API 函数前，必须先成功调用`TapSDK_Init`进行初始化。未初始化或初始化失败时，调用任何云存档函数将返回错误或者非预期结果。
+:::
+
+在 TapTap 云端新建一个云存档。
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// 创建云存档回调函数
+void createCallback(TapEventID eventID, void* data)
+{
+    // 使用TapCloudSaveCreateResponse*强转data类型，获取创建云存档的结果
+    // 注意：data及其里面引用的其他内存，在回调函数返回后会被 SDK 释放。如需长期使用，请开发者自行复制一份
+    auto resp = static_cast<TapCloudSaveCreateResponse*>(data);
+    if (resp->error == nullptr) { // 云存档创建成功
+        const auto& info = *resp->save;
+        // 注意：所有字符串字段（char*）均为 UTF-8 编码，请根据需要自行转换
+        cout << "create callback success: requestID=" << resp->request_id << "uuid=" << info.uuid
+             << ", file_id=" << info.file_id << ", name=" << info.name
+             << ", save_size=" << info.save_size << ", cover_size=" << info.cover_size
+             << ", summary=" << (info.summary ? info.summary : "null")
+             << ", extra=" << (info.extra ? info.extra : "null")
+             << ", playtime=" << info.playtime << ", created_time=" << info.created_time
+             << ", modified_time=" << info.modified_time << endl;
+    } else { // 云存档创建失败，处理错误
+        cout << "create callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // 这里省略 SDK 初始化和启动校验相关代码，假设已经正确完成
+
+    // 1. 注册创建云存档回调函数，只需注册一次
+    TapSDK_RegisterCallback(TapEventID::CloudSaveCreate, createCallback);
+
+    // 2. 构建创建云存档的请求
+    TapCloudSaveCreateRequest createRequest;
+    // 结构体“零值化”，避免内存随机值导致的野指针问题
+    // C++11 及以上，可以使用 TapCloudSaveCreateRequest createRequest{};，无需 memset
+    memset(&createRequest, 0, sizeof(createRequest));
+    // 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+    createRequest.name = "MyFirstCloudSave";               // 存档名，60字节以内，不允许 NULL，不允许汉字
+    createRequest.summary = "This is an updated summary."; // 存档描述，500字节以内，不允许 NULL
+    // 额外的自定义信息，1000字节以内，允许 NULL。开发者可以利用这个字段，实现自己的业务逻辑，如存档冲突解决等
+    createRequest.extra = "Some extra info.";
+    createRequest.playtime = 3600; // 游戏总时长，由开发者自己定义
+    // 存档数据文件路径，创建云存档接口返回前不允许修改该文件，不允许为 NULL
+    createRequest.data_file_path = "/path/to/savefile";
+    // 存档封面文件路径，创建云存档接口返回前不允许修改该文件，允许为 NULL，表示没有封面
+    createRequest.cover_file_path = "/path/to/coverfile";
+    // 3. 发起创建云存档的异步请求
+    // 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用1次的限制，
+    //      且不可并发调用，否则会在回调函数中返回错误
+    auto ret = TapCloudSave_AsyncCreate(
+                  TapCloudSave(), // 云存档模块单例对象
+                  ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                  &createRequest);
+    if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+        cout << "TapCloudSave_AsyncCreate failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // 请求发起成功，等待回调函数返回处理结果
+
+    // 4. 游戏主循环
+    bool running = true;
+    while (running) {
+        // 处理 SDK 回调事件
+        TapSDK_RunCallbacks();
+        // 您的游戏逻辑
+        // ...
+
+        // 控制帧率，请按游戏实际需求调整
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 5. 清理资源
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 2. 更新云存档
+
+更新 TapTap 云端已存在的云存档。
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// 更新云存档回调函数
+void updateCallback(TapEventID eventID, void* data)
+{
+    // 使用TapCloudSaveUpdateResponse*强转data类型，获取更新云存档的结果
+    // 注意：data及其里面引用的其他内存，在回调函数返回后会被 SDK 释放。如需长期使用，请开发者自行复制一份
+    auto resp = static_cast<TapCloudSaveUpdateResponse*>(data);
+    if (resp->error == nullptr) { // 云存档创建成功
+        const auto& info = *resp->save;
+        // 注意：所有字符串字段（char*）均为 UTF-8 编码，请根据需要自行转换
+        cout << "update callback success: requestID=" << resp->request_id
+             << "uuid=" << info.uuid << ", file_id=" << info.file_id << ", name=" << info.name
+             << ", save_size=" << info.save_size << ", cover_size=" << info.cover_size
+             << ", summary=" << (info.summary ? info.summary : "null")
+             << ", extra=" << (info.extra ? info.extra : "null")
+             << ", playtime=" << info.playtime << ", created_time=" << info.created_time
+             << ", modified_time=" << info.modified_time << endl;
+    } else { // 云存档创建失败，处理错误
+        cout << "update callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // 这里省略 SDK 初始化和启动校验相关代码，假设已经正确完成
+
+    // 1. 注册更新云存档回调函数，只需注册一次
+    TapSDK_RegisterCallback(TapEventID::CloudSaveUpdate, updateCallback);
+
+    // 2. 构建更新云存档的请求
+    TapCloudSaveUpdateRequest updateRequest;
+    // 结构体“零值化”，避免内存随机值导致的野指针问题
+    // C++11 及以上，可以使用 TapCloudSaveUpdateRequest updateRequest{};，无需 memset
+    memset(&updateRequest, 0, sizeof(updateRequest));
+    // 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+    // 创建云存档成功时返回的云存档 UUID，用于指定需要更新的云存档
+    updateRequest.uuid = "uuid";
+    updateRequest.name = "MyFirstCloudSave";               // 存档名，60字节以内，不允许 NULL，不允许汉字
+    updateRequest.summary = "This is an updated summary."; // 存档描述，500字节以内，不允许 NULL
+    // 额外的自定义信息，1000字节以内，允许 NULL。开发者可以利用这个字段，实现自己的业务逻辑，如存档冲突解决等
+    updateRequest.extra = "Some extra info.";
+    updateRequest.playtime = 3600; // 游戏总时长，由开发者自己定义
+    // 存档数据文件路径，创建云存档接口返回前不允许修改该文件，不允许为 NULL
+    updateRequest.data_file_path = "/path/to/savefile";
+    // 存档封面文件路径，创建云存档接口返回前不允许修改该文件，允许为 NULL，表示没有封面
+    updateRequest.cover_file_path = "/path/to/coverfile";
+    // 3. 发起更新云存档的异步请求
+    // 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用1次的限制，
+    //      且不可并发调用，否则会在回调函数中返回错误
+    auto ret = TapCloudSave_AsyncUpdate(
+                  TapCloudSave(), // 云存档模块单例对象
+                  ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                  &updateRequest);
+    if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+        cout << "TapCloudSave_AsyncUpdate failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // 请求发起成功，等待回调函数返回处理结果
+
+    // 4. 游戏主循环
+    bool running = true;
+    while (running) {
+        // 处理 SDK 回调事件
+        TapSDK_RunCallbacks();
+        // 您的游戏逻辑
+        // ...
+
+        // 控制帧率，请按游戏实际需求调整
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 5. 清理资源
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 3. 获取云存档列表
+
+获取玩家在该游戏下的所有云存档的列表。
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// 拉取云存档列表回调函数
+void listCallback(TapEventID eventID, void* data)
+{
+    // 使用TapCloudSaveListResponse*强转data，获取拉取云存档列表的结果
+    // 注意：data及其里面引用的其他内存，在回调函数返回后会被 SDK 释放。如需长期使用，请开发者自行复制一份
+    auto resp = static_cast<TapCloudSaveListResponse*>(data);
+    if (resp->error == nullptr) { // 请求成功
+        cout << "list callback success, save count=" << resp->save_count << endl;
+        for (int i = 0; i < resp->save_count; ++i) {
+            const auto& info = resp->saves[i];
+            // 注意：所有字符串字段（char*）均为 UTF-8 编码，请根据需要自行转换
+            cout << "  save[" << i << "]: uuid=" << info.uuid << ", file_id=" << info.file_id
+                 << ", name=" << info.name << ", save_size=" << info.save_size
+                 << ", cover_size=" << info.cover_size
+                 << ", summary=" << (info.summary ? info.summary : "null")
+                 << ", extra=" << (info.extra ? info.extra : "null")
+                 << ", playtime=" << info.playtime << ", created_time=" << info.created_time
+                 << ", modified_time=" << info.modified_time << endl;
+        }
+    } else { // 请求失败
+        cout << "list callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // 这里省略 SDK 初始化和启动校验相关代码，假设已经正确完成
+
+    // 1. 注册拉取云存档列表回调函数，只需注册一次
+    TapSDK_RegisterCallback(TapEventID::CloudSaveList, listCallback);
+
+    // 2. 发起拉取云存档列表的异步请求
+    auto ret = TapCloudSave_AsyncList(TapCloudSave(), // 云存档模块单例对象
+                                      ++gRequestID);  // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+    if (ret != TapCloudSave_Result_OK) {              // 请求发起失败，不会触发回调，请根据返回值做相应处理
+        cout << "TapCloudSave_AsyncList failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // 请求发起成功，等待回调函数返回处理结果
+
+    // 3. 游戏主循环
+    bool running = true;
+    while (running) {
+        // 处理 SDK 回调事件
+        TapSDK_RunCallbacks();
+        // 您的游戏逻辑
+        // ...
+
+        // 控制帧率，请按游戏实际需求调整
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 4. 清理资源
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 4. 获取单个云存档的数据和封面
+
+获取保存在 TapTap 云端的单个云存档的数据文件和封面文件。
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// 获取云存档数据/封面文件回调函数
+void getFileCallback(TapEventID eventID, void* data)
+{
+    // 使用TapCloudSaveGetFileResponse*强转data，获取云存档数据/封面文件读取结果
+    // 注意：data及其里面引用的其他内存，在回调函数返回后会被 SDK 释放。如需长期使用，请开发者自行复制一份
+    auto resp = static_cast<TapCloudSaveGetFileResponse*>(data);
+    if (resp->error == nullptr) { // 请求成功
+        if (eventID == TapEventID::CloudSaveGetData) {
+            cout << "get data callback success, size=" << resp->size << endl;
+        } else {
+            cout << "get cover callback success, size=" << resp->size << endl;
+        }
+    } else { // 请求失败
+        cout << "get file callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // 这里省略 SDK 初始化和启动校验相关代码，假设已经正确完成
+
+    // 1. 注册获取云存档数据/封面文件回调函数，只需注册一次
+    TapSDK_RegisterCallback(TapEventID::CloudSaveGetData, getFileCallback);
+    TapSDK_RegisterCallback(TapEventID::CloudSaveGetCover, getFileCallback);
+
+    // 2. 构造获取云存档数据/封面文件的请求
+    TapCloudSaveGetFileRequest getFileRequest;
+    // 结构体“零值化”，避免内存随机值导致的野指针问题
+    // C++11 及以上，可以使用 TapCloudSaveGetFileRequest getFileRequest{};，无需 memset
+    memset(&getFileRequest, 0, sizeof(getFileRequest));
+    // 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+    // 创建云存档成功或拉取云存档列表时返回的云存档 UUID，用于指定需要拉取的云存档
+    getFileRequest.uuid = "uuid";
+    // 创建云存档成功或拉取云存档列表时返回的云存档文件 ID，和 uuid 一起确定一个数据文件/封面文件。每次更新云存档后该 ID 会变化
+    getFileRequest.file_id = "file_id";
+    // 3. 发起获取云存档数据文件的异步请求
+    auto ret = TapCloudSave_AsyncGetData(TapCloudSave(), // 云存档模块单例对象
+                                         ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                         &getFileRequest);
+    if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+        cout << "TapCloudSave_AsyncGetData failed, ret=" << ret << endl;
+        return -1;
+    }
+    // 4. 发起获取云存档封面文件的异步请求。如果没有上传封面文件，则无需发起该请求
+    ret = TapCloudSave_AsyncGetCover(TapCloudSave(), // 云存档模块单例对象
+                                     ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                     &getFileRequest);
+    if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+        cout << "TapCloudSave_AsyncGetCover failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // 请求发起成功，等待回调函数返回处理结果
+
+    // 5. 游戏主循环
+    bool running = true;
+    while (running) {
+        // 处理 SDK 回调事件
+        TapSDK_RunCallbacks();
+        // 您的游戏逻辑
+        // ...
+
+        // 控制帧率，请按游戏实际需求调整
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 6. 清理资源
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 5. 删除云存档
+
+删除用户保存在 TapTap 云端的某个云存档。
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// 删除云存档回调函数
+void deleteCallback(TapEventID eventID, void* data)
+{
+    // 使用TapCloudSaveDeleteResponse*强转data，获取云存档数据/封面文件读取结果
+    // 注意：data及其里面引用的其他内存，在回调函数返回后会被 SDK 释放。如需长期使用，请开发者自行复制一份
+    auto resp = static_cast<TapCloudSaveDeleteResponse*>(data);
+    if (resp->error == nullptr) {
+        cout << "delete callback success, uuid=" << resp->uuid << endl;
+    } else {
+        cout << "delete callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // 这里省略 SDK 初始化和启动校验相关代码，假设已经正确完成
+
+    // 1. 注册获取删除云存档回调函数，只需注册一次
+    TapSDK_RegisterCallback(TapEventID::CloudSaveDelete, deleteCallback);
+
+    // 2. 发起获取云存档数据文件的异步请求
+    auto ret = TapCloudSave_AsyncDelete(TapCloudSave(), // 云存档模块单例对象
+                                        ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                        "uuid");        // 要删除的云存档 UUID
+    if (ret != TapCloudSave_Result_OK) {                // 请求发起失败，不会触发回调，请根据返回值做相应处理
+        cout << "TapCloudSave_AsyncDelete failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // 请求发起成功，等待回调函数返回处理结果
+
+    // 3. 游戏主循环
+    bool running = true;
+    while (running) {
+        // 处理 SDK 回调事件
+        TapSDK_RunCallbacks();
+        // 您的游戏逻辑
+        // ...
+
+        // 控制帧率，请按游戏实际需求调整
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 4. 清理资源
+    TapSDK_Shutdown();
+    return 0;
+}
+```

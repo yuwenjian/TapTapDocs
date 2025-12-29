@@ -1,0 +1,439 @@
+---
+title: Quick Start
+sidebar_label: Quick Start
+sidebar_position: 1
+slug: /pc/cpp-sdk/cloudsave/quickstart
+---
+
+## Overview
+
+- Support players to upload game saves to TapTap cloud. Players can read saves from any device to continue their game, avoiding player churn due to save loss.
+- For more detailed feature introduction, please refer to <a href="../../../../sdk/tap-cloudsave/features/" target="_blank">Cloud Save Feature Introduction</a>.
+
+### Limitations
+
+- Maximum 10MB per save data file, maximum 512KB per cover file.
+- Limit per player per game: 100 cloud saves, 100MB total storage.
+- Minimum 1 minute interval between create/update cloud save operations, multiple calls within 1 minute will cause errors.
+- Concurrent create/update cloud save operations are not allowed, executing multiple create/update requests simultaneously will cause errors.
+
+## Integration Steps
+
+- This document demonstrates cloud save feature integration steps using **C++** as an example. Other languages can refer to the corresponding DLL calling methods.
+- Before integrating cloud save, please read [Quick Start](/pc/cpp-sdk/quickstart) to understand the basic integration process, and complete SDK initialization and launch verification.
+
+### 1. Create Cloud Save
+
+:::warning Initialization Requirement
+Before calling any cloud save API functions, you must successfully call `TapSDK_Init` for initialization. Calling any cloud save functions without initialization or after initialization failure will return errors or unexpected results.
+:::
+
+Create a new cloud save on TapTap cloud.
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// Create cloud save callback function
+void createCallback(TapEventID eventID, void* data)
+{
+    // Use TapCloudSaveCreateResponse* to cast data type and get cloud save creation result
+    // Note: data and other memory referenced inside will be released by SDK after callback function returns. If you need long-term use, please copy it yourself
+    auto resp = static_cast<TapCloudSaveCreateResponse*>(data);
+    if (resp->error == nullptr) { // Cloud save creation successful
+        const auto& info = *resp->save;
+        // Note: All string fields (char*) are UTF-8 encoded, please convert as needed
+        cout << "create callback success: requestID=" << resp->request_id << "uuid=" << info.uuid
+             << ", file_id=" << info.file_id << ", name=" << info.name
+             << ", save_size=" << info.save_size << ", cover_size=" << info.cover_size
+             << ", summary=" << (info.summary ? info.summary : "null")
+             << ", extra=" << (info.extra ? info.extra : "null")
+             << ", playtime=" << info.playtime << ", created_time=" << info.created_time
+             << ", modified_time=" << info.modified_time << endl;
+    } else { // Cloud save creation failed, handle error
+        cout << "create callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // SDK initialization and launch verification code omitted here, assuming already completed correctly
+
+    // 1. Register create cloud save callback function, only need to register once
+    TapSDK_RegisterCallback(TapEventID::CloudSaveCreate, createCallback);
+
+    // 2. Build create cloud save request
+    TapCloudSaveCreateRequest createRequest;
+    // "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+    // C++11 and above can use TapCloudSaveCreateRequest createRequest{}; without memset
+    memset(&createRequest, 0, sizeof(createRequest));
+    // Note: All string fields (char*) must use UTF-8 encoding
+    createRequest.name = "MyFirstCloudSave";               // Save name, within 60 bytes, cannot be NULL, cannot contain Chinese characters
+    createRequest.summary = "This is an updated summary."; // Save description, within 500 bytes, cannot be NULL
+    // Additional custom information, within 1000 bytes, can be NULL. Developers can use this field to implement their own business logic, such as save conflict resolution
+    createRequest.extra = "Some extra info.";
+    createRequest.playtime = 3600; // Total game time, defined by developer
+    // Save data file path, cannot modify this file before cloud save creation interface returns, cannot be NULL
+    createRequest.data_file_path = "/path/to/savefile";
+    // Save cover file path, cannot modify this file before cloud save creation interface returns, can be NULL, indicating no cover
+    createRequest.cover_file_path = "/path/to/coverfile";
+    // 3. Initiate asynchronous request to create cloud save
+    // Note: TapCloudSave_AsyncCreate() and TapCloudSave_AsyncUpdate() share a limit of only 1 call per minute,
+    //       and cannot be called concurrently, otherwise will return error in callback function
+    auto ret = TapCloudSave_AsyncCreate(
+                  TapCloudSave(), // Cloud save module singleton object
+                  ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                  &createRequest);
+    if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+        cout << "TapCloudSave_AsyncCreate failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // Request initiated successfully, wait for callback function to return processing result
+
+    // 4. Game main loop
+    bool running = true;
+    while (running) {
+        // Process SDK callback events
+        TapSDK_RunCallbacks();
+        // Your game logic
+        // ...
+
+        // Control frame rate, please adjust according to game's actual needs
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 5. Cleanup resources
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 2. Update Cloud Save
+
+Update an existing cloud save on TapTap cloud.
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// Update cloud save callback function
+void updateCallback(TapEventID eventID, void* data)
+{
+    // Use TapCloudSaveUpdateResponse* to cast data type and get cloud save update result
+    // Note: data and other memory referenced inside will be released by SDK after callback function returns. If you need long-term use, please copy it yourself
+    auto resp = static_cast<TapCloudSaveUpdateResponse*>(data);
+    if (resp->error == nullptr) { // Cloud save update successful
+        const auto& info = *resp->save;
+        // Note: All string fields (char*) are UTF-8 encoded, please convert as needed
+        cout << "update callback success: requestID=" << resp->request_id
+             << "uuid=" << info.uuid << ", file_id=" << info.file_id << ", name=" << info.name
+             << ", save_size=" << info.save_size << ", cover_size=" << info.cover_size
+             << ", summary=" << (info.summary ? info.summary : "null")
+             << ", extra=" << (info.extra ? info.extra : "null")
+             << ", playtime=" << info.playtime << ", created_time=" << info.created_time
+             << ", modified_time=" << info.modified_time << endl;
+    } else { // Cloud save update failed, handle error
+        cout << "update callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // SDK initialization and launch verification code omitted here, assuming already completed correctly
+
+    // 1. Register update cloud save callback function, only need to register once
+    TapSDK_RegisterCallback(TapEventID::CloudSaveUpdate, updateCallback);
+
+    // 2. Build update cloud save request
+    TapCloudSaveUpdateRequest updateRequest;
+    // "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+    // C++11 and above can use TapCloudSaveUpdateRequest updateRequest{}; without memset
+    memset(&updateRequest, 0, sizeof(updateRequest));
+    // Note: All string fields (char*) must use UTF-8 encoding
+    // Cloud save UUID returned when cloud save creation succeeds, used to specify which cloud save to update
+    updateRequest.uuid = "uuid";
+    updateRequest.name = "MyFirstCloudSave";               // Save name, within 60 bytes, cannot be NULL, cannot contain Chinese characters
+    updateRequest.summary = "This is an updated summary."; // Save description, within 500 bytes, cannot be NULL
+    // Additional custom information, within 1000 bytes, can be NULL. Developers can use this field to implement their own business logic, such as save conflict resolution
+    updateRequest.extra = "Some extra info.";
+    updateRequest.playtime = 3600; // Total game time, defined by developer
+    // Save data file path, cannot modify this file before cloud save update interface returns, cannot be NULL
+    updateRequest.data_file_path = "/path/to/savefile";
+    // Save cover file path, cannot modify this file before cloud save update interface returns, can be NULL, indicating no cover
+    updateRequest.cover_file_path = "/path/to/coverfile";
+    // 3. Initiate asynchronous request to update cloud save
+    // Note: TapCloudSave_AsyncCreate() and TapCloudSave_AsyncUpdate() share a limit of only 1 call per minute,
+    //       and cannot be called concurrently, otherwise will return error in callback function
+    auto ret = TapCloudSave_AsyncUpdate(
+                  TapCloudSave(), // Cloud save module singleton object
+                  ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                  &updateRequest);
+    if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+        cout << "TapCloudSave_AsyncUpdate failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // Request initiated successfully, wait for callback function to return processing result
+
+    // 4. Game main loop
+    bool running = true;
+    while (running) {
+        // Process SDK callback events
+        TapSDK_RunCallbacks();
+        // Your game logic
+        // ...
+
+        // Control frame rate, please adjust according to game's actual needs
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 5. Cleanup resources
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 3. Get Cloud Save List
+
+Get a list of all cloud saves for the player in this game.
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// Get cloud save list callback function
+void listCallback(TapEventID eventID, void* data)
+{
+    // Use TapCloudSaveListResponse* to cast data and get cloud save list retrieval result
+    // Note: data and other memory referenced inside will be released by SDK after callback function returns. If you need long-term use, please copy it yourself
+    auto resp = static_cast<TapCloudSaveListResponse*>(data);
+    if (resp->error == nullptr) { // Request successful
+        cout << "list callback success, save count=" << resp->save_count << endl;
+        for (int i = 0; i < resp->save_count; ++i) {
+            const auto& info = resp->saves[i];
+            // Note: All string fields (char*) are UTF-8 encoded, please convert as needed
+            cout << "  save[" << i << "]: uuid=" << info.uuid << ", file_id=" << info.file_id
+                 << ", name=" << info.name << ", save_size=" << info.save_size
+                 << ", cover_size=" << info.cover_size
+                 << ", summary=" << (info.summary ? info.summary : "null")
+                 << ", extra=" << (info.extra ? info.extra : "null")
+                 << ", playtime=" << info.playtime << ", created_time=" << info.created_time
+                 << ", modified_time=" << info.modified_time << endl;
+        }
+    } else { // Request failed
+        cout << "list callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // SDK initialization and launch verification code omitted here, assuming already completed correctly
+
+    // 1. Register get cloud save list callback function, only need to register once
+    TapSDK_RegisterCallback(TapEventID::CloudSaveList, listCallback);
+
+    // 2. Initiate asynchronous request to get cloud save list
+    auto ret = TapCloudSave_AsyncList(TapCloudSave(), // Cloud save module singleton object
+                                      ++gRequestID);  // Request ID, generated by developer, used to correspond to original request in callback function
+    if (ret != TapCloudSave_Result_OK) {              // Request initiation failed, will not trigger callback, please handle according to return value
+        cout << "TapCloudSave_AsyncList failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // Request initiated successfully, wait for callback function to return processing result
+
+    // 3. Game main loop
+    bool running = true;
+    while (running) {
+        // Process SDK callback events
+        TapSDK_RunCallbacks();
+        // Your game logic
+        // ...
+
+        // Control frame rate, please adjust according to game's actual needs
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 4. Cleanup resources
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 4. Get Cloud Save Data and Cover
+
+Get the data file and cover file of a single cloud save saved on TapTap cloud.
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// Get cloud save data/cover file callback function
+void getFileCallback(TapEventID eventID, void* data)
+{
+    // Use TapCloudSaveGetFileResponse* to cast data and get cloud save data/cover file reading result
+    // Note: data and other memory referenced inside will be released by SDK after callback function returns. If you need long-term use, please copy it yourself
+    auto resp = static_cast<TapCloudSaveGetFileResponse*>(data);
+    if (resp->error == nullptr) { // Request successful
+        if (eventID == TapEventID::CloudSaveGetData) {
+            cout << "get data callback success, size=" << resp->size << endl;
+        } else {
+            cout << "get cover callback success, size=" << resp->size << endl;
+        }
+    } else { // Request failed
+        cout << "get file callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // SDK initialization and launch verification code omitted here, assuming already completed correctly
+
+    // 1. Register get cloud save data/cover file callback function, only need to register once
+    TapSDK_RegisterCallback(TapEventID::CloudSaveGetData, getFileCallback);
+    TapSDK_RegisterCallback(TapEventID::CloudSaveGetCover, getFileCallback);
+
+    // 2. Build get cloud save data/cover file request
+    TapCloudSaveGetFileRequest getFileRequest;
+    // "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+    // C++11 and above can use TapCloudSaveGetFileRequest getFileRequest{}; without memset
+    memset(&getFileRequest, 0, sizeof(getFileRequest));
+    // Note: All string fields (char*) must use UTF-8 encoding
+    // Cloud save UUID returned when cloud save creation succeeds or cloud save list is retrieved, used to specify which cloud save to retrieve
+    getFileRequest.uuid = "uuid";
+    // Cloud save file ID returned when cloud save creation succeeds or cloud save list is retrieved, together with uuid determines a data file/cover file. This ID changes after each cloud save update
+    getFileRequest.file_id = "file_id";
+    // 3. Initiate asynchronous request to get cloud save data file
+    auto ret = TapCloudSave_AsyncGetData(TapCloudSave(), // Cloud save module singleton object
+                                         ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                         &getFileRequest);
+    if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+        cout << "TapCloudSave_AsyncGetData failed, ret=" << ret << endl;
+        return -1;
+    }
+    // 4. Initiate asynchronous request to get cloud save cover file. If no cover file was uploaded, this request is not needed
+    ret = TapCloudSave_AsyncGetCover(TapCloudSave(), // Cloud save module singleton object
+                                     ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                     &getFileRequest);
+    if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+        cout << "TapCloudSave_AsyncGetCover failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // Request initiated successfully, wait for callback function to return processing result
+
+    // 5. Game main loop
+    bool running = true;
+    while (running) {
+        // Process SDK callback events
+        TapSDK_RunCallbacks();
+        // Your game logic
+        // ...
+
+        // Control frame rate, please adjust according to game's actual needs
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 6. Cleanup resources
+    TapSDK_Shutdown();
+    return 0;
+}
+```
+
+### 5. Delete Cloud Save
+
+Delete a cloud save saved by the user on TapTap cloud.
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "taptap_cloudsave.h"
+
+using namespace std;
+
+atomic<int64_t> gRequestID;
+
+// Delete cloud save callback function
+void deleteCallback(TapEventID eventID, void* data)
+{
+    // Use TapCloudSaveDeleteResponse* to cast data and get cloud save deletion result
+    // Note: data and other memory referenced inside will be released by SDK after callback function returns. If you need long-term use, please copy it yourself
+    auto resp = static_cast<TapCloudSaveDeleteResponse*>(data);
+    if (resp->error == nullptr) {
+        cout << "delete callback success, uuid=" << resp->uuid << endl;
+    } else {
+        cout << "delete callback failed, code=" << resp->error->code
+             << ", message=" << resp->error->message << endl;
+    }
+}
+
+int main()
+{
+    // SDK initialization and launch verification code omitted here, assuming already completed correctly
+
+    // 1. Register delete cloud save callback function, only need to register once
+    TapSDK_RegisterCallback(TapEventID::CloudSaveDelete, deleteCallback);
+
+    // 2. Initiate asynchronous request to delete cloud save
+    auto ret = TapCloudSave_AsyncDelete(TapCloudSave(), // Cloud save module singleton object
+                                        ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                        "uuid");        // UUID of cloud save to delete
+    if (ret != TapCloudSave_Result_OK) {                // Request initiation failed, will not trigger callback, please handle according to return value
+        cout << "TapCloudSave_AsyncDelete failed, ret=" << ret << endl;
+        return -1;
+    }
+
+    // Request initiated successfully, wait for callback function to return processing result
+
+    // 3. Game main loop
+    bool running = true;
+    while (running) {
+        // Process SDK callback events
+        TapSDK_RunCallbacks();
+        // Your game logic
+        // ...
+
+        // Control frame rate, please adjust according to game's actual needs
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+    // 4. Cleanup resources
+    TapSDK_Shutdown();
+    return 0;
+}
+```
