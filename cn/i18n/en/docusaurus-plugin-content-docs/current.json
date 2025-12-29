@@ -1,0 +1,10 @@
+{
+  "sidebar.sdk.category.基础功能": {
+    "message": "Basic Features",
+    "description": "The label for category 基础功能 in sidebar sdk"
+  },
+  "sidebar.sdk.category.云存档": {
+    "message": "Cloud Save",
+    "description": "The label for category 云存档 in sidebar sdk"
+  }
+}

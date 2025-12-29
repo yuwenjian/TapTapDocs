@@ -1,0 +1,462 @@
+---
+title: API 参考
+sidebar_label: API 参考
+sidebar_position: 2
+slug: /pc/cpp-sdk/cloudsave/api-reference/
+---
+
+## 注意事项
+
+:::warning 初始化要求
+调用云存档任何 API 函数前，必须先成功调用 `TapSDK_Init` 进行初始化。未初始化或初始化失败时，调用云存档函数将返回错误或者非预期结果。
+:::
+:::warning 字符串编码
+云存档所有 API 函数接受和返回的字符串参数（char*），都是 UTF-8 编码，请根据项目实际情况自行转换。
+:::
+
+## 数据类型定义
+
+### 枚举类型
+
+```cpp
+// 云存档函数调用结果枚举值
+enum {
+    TapCloudSave_Result_OK = 0,                     // 云存档请求成功发起，请等待回调通知请求执行结果
+    TapCloudSave_Result_Uninitialized = 1,          // SDK 未初始化，请调用 TapSDK_Init() 并确保返回为 TapSDK_Init_Result::OK
+    TapCloudSave_Result_NoTapTapClient = 2,         // 发起云存档请求失败：TapTap 客户端尚未运行
+    TapCloudSave_Result_TapTapClientOutdated = 3,   // 发起云存档请求失败：TapTap 客户端版本过旧，请引导用户更新最新版 TapTap 客户端
+    TapCloudSave_Result_InvalidArgument = 4,        // 发起云存档请求失败：参数错误，比如不允许 NULL 的参数传了 NULL
+    TapCloudSave_Result_SdkFailed = 5,              // 发起云存档请求失败：云存档 SDK 内部错误，一般是因为没有调用 TapSDK_Init()，或者 TapSDK_Init() 返回失败
+    TapCloudSave_Result_FailedToReadSaveFile = 6,   // 发起云存档请求失败：存档文件读取失败
+    TapCloudSave_Result_SaveFileTooLarge = 7,       // 发起云存档请求失败：超过10M限制
+    TapCloudSave_Result_FailedToReadCoverFile = 8,  // 发起云存档请求失败：封面文件读取失败
+    TapCloudSave_Result_CoverFileTooLarge = 9,      // 发起云存档请求失败：超过512K限制
+};
+// 云存档函数调用结果，取值请参考枚举值 TapCloudSave_Result_*
+typedef uint32_t TapCloudSave_Result;
+```
+
+### 结构体类型
+
+:::warning 字节对齐
+云存档使用的所有结构体类型，都使用 8 字节对齐：#pragma pack(push, 8)。
+:::
+
+#### TapCloudSaveInfo
+
+云存档信息：
+
+```cpp
+// 云存档信息
+typedef struct {
+    const char* uuid;       // 标识单个云存档的唯一 ID
+    const char* file_id;    // 云存档文件 ID，用于下载云存档文件，每次更新云存档后该 ID 会变化
+    const char* name;       // 云存档名称
+    uint32_t save_size;     // 云存档文件大小，单位：字节
+    uint32_t cover_size;    // 云存档封面文件大小，单位：字节。如果没有封面文件，该字段为 0
+    const char* summary;    // 云存档摘要信息，如果没有摘要信息，该字段为 NULL
+    const char* extra;      // 云存档额外信息，如果没有额外信息，该字段为 NULL
+    uint32_t playtime;      // 云存档内记录的游戏时长，单位：秒
+    uint32_t created_time;  // 云存档创建时间，1970年开始的秒数
+    uint32_t modified_time; // 云存档最后修改时间，1970年开始的秒数
+} TapCloudSaveInfo;
+```
+
+#### TapCloudSaveListResponse
+
+拉取云存档列表的响应：
+
+```cpp
+// 拉取云存档列表的响应
+typedef struct {
+    int64_t request_id;             // 请求 ID。原样返回开发者调用异步接口时传入的 ID，开发者可使用该 ID 对应到原始请求
+    const TapSDK_Error* error;      // 错误信息。NULL 表示请求成功；非 NULL 表示请求失败，可根据其中的错误码做相应处理
+    int32_t save_count;             // 云存档个数
+    const TapCloudSaveInfo* saves;  // 云存档信息数组，长度为 save_count。如果 save_count 为 0，则该字段为 NULL
+} TapCloudSaveListResponse;
+```
+
+#### TapCloudSaveCreateRequest
+
+创建云存档请求：
+
+```cpp
+// 创建云存档请求
+typedef struct {
+    const char* name;            // 存档名，60字节以内，不允许空，不允许汉字
+    const char* summary;         // 存档描述，500字节以内，不允许空
+    const char* extra;           // 开发者自定义信息，1000字节以内，允许空
+    uint32_t playtime;           // 游戏时长，单位秒
+    const char* data_file_path;  // 存档文件路径，创建云存档接口返回前不允许修改该文件。不允许为 NULL
+    const char* cover_file_path; // 封面文件路径，创建云存档接口返回前不允许修改该文件。允许为 NULL，表示没有封面
+} TapCloudSaveCreateRequest;
+```
+
+#### TapCloudSaveCreateResponse
+
+创建云存档的响应：
+
+```cpp
+// 创建云存档的响应
+typedef struct {
+    int64_t request_id;            // 请求 ID。原样返回开发者调用异步接口时传入的 ID，开发者可使用该 ID 对应到原始请求
+    const TapSDK_Error* error;     // 错误信息。NULL 表示请求成功；非 NULL 表示请求失败，可根据其中的错误码做相应处理
+    const TapCloudSaveInfo* save;  // 云存档信息，如果创建失败，则该字段为 NULL
+} TapCloudSaveCreateResponse;
+```
+
+#### TapCloudSaveUpdateRequest
+
+更新云存档请求：
+
+```cpp
+// 更新云存档请求
+typedef struct {
+    const char* uuid;            // 标识单个云存档的唯一 ID，用于指定需要更新的云存档
+    const char* name;            // 存档名，60字节以内，不允许空，不允许汉字
+    const char* summary;         // 存档描述，500字节以内，不允许空
+    const char* extra;           // 开发者自定义信息，1000字节以内，允许空
+    uint32_t playtime;           // 游戏时长，单位秒
+    const char* data_file_path;  // 存档文件路径，创建云存档接口返回前不允许修改该文件。不允许为 NULL
+    const char* cover_file_path; // 封面文件路径，创建云存档接口返回前不允许修改该文件。允许为 NULL，表示没有封面
+} TapCloudSaveUpdateRequest;
+```
+
+#### TapCloudSaveUpdateResponse
+
+更新云存档的响应：
+
+```cpp
+// 更新云存档的响应，和创建云存档的响应相同
+typedef TapCloudSaveCreateResponse TapCloudSaveUpdateResponse;
+```
+
+#### TapCloudSaveDeleteResponse
+
+删除云存档的响应：
+
+```cpp
+// 删除云存档的响应
+typedef struct {
+    int64_t request_id;         // 请求 ID。原样返回开发者调用异步接口时传入的 ID，开发者可使用该 ID 对应到原始请求
+    const TapSDK_Error* error;  // 错误信息。NULL 表示请求成功；非 NULL 表示请求失败，可根据其中的错误码做相应处理
+    const char* uuid;           // 被删除的云存档的唯一 ID
+} TapCloudSaveDeleteResponse;
+```
+
+#### TapCloudSaveGetFileRequest
+
+读取云存档数据文件/封面文件的请求：
+
+```cpp
+// 读取云存档数据文件/封面文件的请求
+typedef struct {
+    const char* uuid;    // 标识单个云存档的唯一 ID，用于指定需要拉取的云存档
+    const char* file_id; // 云存档文件 ID，和 uuid 一起确定一个数据文件/封面文件。每次更新云存档后该 ID 会变化
+} TapCloudSaveGetFileRequest;
+```
+
+#### TapCloudSaveGetFileResponse
+
+读取云存档数据文件/封面文件的响应：
+
+```cpp
+// 读取云存档数据文件/封面文件的响应
+typedef struct {
+    int64_t request_id;         // 请求 ID。原样返回开发者调用异步接口时传入的 ID，开发者可使用该 ID 对应到原始请求
+    const TapSDK_Error* error;  // 错误信息。NULL 表示请求成功；非 NULL 表示请求失败，可根据其中的错误码做相应处理
+    uint32_t size;              // 文件大小，单位：字节。如果 size 为 0，则 data 为 NULL
+    const void* data;           // 文件内容，长度为 size 字节
+} TapCloudSaveGetFileResponse;
+```
+
+#### ITapCloudSave
+
+云存档接口对象：
+
+```cpp
+// 云存档接口对象，通过 TapCloudSave() 获取
+typedef struct ITapCloudSave ITapCloudSave;
+```
+
+## 函数说明
+
+### TapCloudSave
+
+获取云存档接口单例对象。
+
+```cpp
+ITapCloudSave* TapCloudSave();
+```
+
+**返回值：**
+- 云存档接口对象
+
+**使用示例：**
+
+```cpp
+auto ret = TapCloudSave_AsyncDelete(TapCloudSave(), // 云存档模块单例对象
+                                    ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                    "uuid");        // 要删除的云存档 UUID
+```
+
+### TapCloudSave_AsyncList
+
+发起获取云存档列表的异步请求。如果请求发起成功，请求处理结果会通过TapEventID::CloudSaveList对应的回调函数返回。
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncList(
+    ITapCloudSave* self,
+    int64_t request_id
+);
+```
+
+**参数：**
+- `self`：TapCloudSave() 返回的云存档单例对象
+- `request_id`：开发者生成的请求 ID，请求处理完成后，调用回调函数时原样返回，开发者可使用该 ID 对应到原始请求
+
+**返回值：**
+- `TapCloudSave_Result`：请求发起结果，如果不是 TapCloudSave_Result_OK，表示请求发起失败，不会触发回调函数
+
+**使用示例：**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveList, listCallback);
+
+auto ret = TapCloudSave_AsyncList(TapCloudSave(), // 云存档模块单例对象
+                                  ++gRequestID);  // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+if (ret != TapCloudSave_Result_OK) {              // 请求发起失败，不会触发回调，请根据返回值做相应处理
+    cout << "TapCloudSave_AsyncList failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+### TapCloudSave_AsyncCreate
+
+发起创建云存档的异步请求。如果请求发起成功，请求处理结果会通过TapEventID::CloudSaveCreate对应的回调函数返回。
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncCreate(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveCreateRequest* request
+);
+```
+
+**参数：**
+- `self`：TapCloudSave() 返回的云存档单例对象
+- `request_id`：开发者生成的请求 ID，请求处理完成后，调用回调函数时原样返回，开发者可使用该 ID 对应到原始请求
+- `request`：创建云存档请求
+
+**返回值：**
+- `TapCloudSave_Result`：请求发起结果，如果不是 TapCloudSave_Result_OK，表示请求发起失败，不会触发回调函数
+
+**使用示例：**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveCreate, createCallback);
+
+TapCloudSaveCreateRequest createRequest;
+// 结构体“零值化”，避免内存随机值导致的野指针问题
+// C++11 及以上，可以使用 TapCloudSaveCreateRequest createRequest{};，无需 memset
+memset(&createRequest, 0, sizeof(createRequest));
+// 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+createRequest.name = "MyFirstCloudSave";               // 存档名，60字节以内，不允许 NULL，不允许汉字
+createRequest.summary = "This is an updated summary."; // 存档描述，500字节以内，不允许 NULL
+// 额外的自定义信息，1000字节以内，允许 NULL。开发者可以利用这个字段，实现自己的业务逻辑，如存档冲突解决等
+createRequest.extra = "Some extra info.";
+createRequest.playtime = 3600; // 游戏总时长，由开发者自己定义
+// 存档数据文件路径，创建云存档接口返回前不允许修改该文件，不允许为 NULL
+createRequest.data_file_path = "/path/to/savefile";
+// 存档封面文件路径，创建云存档接口返回前不允许修改该文件，允许为 NULL，表示没有封面
+createRequest.cover_file_path = "/path/to/coverfile";
+// 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用1次的限制，
+//      且不可并发调用，否则会在回调函数中返回错误
+auto ret = TapCloudSave_AsyncCreate(
+              TapCloudSave(), // 云存档模块单例对象
+              ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+              &createRequest);
+if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+    cout << "TapCloudSave_AsyncCreate failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+**注意事项：**
+- TapCloudSave_AsyncCreate() 和 TapCloudSave_AsyncUpdate() 共享每分钟只允许调用一次的限制，且不允许并发调用
+
+### TapCloudSave_AsyncUpdate
+
+发起更新云存档的异步请求。如果请求发起成功，请求处理结果会通过TapEventID::CloudSaveUpdate对应的回调函数返回。
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncUpdate(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveUpdateRequest* request
+);
+```
+
+**参数：**
+- `self`：TapCloudSave() 返回的云存档单例对象
+- `request_id`：开发者生成的请求 ID，请求处理完成后，调用回调函数时原样返回，开发者可使用该 ID 对应到原始请求
+- `request`：更新云存档请求
+
+**返回值：**
+- `TapCloudSave_Result`：请求发起结果，如果不是 TapCloudSave_Result_OK，表示请求发起失败，不会触发回调函数
+
+**使用示例：**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveUpdate, updateCallback);
+
+TapCloudSaveUpdateRequest updateRequest;
+// 结构体“零值化”，避免内存随机值导致的野指针问题
+// C++11 及以上，可以使用 TapCloudSaveUpdateRequest updateRequest{};，无需 memset
+memset(&updateRequest, 0, sizeof(updateRequest));
+// 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+// 创建云存档成功时返回的云存档 UUID，用于指定需要更新的云存档
+updateRequest.uuid = "uuid";
+updateRequest.name = "MyFirstCloudSave";               // 存档名，60字节以内，不允许 NULL，不允许汉字
+updateRequest.summary = "This is an updated summary."; // 存档描述，500字节以内，不允许 NULL
+// 额外的自定义信息，1000字节以内，允许 NULL。开发者可以利用这个字段，实现自己的业务逻辑，如存档冲突解决等
+updateRequest.extra = "Some extra info.";
+updateRequest.playtime = 3600; // 游戏总时长，由开发者自己定义
+// 存档数据文件路径，创建云存档接口返回前不允许修改该文件，不允许为 NULL
+updateRequest.data_file_path = "/path/to/savefile";
+// 存档封面文件路径，创建云存档接口返回前不允许修改该文件，允许为 NULL，表示没有封面
+updateRequest.cover_file_path = "/path/to/coverfile";
+// 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用1次的限制，
+//      且不可并发调用，否则会在回调函数中返回错误
+auto ret = TapCloudSave_AsyncUpdate(
+              TapCloudSave(), // 云存档模块单例对象
+              ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+              &updateRequest);
+if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+    cout << "TapCloudSave_AsyncUpdate failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+**注意事项：**
+- TapCloudSave_AsyncCreate() 和 TapCloudSave_AsyncUpdate() 共享每分钟只允许调用一次的限制，且不允许并发调用
+
+### TapCloudSave_AsyncDelete
+
+发起删除云存档的异步请求。如果请求发起成功，请求处理结果会通过TapEventID::CloudSaveDelete对应的回调函数返回。
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncDelete(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const char* uuid
+);
+```
+
+**参数：**
+- `self`：TapCloudSave() 返回的云存档单例对象
+- `request_id`：开发者生成的请求 ID，请求处理完成后，调用回调函数时原样返回，开发者可使用该 ID 对应到原始请求
+- `uuid`：标识单个云存档的唯一 ID，用于指定需要删除的云存档
+
+**返回值：**
+- `TapCloudSave_Result`：请求发起结果，如果不是 TapCloudSave_Result_OK，表示请求发起失败，不会触发回调函数
+
+**使用示例：**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveDelete, deleteCallback);
+
+auto ret = TapCloudSave_AsyncDelete(TapCloudSave(), // 云存档模块单例对象
+                                    ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                    "uuid");        // 要删除的云存档 UUID
+if (ret != TapCloudSave_Result_OK) {                // 请求发起失败，不会触发回调，请根据返回值做相应处理
+    cout << "TapCloudSave_AsyncDelete failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+### TapCloudSave_AsyncGetData
+
+发起读取云存档数据文件的异步请求。如果请求发起成功，请求处理结果会通过TapEventID::CloudSaveGetData对应的回调函数返回。
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncGetData(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveGetFileRequest* request
+);
+```
+
+**参数：**
+- `self`：TapCloudSave() 返回的云存档单例对象
+- `request_id`：开发者生成的请求 ID，请求处理完成后，调用回调函数时原样返回，开发者可使用该 ID 对应到原始请求
+- `request`：读取云存档数据文件的请求
+
+**返回值：**
+- `TapCloudSave_Result`：请求发起结果，如果不是 TapCloudSave_Result_OK，表示请求发起失败，不会触发回调函数
+
+**使用示例：**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveGetData, getFileCallback);
+
+TapCloudSaveGetFileRequest getFileRequest;
+// 结构体“零值化”，避免内存随机值导致的野指针问题
+// C++11 及以上，可以使用 TapCloudSaveGetFileRequest getFileRequest{};，无需 memset
+memset(&getFileRequest, 0, sizeof(getFileRequest));
+// 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+// 创建云存档成功或拉取云存档列表时返回的云存档 UUID，用于指定需要拉取的云存档
+getFileRequest.uuid = "uuid";
+// 创建云存档成功或拉取云存档列表时返回的云存档文件 ID，和 uuid 一起确定一个数据文件/封面文件。每次更新云存档后该 ID 会变化
+getFileRequest.file_id = "file_id";
+auto ret = TapCloudSave_AsyncGetData(TapCloudSave(), // 云存档模块单例对象
+                                     ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                     &getFileRequest);
+if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+    cout << "TapCloudSave_AsyncGetData failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+### TapCloudSave_AsyncGetCover
+
+发起读取云存档封面文件的异步请求。如果请求发起成功，请求处理结果会通过TapEventID::CloudSaveGetCover对应的回调函数返回。
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncGetCover(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveGetFileRequest* request
+);
+```
+
+**参数：**
+- `self`：TapCloudSave() 返回的云存档单例对象
+- `request_id`：开发者生成的请求 ID，请求处理完成后，调用回调函数时原样返回，开发者可使用该 ID 对应到原始请求
+- `request`：读取云存档封面文件的请求
+
+**返回值：**
+- `TapCloudSave_Result`：请求发起结果，如果不是 TapCloudSave_Result_OK，表示请求发起失败，不会触发回调函数
+
+**使用示例：**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveGetCover, getFileCallback);
+
+TapCloudSaveGetFileRequest getFileRequest;
+// 结构体“零值化”，避免内存随机值导致的野指针问题
+// C++11 及以上，可以使用 TapCloudSaveGetFileRequest getFileRequest{};，无需 memset
+memset(&getFileRequest, 0, sizeof(getFileRequest));
+// 注意：所有字符串字段（char*）必须使用 UTF-8 编码
+// 创建云存档成功或拉取云存档列表时返回的云存档 UUID，用于指定需要拉取的云存档
+getFileRequest.uuid = "uuid";
+// 创建云存档成功或拉取云存档列表时返回的云存档文件 ID，和 uuid 一起确定一个数据文件/封面文件。每次更新云存档后该 ID 会变化
+getFileRequest.file_id = "file_id";
+auto ret = TapCloudSave_AsyncGetCover(TapCloudSave(), // 云存档模块单例对象
+                                      ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
+                                      &getFileRequest);
+if (ret != TapCloudSave_Result_OK) { // 请求发起失败，不会触发回调，请根据返回值做相应处理
+    cout << "TapCloudSave_AsyncGetCover failed, ret=" << ret << endl;
+    return -1;
+}
+```

@@ -5,14 +5,12 @@ sidebar_position: 1
 slug: /pc/cpp-sdk/overview/
 ---
 
-import { Conditional } from "/src/docComponents/conditional";
-
 ## Product Introduction
 
 TapSDK PC is a C++ SDK specifically designed for PC games running through the TapTap launcher.
-It provides deep integration with the TapTap platform, including core services such as user authorization and license verification (for premium games).
+It provides deep integration with the TapTap platform, including basic features such as user authorization and license verification (for premium games), as well as extended features such as cloud save.
 
-## Core Features
+## Basic Features
 
 ### Launch Verification
 - **Game Ownership Verification**: Verify whether the user owns the game
@@ -21,16 +19,74 @@ It provides deep integration with the TapTap platform, including core services s
 - **TapTap Login Authorization**: Get user authorization
 - **User Information Retrieval**: Get basic user information such as OpenID
 
-### License Verification
+### License Verification (Premium Games)
 - **DLC Ownership Verification**: Check if the user owns specific DLC
 - **DLC Store Display**: Guide users to purchase DLC
 - **Game and DLC Status Monitoring**: Monitor changes in the playable status of games and DLC
+
+## Extended Features
+
+### Cloud Save
+- **Save to TapTap Cloud**: Players can read saves from any device to continue their game, avoiding player churn due to save loss.
+
+## System Requirements
+
+- **Operating System**: Windows 7 or higher, 64-bit
+- **Runtime Environment**: Games must be launched through the TapTap launcher
+- **Network Requirements**: Internet connection required
+- **SDK Type**: Dynamic Link Library (DLL)
+
+## Integration Preparation
+
+### 1. Get Developer Resources
+
+Before starting integration, you need to:
+
+1. Register a developer account at [TapTap Developer Center](https://developer.taptap.cn/)
+2. Create a game application and obtain the following information from "Your Games" → "Game Services" → "Application Configuration":
+   - **Client ID**: Unique identifier for the application
+   - **Client Public Key**: Public key string for SDK initialization
+
+### 2. Download SDK
+
+Visit the [TapSDK PC C++ Releases](https://github.com/taptap/TapSDK-PC-cpp/releases) page to download the latest version of the SDK.
+
+The SDK includes the following files:
+- `taptap_api.h`: Header file for basic features API (initialization, callback registration, user authorization, license verification, etc.)
+- `taptap_cloudsave.h`: Header file for cloud save feature API
+- `taptap_api.dll`: Dynamic library file (Windows)
+- `taptap_api.lib`: Import library file (Windows)
+
+## Basic Integration Steps
+
+### Language Support
+
+The PC SDK is provided as a Dynamic Link Library (DLL) and supports integration with multiple programming languages:
+
+- **C++**
+  - If you only need basic features such as user authorization and license verification, include the header file `taptap_api.h`. For specific integration steps, refer to [Quick Start](/pc/cpp-sdk/quickstart/).
+  - If you need to use cloud save features, include the header file `taptap_cloudsave.h`. For specific integration steps, refer to [Cloud Save Quick Start](/pc/cpp-sdk/cloudsave/quickstart/).
+- **Other Languages**: Implement through each language's DLL calling mechanism.
+
+### Add SDK Files
+
+Add the downloaded SDK files to your project:
+
+**C++ Project:**
+```cpp
+#include "taptap_api.h" // Must include basic features header file
+#include "taptap_cloudsave.h" // If cloud save features are needed
+```
+
+**Other Languages:**
+- Place `taptap_api.dll` in the same directory as the executable or in the system path
+- Load the DLL and declare function signatures according to language-specific features
 
 ## Documentation Structure
 
 This documentation contains the following content:
 
-1. **[Quick Start](/pc/cpp-sdk/quickstart)**: SDK integration and basic configuration
-2. **[API Reference](/pc/cpp-sdk/api-reference)**: Detailed API documentation and usage examples
+1. **[Basic Features](/pc/cpp-sdk/quickstart)**: SDK basic features integration, basic configuration, detailed API documentation, and usage examples
+2. **[Cloud Save](/pc/cpp-sdk/cloudsave/quickstart)**: Cloud save feature integration, detailed API documentation, and usage examples
 
-Before getting started, please read the [Quick Start](/pc/cpp-sdk/quickstart) guide to understand the basic integration process. 
+Before getting started, please read [Quick Start](/pc/cpp-sdk/quickstart) to understand the integration process.

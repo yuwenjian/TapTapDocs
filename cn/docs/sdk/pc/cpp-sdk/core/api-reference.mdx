@@ -1,11 +1,11 @@
 ---
 title: API 参考
 sidebar_label: API 参考
-sidebar_position: 3
+sidebar_position: 2
 slug: /pc/cpp-sdk/api-reference/
 ---
 
-## 重要说明
+## 注意事项
 
 :::warning 初始化要求
 除了 `TapSDK_RestartAppIfNecessary` 之外，调用其他所有 API 函数前必须先成功调用 `TapSDK_Init` 进行初始化。
@@ -19,6 +19,17 @@ slug: /pc/cpp-sdk/api-reference/
 ```cpp
 typedef char ErrMsg[1024];       // 错误信息，最大长度 1023 字节 + '\0'
 typedef void (T_CALLTYPE *callback_t)(TapEventID, void *);  // 回调函数类型
+typedef int64_t TapSDK_ErrorCode; // 错误码，取值请参考枚举值 TapSDK_ErrorCode_*
+
+#pragma pack(push, 8)
+
+// 错误信息结构体
+typedef struct {
+    TapSDK_ErrorCode code; // 错误码
+    const char* message;   // 错误信息
+} TapSDK_Error;
+
+#pragma pack(pop)
 ```
 
 ### 枚举类型
@@ -33,7 +44,7 @@ enum class TapSDK_Init_Result : uint32_t {
     FailedGeneric = 1,          // 其他错误
     NoPlatform = 2,             // 未找到 TapTap 平台
     NotLaunchedByPlatform = 3,  // 未通过 TapTap 启动
-    PlatformVersionMismatch = 4 // 平台版本不匹配
+    PlatformVersionMismatch = 4 // 平台版本过旧，请引导用户升级 TapTap 至最新版本，再重新运行游戏
 };
 ```
 
@@ -60,6 +71,44 @@ enum class TapEventID : uint32_t {
     AuthorizeFinished = 2002,           // 授权完成事件
     GamePlayableStatusChanged = 4001,   // 游戏可玩状态变更事件
     DLCPlayableStatusChanged = 4002,    // DLC 可玩状态变更事件
+
+    CloudSaveList = 6001,     // 获取云存档列表
+    CloudSaveCreate = 6002,   // 创建云存档
+    CloudSaveUpdate = 6003,   // 更新云存档
+    CloudSaveDelete = 6004,   // 删除云存档
+    CloudSaveGetData = 6005,  // 获取云存档数据
+    CloudSaveGetCover = 6006, // 获取云存档封面
+};
+```
+
+#### TapSDK_ErrorCode
+
+错误码枚举：
+
+```cpp
+enum {
+    TapSDK_ErrorCode_Success = 0,              // 请求执行成功
+    TapSDK_ErrorCode_Unknown = 1,              // 未知错误
+    TapSDK_ErrorCode_Unauthorized = 2,         // 用户凭证失效，请引导用户重新登录 TapTap
+    TapSDK_ErrorCode_MethodNotAllowed = 3,     // 不允许的接口请求
+    TapSDK_ErrorCode_Unimplemented = 4,        // 接口未实现
+    TapSDK_ErrorCode_InvalidArguments = 5,     // 参数错误
+    TapSDK_ErrorCode_Forbidden = 6,            // 用户没有当前动作的权限
+    TapSDK_ErrorCode_UserIsDeactivated = 7,    // 用户被冻结
+    TapSDK_ErrorCode_InternalServerError = 8,  // 服务器内部错误
+    TapSDK_ErrorCode_InternalSdkError = 9,     // SDK内部错误
+    TapSDK_ErrorCode_NetworkError = 10,        // 网络错误
+
+    TapSDK_ErrorCode_CloudSave_InvalidFileSize = 400000,               // 非法的存档文件/封面大小
+    TapSDK_ErrorCode_CloudSave_UploadRateLimit = 400001,               // 存档上传频率超限
+    TapSDK_ErrorCode_CloudSave_FileNotFound = 400002,                  // 存档文件不存在
+    TapSDK_ErrorCode_CloudSave_FileCountLimitPerClient = 400003,       // 用户在该用下存档文件数量超限
+    TapSDK_ErrorCode_CloudSave_StorageSizeLimitPerClient = 400004,     // 用户在该应用下使用存储空间超限
+    TapSDK_ErrorCode_CloudSave_TotalStorageSizeLimit = 400005,         // 用户总使用存储空间超限
+    TapSDK_ErrorCode_CloudSave_Timeout = 400006,                       // 请求超时，通常是由于网络卡顿，创建/更新存档耗时过长导致
+    TapSDK_ErrorCode_CloudSave_ConcurrentCallDisallowed = 400007,      // 不允许并发调用的请求
+    TapSDK_ErrorCode_CloudSave_StorageServerError = 400008,            // 存储服务故障
+    TapSDK_ErrorCode_CloudSave_InvalidName = 400009,                   // 存档名称不合法
 };
 ```
 
@@ -102,7 +151,7 @@ struct DLCPlayableStatusChangedResponse {
 };
 ```
 
-## SDK 核心功能
+## SDK 核心接口
 
 ### TapSDK_RestartAppIfNecessary
 
@@ -225,6 +274,11 @@ if (TapSDK_GetClientID(clientID)) {
 ```
 
 ## 回调相关功能
+
+:::warning 内存管理
+- 回调函数中的数据指针 `data` 指向的内存由 SDK 管理，调用者无需释放
+- 回调函数返回后，SDK 会自动释放该内存，如需长期使用，请自行复制一份
+:::
 
 ### TapSDK_RegisterCallback
 

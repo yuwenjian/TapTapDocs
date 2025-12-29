@@ -1,79 +1,34 @@
 ---
 title: Quick Start
 sidebar_label: Quick Start
-sidebar_position: 2
+sidebar_position: 1
 slug: /pc/cpp-sdk/quickstart/
 ---
 
-## System Requirements
-
-- **Operating System**: Windows 7 or later 64-bit operating system
-- **Runtime Environment**: Games must be launched through the TapTap launcher
-- **Network Requirements**: Internet connection required for authorization and verification
-- **SDK Type**: Dynamic Link Library (DLL)
-
-## Prerequisites
-
-### 1. Get Developer Resources
-
-Before starting integration, you need to:
-
-1. Register a developer account at [TapTap Developer Center](https://developer.taptap.cn/)
-2. Create a game application and obtain the following information from "Your Games" → "Game Services" → "App Configuration":
-   - **Client ID**: Unique identifier for the application
-   - **Client Public Key**: Public key string for SDK initialization
-
-### 2. Download SDK
-
-Visit the [TapSDK PC C++ Releases](https://github.com/taptap/TapSDK-PC-cpp/releases) page to download the latest version of the SDK.
-
-The SDK contains the following files:
-- `taptap_api.h`: Header file
-- `taptap_api.dll`: Dynamic library file (Windows)
-- `taptap_api.lib`: Import library file (Windows)
-
 ## Integration Steps
 
-### Language Support
+- This document demonstrates basic feature integration steps using **C++** as an example. Other languages can refer to the corresponding DLL calling methods.
+- Before starting integration, please ensure you have completed [Integration Preparation](/pc/cpp-sdk/overview/#integration-preparation) and [Basic Integration Steps](/pc/cpp-sdk/overview/#basic-integration-steps).
 
-The PC SDK is provided as a Dynamic Link Library (DLL) and supports integration with multiple programming languages:
+### 1. Initialization and Launch Verification Example
 
-- **C++**: Directly include the header file `taptap_api.h`
-- **Other Languages**: Implement through each language's DLL calling mechanism
-
-This documentation demonstrates integration steps using **C++** as an example. Other languages can refer to their respective DLL calling methods.
-
-### 1. Add SDK Files
-
-Add the downloaded SDK files to your project:
-
-**C++ Project:**
-```cpp
-#include "taptap_api.h"
-```
-
-**Other Languages:**
-- Place `taptap_api.dll` in the same directory as the executable or in the system path
-- Load the DLL and declare function signatures according to the language's characteristics
-
-### 2. Initialization and Launch Verification Example
-
-:::warning Initialization Requirements
-Except for `TapSDK_RestartAppIfNecessary`, all other API functions must be called only after successfully calling `TapSDK_Init` for initialization.
+:::warning Initialization Requirement
+Except for `TapSDK_RestartAppIfNecessary`, all other API functions must successfully call `TapSDK_Init` for initialization before use.
 Calling other functions without initialization or after initialization failure will return errors or unexpected results.
 :::
 
 ```cpp
-#include "taptap_api.h"
 #include <iostream>
 #include <string>
+
+#include "taptap_api.h"
 
 int main() {
     const char* clientID = "your_client_id_here";
     const char* pubKey = "your_client_public_key_here";
     
     // 1. Check if app restart is necessary
-    // SDK depends on launching the game from TapTap. If user runs the game executable directly, this function returns true
+    // SDK depends on launching the game from TapTap. If the user runs the game executable directly, this function returns true
     if (TapSDK_RestartAppIfNecessary(clientID)) {
         std::cout << "App restart required, TapTap will restart the game" << std::endl;
         return 0; // Exit immediately and wait for TapTap to restart
@@ -92,14 +47,14 @@ int main() {
             std::cout << "Download URL: https://www.taptap.cn/mobile" << std::endl;
             return -1;
         case TapSDK_Init_Result::NotLaunchedByPlatform:
-            std::cout << "Game not launched through TapTap launcher, please reopen from launcher" << std::endl;
+            std::cout << "Game not launched through TapTap launcher, please reopen the game from the launcher" << std::endl;
             return -1;
         case TapSDK_Init_Result::PlatformVersionMismatch:
-            std::cout << "Platform version mismatch, please upgrade TapTap launcher or game to latest version" << std::endl;
+            std::cout << "Platform version mismatch, please upgrade TapTap launcher or game to the latest version" << std::endl;
             return -1;
         default:
             std::cout << "Initialization failed: " << errMsg << std::endl;
-            std::cout << "Please close the game and reopen from TapTap" << std::endl;
+            std::cout << "Please close the game and reopen it from TapTap" << std::endl;
             return -1;
     }
     
@@ -122,10 +77,10 @@ int main() {
 }
 ```
 
-### 3. Login Example
+### 2. Login Example
 
 Through user authorization, you can obtain authorization credentials (including Token, MAC key, etc.). You can use these credentials to call TapTap Open API on the server side to get detailed user information.
-For specific API calling methods, please refer to the [TapTap OAuth Documentation](/sdk/taptap-login/taptap-oauth/).
+For specific API calling methods, please refer to [TapTap OAuth Documentation](/sdk/taptap-login/taptap-oauth/).
 
 ```cpp
 #include "taptap_api.h"
@@ -136,18 +91,18 @@ void T_CALLTYPE OnAuthorizeFinished(TapEventID eventID, void* data) {
         AuthorizeFinishedResponse* response = (AuthorizeFinishedResponse*)data;
         
         if (response->is_cancel) {
-            std::cout << "User cancelled authorization" << std::endl;
+            std::cout << "User canceled authorization" << std::endl;
         } else if (strlen(response->error) > 0) {
             std::cout << "Authorization failed: " << response->error << std::endl;
         } else {
             std::cout << "Authorization successful" << std::endl;
             
-            // Print all content of the response
+            // Print all content of response
             std::cout << "=== Authorization Response Details ===" << std::endl;
-            std::cout << "Token Type: " << response->token_type << std::endl;
+            std::cout << "Token type: " << response->token_type << std::endl;
             std::cout << "Key ID: " << response->kid << std::endl;
-            std::cout << "MAC Key: " << response->mac_key << std::endl;
-            std::cout << "MAC Algorithm: " << response->mac_algorithm << std::endl;
+            std::cout << "MAC key: " << response->mac_key << std::endl;
+            std::cout << "MAC algorithm: " << response->mac_algorithm << std::endl;
             std::cout << "Scope: " << response->scope << std::endl;
             std::cout << "=====================================" << std::endl;
         }
@@ -177,7 +132,7 @@ void RequestUserAuthorization() {
 }
 ```
 
-### 4. DLC Management Example
+### 3. DLC Management Example
 
 ```cpp
 // DLC status change callback
@@ -217,30 +172,30 @@ void CheckDLCStatus() {
 }
 ```
 
-### 5. Game Status Change Monitoring Example
+### 4. Game Ownership Status Change Monitoring Example
 
-For premium games, when users experience refunds or other situations, the playable status of the game will change. The SDK will notify the game through callback events, and developers can prompt users or perform corresponding operations based on status changes.
+For premium games, when users refund or other situations occur, the playable status of the game will change. The SDK will notify the game through callback events, and developers can prompt users or perform corresponding operations based on status changes.
 
 ```cpp
-// Game status change callback
+// Game ownership status change callback
 void T_CALLTYPE OnGamePlayableStatusChanged(TapEventID eventID, void* data) {
     if (eventID == TapEventID::GamePlayableStatusChanged) {
         GamePlayableStatusChangedResponse* response = (GamePlayableStatusChangedResponse*)data;
         
         if (response->is_playable) {
-            std::cout << "Game is now playable normally" << std::endl;
+            std::cout << "Game is now playable" << std::endl;
             // Restore game features
             EnableGameFeatures();
         } else {
             std::cout << "Game is not playable, possibly due to refund or other reasons" << std::endl;
             
-            // Show notification to user
+            // Display notification to user
             ShowRefundNotification();
             
             // Optional: Save user progress before exiting game
             SaveUserProgress();
             
-            // Delay exit to give user time to read the notification
+            // Delay exit to give user time to view notification
             std::cout << "Game will exit in 10 seconds..." << std::endl;
             Sleep(10000);
             ExitGame();
@@ -249,7 +204,7 @@ void T_CALLTYPE OnGamePlayableStatusChanged(TapEventID eventID, void* data) {
 }
 
 void SetupGameStatusMonitoring() {
-    // Register game status change callback
+    // Register game ownership status change callback
     TapSDK_RegisterCallback(TapEventID::GamePlayableStatusChanged, OnGamePlayableStatusChanged);
     
     // Check current game ownership status
@@ -257,7 +212,7 @@ void SetupGameStatusMonitoring() {
         std::cout << "User owns the game, can play normally" << std::endl;
         EnableGameFeatures();
     } else {
-        std::cout << "User does not own the game or has been refunded" << std::endl;
+        std::cout << "User does not own the game or has refunded" << std::endl;
         ShowPurchasePrompt();
     }
 }
@@ -267,7 +222,7 @@ void ShowRefundNotification() {
     std::cout << "=== Important Notice ===" << std::endl;
     std::cout << "Your game has been refunded, game features will be restricted." << std::endl;
     std::cout << "If you have any questions, please contact customer service or repurchase the game." << std::endl;
-    std::cout << "======================" << std::endl;
+    std::cout << "========================" << std::endl;
 }
 
 void EnableGameFeatures() {
@@ -287,17 +242,17 @@ void ExitGame() {
 }
 
 void ShowPurchasePrompt() {
-    std::cout << "Please purchase the game first to continue playing" << std::endl;
+    std::cout << "Please purchase the game to continue playing" << std::endl;
 }
 ```
 
 ## Development and Debugging
 
-During the pre-release period, developers can add test users to the whitelist and download the TapTap PC client, then choose corresponding testing solutions based on different development stages.
+During the pre-release period, developers can add test users to the whitelist and download TapTap PC client, then choose the corresponding test solution according to different development stages.
 
 ### Add Whitelist
 
-Go to Developer Center > Store > Version Release > Testing > Internal Testing page, select "Create Test Plan" and add test user whitelist. Example video below:
+Go to Developer Center > Store > Version Release > Testing > Internal Testing page, select Create Test Plan and add test user whitelist. Example video below:
 
 <div align="center">
   <video
@@ -314,20 +269,20 @@ Go to Developer Center > Store > Version Release > Testing > Internal Testing pa
 
 ### Download TapTap PC Client
 
-Download [TapTap PC Client](https://www.taptap.cn/mobile) and log in with the configured whitelist account.
+Download [TapTap PC Client](https://www.taptap.cn/mobile) and log in with the configured whitelist account
 
 ### Local Testing Solution
 
-This solution is suitable for self-testing during development phase, no need to upload packages to TapTap. Developers can go to TapTap Developer Center >> Game Services >> Launch Verification page and click `Configuration File`, as shown:
+This solution is suitable for self-testing during development and does not require uploading packages to TapTap. Developers can go to TapTap Developer Center >> Game Services >> Launch Verification page and click `Configuration File`, as shown:
 
 ![](/img/pc-quickstart/download_debug_file.png)
 
-The browser will download a text file named `taptap_client_id.txt`. Developers need to move this file to the directory where the game executable is located, then they can launch the game locally and start testing related business functions.
+The browser will download a text file named `taptap_client_id.txt`. Developers need to move this file to the directory where the game executable is located, then they can launch the game locally and start testing related business features.
 
 
 ### Package Upload Testing Solution
 
-This solution is suitable for pre-release self-testing, can upload packages to TapTap platform and download games for testing.
+This solution is suitable for self-testing before release. You can upload packages to TapTap platform and download the game for testing
 
 #### 1. Upload Game Package
 
@@ -352,7 +307,7 @@ If your game has dependencies, please place the dependency installation files in
 
 #### 2. Complete Package Self-Testing
 
-After test users download TapTap PC version locally on Windows computers and log in with test accounts, click "Start Self-Test" or copy the self-test link to browser.
+After test users download TapTap PC client locally on Windows and log in with test account, click "Self-Test Now" or copy the self-test link to browser.
 <div align="center">
   <video
     src="https://capacity-files.lcfile.com/y82mWx7FtMailiOwOtKQ0o9IUEbnbvy3/dianjizice.mp4"
@@ -367,21 +322,21 @@ After test users download TapTap PC version locally on Windows computers and log
 </div>
 
 :::tip
-Note: When releasing the game, please make sure to delete the `taptap_client_id.txt` debug text file from the game directory
+Note: When releasing the game, please be sure to delete the `taptap_client_id.txt` debug text file in the game directory
 :::
 
-## Pre-Release Checklist
+## Game Release Checklist
 
 ### Initialization and Launch Verification
 * Exit the game when `TapSDK_RestartAppIfNecessary` returns `true`
-* Prompt the user and exit the game when `TapSDK_Init` returns non-`TapSDK_Init_Result::OK`
+* Prompt the user and exit the game when `TapSDK_Init` returns a value other than `TapSDK_Init_Result::OK`
 * Call `TapSDK_RunCallbacks` once per frame or multiple frames
 * Call `TapSDK_Shutdown` when exiting the game
 
 ### Login
-* Prompt the user and guide them to retry when `TapUser_AsyncAuthorize` returns non-`TapUser_AsyncAuthorize_Result::OK`
-* Properly handle user cancellation and error data returned by `TapEventID::AuthorizeFinished` event, prompt the user and guide them to retry
+* Guide the user to retry when `TapUser_AsyncAuthorize` returns a value other than `TapUser_AsyncAuthorize_Result::OK`
+* Properly handle user cancellation and error data returned by `TapEventID::AuthorizeFinished` event, guide the user to retry
 
-### License Verification
+### License Verification (Premium Games)
 * Listen to `TapEventID::GamePlayableStatusChanged` to get game unplayable events (triggered by user refunds, being blocked, etc.)
-* Listen to `TapEventID::DLCPlayableStatusChanged` to get user purchase and refund DLC events
+* Listen to `TapEventID::DLCPlayableStatusChanged` to get user purchase/refund DLC events

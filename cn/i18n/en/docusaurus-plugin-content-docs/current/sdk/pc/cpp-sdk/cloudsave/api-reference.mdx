@@ -1,0 +1,462 @@
+---
+title: API Reference
+sidebar_label: API Reference
+sidebar_position: 2
+slug: /pc/cpp-sdk/cloudsave/api-reference/
+---
+
+## Notes
+
+:::warning Initialization Requirement
+Before calling any cloud save API functions, you must successfully call `TapSDK_Init` for initialization. Calling cloud save functions without initialization or after initialization failure will return errors or unexpected results.
+:::
+:::warning String Encoding
+All string parameters (char*) accepted and returned by cloud save API functions are UTF-8 encoded. Please convert according to your project's actual situation.
+:::
+
+## Data Type Definitions
+
+### Enumeration Types
+
+```cpp
+// Cloud save function call result enumeration values
+enum {
+    TapCloudSave_Result_OK = 0,                     // Cloud save request successfully initiated, please wait for callback notification of request execution result
+    TapCloudSave_Result_Uninitialized = 1,          // SDK not initialized, please call TapSDK_Init() and ensure return is TapSDK_Init_Result::OK
+    TapCloudSave_Result_NoTapTapClient = 2,         // Failed to initiate cloud save request: TapTap client not running
+    TapCloudSave_Result_TapTapClientOutdated = 3,   // Failed to initiate cloud save request: TapTap client version too old, please guide users to update to latest TapTap client
+    TapCloudSave_Result_InvalidArgument = 4,        // Failed to initiate cloud save request: parameter error, e.g., NULL passed for parameter that does not allow NULL
+    TapCloudSave_Result_SdkFailed = 5,              // Failed to initiate cloud save request: cloud save SDK internal error, usually because TapSDK_Init() was not called, or TapSDK_Init() returned failure
+    TapCloudSave_Result_FailedToReadSaveFile = 6,   // Failed to initiate cloud save request: save file read failed
+    TapCloudSave_Result_SaveFileTooLarge = 7,       // Failed to initiate cloud save request: exceeds 10M limit
+    TapCloudSave_Result_FailedToReadCoverFile = 8,  // Failed to initiate cloud save request: cover file read failed
+    TapCloudSave_Result_CoverFileTooLarge = 9,      // Failed to initiate cloud save request: exceeds 512K limit
+};
+// Cloud save function call result, values refer to enumeration values TapCloudSave_Result_*
+typedef uint32_t TapCloudSave_Result;
+```
+
+### Structure Types
+
+:::warning Byte Alignment
+All structure types used by cloud save use 8-byte alignment: #pragma pack(push, 8).
+:::
+
+#### TapCloudSaveInfo
+
+Cloud save information:
+
+```cpp
+// Cloud save information
+typedef struct {
+    const char* uuid;       // Unique ID identifying a single cloud save
+    const char* file_id;    // Cloud save file ID, used to download cloud save file, this ID changes after each cloud save update
+    const char* name;       // Cloud save name
+    uint32_t save_size;     // Cloud save file size, unit: bytes
+    uint32_t cover_size;    // Cloud save cover file size, unit: bytes. If there is no cover file, this field is 0
+    const char* summary;    // Cloud save summary information, if there is no summary information, this field is NULL
+    const char* extra;      // Cloud save extra information, if there is no extra information, this field is NULL
+    uint32_t playtime;      // Game time recorded in cloud save, unit: seconds
+    uint32_t created_time;  // Cloud save creation time, seconds since 1970
+    uint32_t modified_time; // Cloud save last modification time, seconds since 1970
+} TapCloudSaveInfo;
+```
+
+#### TapCloudSaveListResponse
+
+Response for retrieving cloud save list:
+
+```cpp
+// Response for retrieving cloud save list
+typedef struct {
+    int64_t request_id;             // Request ID. Returns the ID passed by developer when calling async interface as-is, developer can use this ID to correspond to original request
+    const TapSDK_Error* error;      // Error information. NULL indicates request successful; non-NULL indicates request failed, can handle according to error code
+    int32_t save_count;             // Number of cloud saves
+    const TapCloudSaveInfo* saves;  // Cloud save information array, length is save_count. If save_count is 0, this field is NULL
+} TapCloudSaveListResponse;
+```
+
+#### TapCloudSaveCreateRequest
+
+Create cloud save request:
+
+```cpp
+// Create cloud save request
+typedef struct {
+    const char* name;            // Save name, within 60 bytes, cannot be empty, cannot contain Chinese characters
+    const char* summary;         // Save description, within 500 bytes, cannot be empty
+    const char* extra;           // Developer custom information, within 1000 bytes, can be empty
+    uint32_t playtime;           // Game time, unit seconds
+    const char* data_file_path;  // Save file path, cannot modify this file before cloud save creation interface returns. Cannot be NULL
+    const char* cover_file_path; // Cover file path, cannot modify this file before cloud save creation interface returns. Can be NULL, indicating no cover
+} TapCloudSaveCreateRequest;
+```
+
+#### TapCloudSaveCreateResponse
+
+Create cloud save response:
+
+```cpp
+// Create cloud save response
+typedef struct {
+    int64_t request_id;            // Request ID. Returns the ID passed by developer when calling async interface as-is, developer can use this ID to correspond to original request
+    const TapSDK_Error* error;     // Error information. NULL indicates request successful; non-NULL indicates request failed, can handle according to error code
+    const TapCloudSaveInfo* save;  // Cloud save information, if creation failed, this field is NULL
+} TapCloudSaveCreateResponse;
+```
+
+#### TapCloudSaveUpdateRequest
+
+Update cloud save request:
+
+```cpp
+// Update cloud save request
+typedef struct {
+    const char* uuid;            // Unique ID identifying a single cloud save, used to specify which cloud save to update
+    const char* name;            // Save name, within 60 bytes, cannot be empty, cannot contain Chinese characters
+    const char* summary;         // Save description, within 500 bytes, cannot be empty
+    const char* extra;           // Developer custom information, within 1000 bytes, can be empty
+    uint32_t playtime;           // Game time, unit seconds
+    const char* data_file_path;  // Save file path, cannot modify this file before cloud save update interface returns. Cannot be NULL
+    const char* cover_file_path; // Cover file path, cannot modify this file before cloud save update interface returns. Can be NULL, indicating no cover
+} TapCloudSaveUpdateRequest;
+```
+
+#### TapCloudSaveUpdateResponse
+
+Update cloud save response:
+
+```cpp
+// Update cloud save response, same as create cloud save response
+typedef TapCloudSaveCreateResponse TapCloudSaveUpdateResponse;
+```
+
+#### TapCloudSaveDeleteResponse
+
+Delete cloud save response:
+
+```cpp
+// Delete cloud save response
+typedef struct {
+    int64_t request_id;         // Request ID. Returns the ID passed by developer when calling async interface as-is, developer can use this ID to correspond to original request
+    const TapSDK_Error* error;  // Error information. NULL indicates request successful; non-NULL indicates request failed, can handle according to error code
+    const char* uuid;           // Unique ID of deleted cloud save
+} TapCloudSaveDeleteResponse;
+```
+
+#### TapCloudSaveGetFileRequest
+
+Request for reading cloud save data file/cover file:
+
+```cpp
+// Request for reading cloud save data file/cover file
+typedef struct {
+    const char* uuid;    // Unique ID identifying a single cloud save, used to specify which cloud save to retrieve
+    const char* file_id; // Cloud save file ID, together with uuid determines a data file/cover file. This ID changes after each cloud save update
+} TapCloudSaveGetFileRequest;
+```
+
+#### TapCloudSaveGetFileResponse
+
+Response for reading cloud save data file/cover file:
+
+```cpp
+// Response for reading cloud save data file/cover file
+typedef struct {
+    int64_t request_id;         // Request ID. Returns the ID passed by developer when calling async interface as-is, developer can use this ID to correspond to original request
+    const TapSDK_Error* error;  // Error information. NULL indicates request successful; non-NULL indicates request failed, can handle according to error code
+    uint32_t size;              // File size, unit: bytes. If size is 0, then data is NULL
+    const void* data;           // File content, length is size bytes
+} TapCloudSaveGetFileResponse;
+```
+
+#### ITapCloudSave
+
+Cloud save interface object:
+
+```cpp
+// Cloud save interface object, obtained through TapCloudSave()
+typedef struct ITapCloudSave ITapCloudSave;
+```
+
+## Function Descriptions
+
+### TapCloudSave
+
+Get cloud save interface singleton object.
+
+```cpp
+ITapCloudSave* TapCloudSave();
+```
+
+**Return Value:**
+- Cloud save interface object
+
+**Usage Example:**
+
+```cpp
+auto ret = TapCloudSave_AsyncDelete(TapCloudSave(), // Cloud save module singleton object
+                                    ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                    "uuid");        // UUID of cloud save to delete
+```
+
+### TapCloudSave_AsyncList
+
+Initiate asynchronous request to get cloud save list. If request initiation is successful, request processing result will be returned through callback function corresponding to TapEventID::CloudSaveList.
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncList(
+    ITapCloudSave* self,
+    int64_t request_id
+);
+```
+
+**Parameters:**
+- `self`: Cloud save singleton object returned by TapCloudSave()
+- `request_id`: Request ID generated by developer, returned as-is when callback function is called after request processing completes, developer can use this ID to correspond to original request
+
+**Return Value:**
+- `TapCloudSave_Result`: Request initiation result, if not TapCloudSave_Result_OK, indicates request initiation failed, callback function will not be triggered
+
+**Usage Example:**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveList, listCallback);
+
+auto ret = TapCloudSave_AsyncList(TapCloudSave(), // Cloud save module singleton object
+                                  ++gRequestID);  // Request ID, generated by developer, used to correspond to original request in callback function
+if (ret != TapCloudSave_Result_OK) {              // Request initiation failed, will not trigger callback, please handle according to return value
+    cout << "TapCloudSave_AsyncList failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+### TapCloudSave_AsyncCreate
+
+Initiate asynchronous request to create cloud save. If request initiation is successful, request processing result will be returned through callback function corresponding to TapEventID::CloudSaveCreate.
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncCreate(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveCreateRequest* request
+);
+```
+
+**Parameters:**
+- `self`: Cloud save singleton object returned by TapCloudSave()
+- `request_id`: Request ID generated by developer, returned as-is when callback function is called after request processing completes, developer can use this ID to correspond to original request
+- `request`: Create cloud save request
+
+**Return Value:**
+- `TapCloudSave_Result`: Request initiation result, if not TapCloudSave_Result_OK, indicates request initiation failed, callback function will not be triggered
+
+**Usage Example:**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveCreate, createCallback);
+
+TapCloudSaveCreateRequest createRequest;
+// "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+// C++11 and above can use TapCloudSaveCreateRequest createRequest{}; without memset
+memset(&createRequest, 0, sizeof(createRequest));
+// Note: All string fields (char*) must use UTF-8 encoding
+createRequest.name = "MyFirstCloudSave";               // Save name, within 60 bytes, cannot be NULL, cannot contain Chinese characters
+createRequest.summary = "This is an updated summary."; // Save description, within 500 bytes, cannot be NULL
+// Additional custom information, within 1000 bytes, can be NULL. Developers can use this field to implement their own business logic, such as save conflict resolution
+createRequest.extra = "Some extra info.";
+createRequest.playtime = 3600; // Total game time, defined by developer
+// Save data file path, cannot modify this file before cloud save creation interface returns, cannot be NULL
+createRequest.data_file_path = "/path/to/savefile";
+// Save cover file path, cannot modify this file before cloud save creation interface returns, can be NULL, indicating no cover
+createRequest.cover_file_path = "/path/to/coverfile";
+// Note: TapCloudSave_AsyncCreate() and TapCloudSave_AsyncUpdate() share a limit of only 1 call per minute,
+//       and cannot be called concurrently, otherwise will return error in callback function
+auto ret = TapCloudSave_AsyncCreate(
+              TapCloudSave(), // Cloud save module singleton object
+              ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+              &createRequest);
+if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+    cout << "TapCloudSave_AsyncCreate failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+**Notes:**
+- TapCloudSave_AsyncCreate() and TapCloudSave_AsyncUpdate() share a limit of only 1 call per minute, and concurrent calls are not allowed
+
+### TapCloudSave_AsyncUpdate
+
+Initiate asynchronous request to update cloud save. If request initiation is successful, request processing result will be returned through callback function corresponding to TapEventID::CloudSaveUpdate.
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncUpdate(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveUpdateRequest* request
+);
+```
+
+**Parameters:**
+- `self`: Cloud save singleton object returned by TapCloudSave()
+- `request_id`: Request ID generated by developer, returned as-is when callback function is called after request processing completes, developer can use this ID to correspond to original request
+- `request`: Update cloud save request
+
+**Return Value:**
+- `TapCloudSave_Result`: Request initiation result, if not TapCloudSave_Result_OK, indicates request initiation failed, callback function will not be triggered
+
+**Usage Example:**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveUpdate, updateCallback);
+
+TapCloudSaveUpdateRequest updateRequest;
+// "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+// C++11 and above can use TapCloudSaveUpdateRequest updateRequest{}; without memset
+memset(&updateRequest, 0, sizeof(updateRequest));
+// Note: All string fields (char*) must use UTF-8 encoding
+// Cloud save UUID returned when cloud save creation succeeds, used to specify which cloud save to update
+updateRequest.uuid = "uuid";
+updateRequest.name = "MyFirstCloudSave";               // Save name, within 60 bytes, cannot be NULL, cannot contain Chinese characters
+updateRequest.summary = "This is an updated summary."; // Save description, within 500 bytes, cannot be NULL
+// Additional custom information, within 1000 bytes, can be NULL. Developers can use this field to implement their own business logic, such as save conflict resolution
+updateRequest.extra = "Some extra info.";
+updateRequest.playtime = 3600; // Total game time, defined by developer
+// Save data file path, cannot modify this file before cloud save update interface returns, cannot be NULL
+updateRequest.data_file_path = "/path/to/savefile";
+// Save cover file path, cannot modify this file before cloud save update interface returns, can be NULL, indicating no cover
+updateRequest.cover_file_path = "/path/to/coverfile";
+// Note: TapCloudSave_AsyncCreate() and TapCloudSave_AsyncUpdate() share a limit of only 1 call per minute,
+//       and cannot be called concurrently, otherwise will return error in callback function
+auto ret = TapCloudSave_AsyncUpdate(
+              TapCloudSave(), // Cloud save module singleton object
+              ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+              &updateRequest);
+if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+    cout << "TapCloudSave_AsyncUpdate failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+**Notes:**
+- TapCloudSave_AsyncCreate() and TapCloudSave_AsyncUpdate() share a limit of only 1 call per minute, and concurrent calls are not allowed
+
+### TapCloudSave_AsyncDelete
+
+Initiate asynchronous request to delete cloud save. If request initiation is successful, request processing result will be returned through callback function corresponding to TapEventID::CloudSaveDelete.
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncDelete(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const char* uuid
+);
+```
+
+**Parameters:**
+- `self`: Cloud save singleton object returned by TapCloudSave()
+- `request_id`: Request ID generated by developer, returned as-is when callback function is called after request processing completes, developer can use this ID to correspond to original request
+- `uuid`: Unique ID identifying a single cloud save, used to specify which cloud save to delete
+
+**Return Value:**
+- `TapCloudSave_Result`: Request initiation result, if not TapCloudSave_Result_OK, indicates request initiation failed, callback function will not be triggered
+
+**Usage Example:**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveDelete, deleteCallback);
+
+auto ret = TapCloudSave_AsyncDelete(TapCloudSave(), // Cloud save module singleton object
+                                    ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                    "uuid");        // UUID of cloud save to delete
+if (ret != TapCloudSave_Result_OK) {                // Request initiation failed, will not trigger callback, please handle according to return value
+    cout << "TapCloudSave_AsyncDelete failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+### TapCloudSave_AsyncGetData
+
+Initiate asynchronous request to read cloud save data file. If request initiation is successful, request processing result will be returned through callback function corresponding to TapEventID::CloudSaveGetData.
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncGetData(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveGetFileRequest* request
+);
+```
+
+**Parameters:**
+- `self`: Cloud save singleton object returned by TapCloudSave()
+- `request_id`: Request ID generated by developer, returned as-is when callback function is called after request processing completes, developer can use this ID to correspond to original request
+- `request`: Request for reading cloud save data file
+
+**Return Value:**
+- `TapCloudSave_Result`: Request initiation result, if not TapCloudSave_Result_OK, indicates request initiation failed, callback function will not be triggered
+
+**Usage Example:**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveGetData, getFileCallback);
+
+TapCloudSaveGetFileRequest getFileRequest;
+// "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+// C++11 and above can use TapCloudSaveGetFileRequest getFileRequest{}; without memset
+memset(&getFileRequest, 0, sizeof(getFileRequest));
+// Note: All string fields (char*) must use UTF-8 encoding
+// Cloud save UUID returned when cloud save creation succeeds or cloud save list is retrieved, used to specify which cloud save to retrieve
+getFileRequest.uuid = "uuid";
+// Cloud save file ID returned when cloud save creation succeeds or cloud save list is retrieved, together with uuid determines a data file/cover file. This ID changes after each cloud save update
+getFileRequest.file_id = "file_id";
+auto ret = TapCloudSave_AsyncGetData(TapCloudSave(), // Cloud save module singleton object
+                                     ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                     &getFileRequest);
+if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+    cout << "TapCloudSave_AsyncGetData failed, ret=" << ret << endl;
+    return -1;
+}
+```
+
+### TapCloudSave_AsyncGetCover
+
+Initiate asynchronous request to read cloud save cover file. If request initiation is successful, request processing result will be returned through callback function corresponding to TapEventID::CloudSaveGetCover.
+
+```cpp
+TapCloudSave_Result TapCloudSave_AsyncGetCover(
+    ITapCloudSave* self,
+    int64_t request_id,
+    const TapCloudSaveGetFileRequest* request
+);
+```
+
+**Parameters:**
+- `self`: Cloud save singleton object returned by TapCloudSave()
+- `request_id`: Request ID generated by developer, returned as-is when callback function is called after request processing completes, developer can use this ID to correspond to original request
+- `request`: Request for reading cloud save cover file
+
+**Return Value:**
+- `TapCloudSave_Result`: Request initiation result, if not TapCloudSave_Result_OK, indicates request initiation failed, callback function will not be triggered
+
+**Usage Example:**
+
+```cpp
+TapSDK_RegisterCallback(TapEventID::CloudSaveGetCover, getFileCallback);
+
+TapCloudSaveGetFileRequest getFileRequest;
+// "Zero-initialize" structure to avoid wild pointer issues caused by random memory values
+// C++11 and above can use TapCloudSaveGetFileRequest getFileRequest{}; without memset
+memset(&getFileRequest, 0, sizeof(getFileRequest));
+// Note: All string fields (char*) must use UTF-8 encoding
+// Cloud save UUID returned when cloud save creation succeeds or cloud save list is retrieved, used to specify which cloud save to retrieve
+getFileRequest.uuid = "uuid";
+// Cloud save file ID returned when cloud save creation succeeds or cloud save list is retrieved, together with uuid determines a data file/cover file. This ID changes after each cloud save update
+getFileRequest.file_id = "file_id";
+auto ret = TapCloudSave_AsyncGetCover(TapCloudSave(), // Cloud save module singleton object
+                                      ++gRequestID,   // Request ID, generated by developer, used to correspond to original request in callback function
+                                      &getFileRequest);
+if (ret != TapCloudSave_Result_OK) { // Request initiation failed, will not trigger callback, please handle according to return value
+    cout << "TapCloudSave_AsyncGetCover failed, ret=" << ret << endl;
+    return -1;
+}
+```
