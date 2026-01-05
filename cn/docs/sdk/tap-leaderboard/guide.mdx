@@ -218,12 +218,14 @@ pod 'TapTapSDK/Leaderboard', '~> ${v4SDKVersions.taptap.ios}'`
 - `TapTapCoreSDK.xcframework` 核心库
 - `TapTapGidSDK.xcframework` 基础库
 - `TapTapNetworkSDK.xcframework` 基础库
+- `THEMISLite.xcframework` 基础库
+- `TapTapKingfisher ` 基础库
+- `TapTapSDKBridgeCore.xcframework` 基础库
 - `TapTapLoginSDK.xcframework` 登录模块
 - `TapTapLeaderboardSDK.xcframework` 排行榜模块
-- `THEMISLite.xcframework` 基础库
 - `TapTapProfileSDK ` 用户名片依赖库
 - `TapTapProfileResource.bundle` 用户名片资源文件
-- `TapTapKingfisher ` 基础库
+
 
 2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
 3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
