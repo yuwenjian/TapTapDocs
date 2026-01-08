@@ -24,7 +24,6 @@ sidebar_position: 1
 | 字段名    | 描述                                                                                           | 类型   | 示例                 |
 | --------- | ---------------------------------------------------------------------------------------------- | ------ | -------------------- |
 | client_id | TapTap 开放平台 ID                                                                             | string | `tapclientid1234567` |
-| app_id    | 游戏在 TapTap 商店的唯一身份标识, 例如：https://www.taptap.cn/app/187168 其中 187168 是 app_id | uint64 | `187168`             |
 
 ### HTTP Headers
 
@@ -50,7 +49,7 @@ sidebar_position: 1
 | 字段名             | 描述                                                                                                                                                                  | 示例                                                                                    |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | method             | HTTP 方法，如 `GET` / `POST` (须为全部大写)                                                                                                                           | `GET`                                                                                   |
-| url_path_and_query | 完整请求路径及 QueryString                                                                                                                                            | `/apk/v1/upload-params?app_id=187168&file_name=taptap.apk&client_id=tapclientid1234567` |
+| url_path_and_query | 完整请求路径及 QueryString                                                                                                                                            | `/apk/v1/upload-params?file_name=taptap.apk&client_id=tapclientid1234567` |
 | headers            | 所有以 `x-tap-` 为前缀的请求头（`x-tap-sign` 除外），将其 header keys 转小写并按 ANSII 排序后，key 和 value 以 `:` 分隔，各个 header 以换行符 `\n` 分隔，拼接成字符串 | `x-tap-nonce:q1w2e3r4\nx-tap-ts:1692347090`                                             |
 | body               | 完整请求体                                                                                                                                                            | `{"key":"value"}`                                                                       |
 
@@ -82,7 +81,7 @@ import (
 
 func main() {
 	// 创建一个新的 http request
-	req, err := http.NewRequest("GET", "https://cloud.tapapis.cn/apk/v1/upload-params?app_id=187168&file_name=taptap.apk&client_id=tapclientid1234567", strings.NewReader("{\"key\":\"value\"}"))
+	req, err := http.NewRequest("GET", "https://cloud.tapapis.cn/apk/v1/upload-params?file_name=taptap.apk&client_id=tapclientid1234567", strings.NewReader("{\"key\":\"value\"}"))
 	if err != nil {
 		fmt.Println("Failed to create request:", err)
 		return
@@ -175,19 +174,18 @@ func getHeadersPart(header http.Header) (string, error) {
 
 ```json
 {
-  "code": 0,
-  "msg": "OK",
-  "data": {
-    // response data
-  }
+  "success": true，
+  "data": {},
+  "now": 1767065075
 }
 ```
 
 | 字段名 | 类型   | 描述                                                                            |
 | ------ | ------ | ------------------------------------------------------------------------------- |
-| code   | uint64 | 业务返回状态码<br />`0` 表示请求成功，`非 0` 表示请求异常，参见具体业务的错误码 |
-| msg    | string | 业务返回状态描述<br />`OK` 表示请求成功，其他表示请求异常，错误信息见字段内容   |
-| data   | object | 成功时返回业务数据，失败时不读取                                                |
+| success   | boolean | `true` 表示请求成功，`false` 表示请求异常，参见具体业务的错误码 |
+| data   | object | 成功时返回业务数据，失败时读取 data.erorr 做错误处理 |
+| now    | uint64 | 服务端响应时间 |
+
 
 ## FAQ
 
