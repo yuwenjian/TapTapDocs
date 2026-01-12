@@ -4,6 +4,9 @@ sidebar_label: 常见问题
 sidebar_position: 3
 slug: /sdk/tap-online-battle/faq
 ---
+
+import MultiLang from "/src/docComponents/MultiLang";
+
 ### Q1: 如何判断自己是不是房主?
 
 使用当前用户的用户 ID 判断是否和房间信息中的 房主 ID 一致
@@ -15,6 +18,10 @@ slug: /sdk/tap-online-battle/faq
 ### Q3: 如何获取房间内所有玩家?
 
 通过房间信息中的 players 字段读取玩家信息，示例如下：
+
+<MultiLang kind="unity_android_ios_v4">
+
+<>
 
 ```cs
 foreach (var player in roomInfo.players)
@@ -28,6 +35,82 @@ foreach (var player in roomInfo.players)
     }
 }
 ```
+
+</>
+<>
+
+```java
+import com.taptap.sdk.battle.model.RoomInfo;
+import com.taptap.sdk.battle.model.PlayerInfo;
+import android.util.Log;
+
+for (PlayerInfo player : roomInfo.getPlayers()) {
+    Log.d("Battle", "玩家ID:" + player.getId());
+    String readyStatus = (player.getCustomStatus() == 1) ? "已准备" : "未准备";
+    Log.d("Battle", "准备状态:" + readyStatus);
+
+    if (player.getId().equals(roomInfo.getOwnerId())) {
+        Log.d("Battle", "这是房主");
+    }
+}
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.model.RoomInfo
+import com.taptap.sdk.battle.model.PlayerInfo
+import android.util.Log
+
+for (player in roomInfo.players) {
+    Log.d("Battle", "玩家ID:${player.id}")
+    val readyStatus = if (player.customStatus == 1) "已准备" else "未准备"
+    Log.d("Battle", "准备状态:$readyStatus")
+
+    if (player.id == roomInfo.ownerId) {
+        Log.d("Battle", "这是房主")
+    }
+}
+```
+
+</>
+<>
+
+```swift
+import TapTapBattleSDK
+
+for player in roomInfo.players {
+    print("玩家ID:\(player.id)")
+    let readyStatus = (player.customStatus == 1) ? "已准备" : "未准备"
+    print("准备状态:\(readyStatus)")
+
+    if player.id == roomInfo.ownerId {
+        print("这是房主")
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+for (PlayerInfo *player in roomInfo.players) {
+    NSLog(@"玩家ID:%@", player.id);
+    NSString *readyStatus = (player.customStatus.intValue == 1) ? @"已准备" : @"未准备";
+    NSLog(@"准备状态:%@", readyStatus);
+
+    if ([player.id isEqualToString:roomInfo.ownerId]) {
+        NSLog(@"这是房主");
+    }
+}
+```
+
+</>
+
+</MultiLang>
 ### Q4：发送自定义消息有大小限制吗？
 单个消息不超过 2KB。如果需要传输大量数据（如地图数据），建议分批发送或存储在服务器上，只传输 ID。
 
@@ -41,6 +124,10 @@ foreach (var player in roomInfo.players)
 
 ### Q7：如何实现"准备"机制？
 开发者可通过修改玩家自定义状态值来设置玩家游戏状态
+
+<MultiLang kind="unity_android_ios_v4">
+
+<>
 
 ```cs
 // 设置自己为准备状态
@@ -74,3 +161,159 @@ if (AllPlayersReady())
     // 方式二：使用 SendCustomMessage 发送游戏开始消息
 }
 ```
+
+</>
+<>
+
+```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.UpdatePlayerCustomStatusListener;
+import com.taptap.sdk.battle.model.RoomInfo;
+import com.taptap.sdk.battle.model.PlayerInfo;
+import com.taptap.sdk.kit.internal.exception.TapError;
+import android.util.Log;
+
+// 设置自己为准备状态
+// updatePlayerStatus  0=未准备，1=准备
+TapTapBattle.updatePlayerCustomStatus(updatePlayerStatus, new UpdatePlayerCustomStatusListener() {
+    @Override
+    public void onSuccess() {
+        Log.d("Battle", "更新玩家状态 成功");
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "更新玩家状态 error " + error.code + " " + error.message);
+    }
+});
+
+// 检查所有玩家是否都准备好了
+boolean AllPlayersReady() {
+    for (PlayerInfo player : roomInfo.getPlayers()) {
+        if (player.getCustomStatus() != 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 如果都准备好了，开始游戏
+if (AllPlayersReady()) {
+    // 玩家可以根据自己游戏逻辑，房主通过 UpdateRoomProperties 或 SendCustomMessage 通知其他玩家游戏开始
+    // 方式一：使用 UpdateRoomProperties 更新房间状态
+    // 方式二：使用 SendCustomMessage 发送游戏开始消息
+}
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.UpdatePlayerCustomStatusListener
+import com.taptap.sdk.battle.model.RoomInfo
+import com.taptap.sdk.battle.model.PlayerInfo
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 设置自己为准备状态
+// updatePlayerStatus  0=未准备，1=准备
+TapTapBattle.updatePlayerCustomStatus(updatePlayerStatus, object : UpdatePlayerCustomStatusListener {
+    override fun onSuccess() {
+        Log.d("Battle", "更新玩家状态 成功")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "更新玩家状态 error ${error.code} ${error.message}")
+    }
+})
+
+// 检查所有玩家是否都准备好了
+fun allPlayersReady(): Boolean {
+    for (player in roomInfo.players) {
+        if (player.customStatus != 1) {
+            return false
+        }
+    }
+    return true
+}
+
+// 如果都准备好了，开始游戏
+if (allPlayersReady()) {
+    // 玩家可以根据自己游戏逻辑，房主通过 UpdateRoomProperties 或 SendCustomMessage 通知其他玩家游戏开始
+    // 方式一：使用 UpdateRoomProperties 更新房间状态
+    // 方式二：使用 SendCustomMessage 发送游戏开始消息
+}
+```
+
+</>
+<>
+
+```swift
+import TapTapBattleSDK
+
+// 设置自己为准备状态
+// updatePlayerStatus  0=未准备，1=准备
+TapTapBattle.updatePlayerCustomStatus(status: updatePlayerStatus) { error in
+    if let error = error {
+        print("更新玩家状态 error \(error.code) \(error.message)")
+    } else {
+        print("更新玩家状态 成功")
+    }
+}
+
+// 检查所有玩家是否都准备好了
+func allPlayersReady() -> Bool {
+    for player in roomInfo.players {
+        if player.customStatus != 1 {
+            return false
+        }
+    }
+    return true
+}
+
+// 如果都准备好了，开始游戏
+if allPlayersReady() {
+    // 玩家可以根据自己游戏逻辑，房主通过 UpdateRoomProperties 或 SendCustomMessage 通知其他玩家游戏开始
+    // 方式一：使用 UpdateRoomProperties 更新房间状态
+    // 方式二：使用 SendCustomMessage 发送游戏开始消息
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+// 设置自己为准备状态
+// updatePlayerStatus  0=未准备，1=准备
+[TapTapBattle updatePlayerCustomStatus:updatePlayerStatus completion:^(NSError *error) {
+    if (error) {
+        NSLog(@"更新玩家状态 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"更新玩家状态 成功");
+    }
+}];
+
+// 检查所有玩家是否都准备好了
+BOOL AllPlayersReady() {
+    for (PlayerInfo *player in roomInfo.players) {
+        if (player.customStatus.intValue != 1) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
+// 如果都准备好了，开始游戏
+if (AllPlayersReady()) {
+    // 玩家可以根据自己游戏逻辑，房主通过 UpdateRoomProperties 或 SendCustomMessage 通知其他玩家游戏开始
+    // 方式一：使用 UpdateRoomProperties 更新房间状态
+    // 方式二：使用 SendCustomMessage 发送游戏开始消息
+}
+```
+
+</>
+
+</MultiLang>

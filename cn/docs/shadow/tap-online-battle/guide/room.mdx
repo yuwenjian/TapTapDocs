@@ -77,7 +77,7 @@ import MultiLang from "/src/docComponents/MultiLang";
 
 请求成功后，会返回对应房间的具体[信息](#房间信息)，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -99,7 +99,7 @@ var config = new CreateRoomConfig()
         matchParams = matchParams, // 房间匹配参数，选填，最大支持3个K/V对, K/V取值由开发者决定，K最大32字节，V最大64字节
     },
     // 玩家配置
-    playerConfig = new PlayerConfig() 
+    playerConfig = new PlayerConfig()
     {
         customStatus = playerCustomStatus, // 自定义玩家状态，整型，选填
         customProperties = playerProperty, // 自定义玩家属性，选填
@@ -119,7 +119,153 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.CreateRoomListener;
+import com.taptap.sdk.battle.model.CreateRoomConfig;
+import com.taptap.sdk.battle.model.RoomConfig;
+import com.taptap.sdk.battle.model.PlayerConfig;
+import com.taptap.sdk.battle.model.RoomInfo;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 定义匹配参数
+Map<String, String> matchParams = null;
+// 定义房间配置
+RoomConfig roomConfig = new RoomConfig();
+roomConfig.setMaxPlayerCount(roomMaxPlayerCount); // 房间最大支持人数，取值范围为[1, 20]，必填
+roomConfig.setType(roomType); // 房间类型，最大32字节，必填
+roomConfig.setName(roomName); // 房间名称，最大64个字节，选填
+roomConfig.setCustomProperties(roomProperty); // 自定义房间属性，最大2048字节，选填
+roomConfig.setMatchParams(matchParams); // 房间匹配参数，选填
+
+// 定义玩家配置
+PlayerConfig playerConfig = new PlayerConfig();
+playerConfig.setCustomStatus(playerCustomStatus); // 自定义玩家状态，整型，选填
+playerConfig.setCustomProperties(playerProperty); // 自定义玩家属性，选填
+
+// 创建房间配置
+CreateRoomConfig config = new CreateRoomConfig(roomConfig, playerConfig);
+
+TapTapBattle.createRoom(config, new CreateRoomListener() {
+    @Override
+    public void onSuccess(RoomInfo roomInfo) {
+        Log.d("Battle", "创建房间成功 " + roomInfo.toString());
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "创建房间 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.CreateRoomListener
+import com.taptap.sdk.battle.model.CreateRoomConfig
+import com.taptap.sdk.battle.model.RoomConfig
+import com.taptap.sdk.battle.model.PlayerConfig
+import com.taptap.sdk.battle.model.RoomInfo
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 定义匹配参数
+val matchParams: Map<String, String>? = null
+// 定义房间配置
+val roomConfig = RoomConfig().apply {
+    maxPlayerCount = roomMaxPlayerCount // 房间最大支持人数，取值范围为[1, 20]，必填
+    type = roomType // 房间类型，最大32字节，必填
+    name = roomName // 房间名称，最大64个字节，选填
+    customProperties = roomProperty // 自定义房间属性，最大2048字节，选填
+    this.matchParams = matchParams // 房间匹配参数，选填
+}
+
+// 定义玩家配置
+val playerConfig = PlayerConfig().apply {
+    customStatus = playerCustomStatus // 自定义玩家状态，整型，选填
+    customProperties = playerProperty // 自定义玩家属性，选填
+}
+
+// 创建房间配置
+val config = CreateRoomConfig(roomConfig, playerConfig)
+
+TapTapBattle.createRoom(config, object : CreateRoomListener {
+    override fun onSuccess(roomInfo: RoomInfo) {
+        Log.d("Battle", "创建房间成功 $roomInfo")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "创建房间 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// 定义匹配参数
+let matchParams: [String: String]? = nil
+// 定义房间配置
+let roomConfig = RoomConfig()
+roomConfig.maxPlayerCount = roomMaxPlayerCount // 房间最大支持人数，取值范围为[1, 20]，必填
+roomConfig.type = roomType // 房间类型，最大32字节，必填
+roomConfig.name = roomName // 房间名称，最大64个字节，选填
+roomConfig.customProperties = roomProperty // 自定义房间属性，最大2048字节，选填
+roomConfig.matchParams = matchParams // 房间匹配参数，选填
+
+// 定义玩家配置
+let playerConfig = PlayerConfig()
+playerConfig.customStatus = playerCustomStatus // 自定义玩家状态，整型，选填
+playerConfig.customProperties = playerProperty // 自定义玩家属性，选填
+
+// 创建房间请求
+let request = CreateRoomRequest(roomCfg: roomConfig, playerCfg: playerConfig)
+
+TapTapBattle.createRoom(request: request) { roomInfo, error in
+    if let error = error {
+        print("创建房间 error \(error.code) \(error.message)")
+    } else if let roomInfo = roomInfo {
+        print("创建房间成功 \(roomInfo)")
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// 定义匹配参数
+NSDictionary<NSString *, NSString *> *matchParams = nil;
+// 定义房间配置
+RoomConfig *roomConfig = [[RoomConfig alloc] init];
+roomConfig.maxPlayerCount = roomMaxPlayerCount; // 房间最大支持人数，取值范围为[1, 20]，必填
+roomConfig.type = roomType; // 房间类型，最大32字节，必填
+roomConfig.name = roomName; // 房间名称，最大64个字节，选填
+roomConfig.customProperties = roomProperty; // 自定义房间属性，最大2048字节，选填
+roomConfig.matchParams = matchParams; // 房间匹配参数，选填
+
+// 定义玩家配置
+PlayerConfig *playerConfig = [[PlayerConfig alloc] init];
+playerConfig.customStatus = playerCustomStatus; // 自定义玩家状态，整型，选填
+playerConfig.customProperties = playerProperty; // 自定义玩家属性，选填
+
+// 创建房间请求
+CreateRoomRequest *request = [[CreateRoomRequest alloc] initWithRoomCfg:roomConfig playerCfg:playerConfig];
+
+[TapTapBattle createRoomWithRequest:request callback:^(RoomInfo *roomInfo, NSError *error) {
+    if (error) {
+        NSLog(@"创建房间 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"创建房间成功 %@", roomInfo);
+    }
+}];
 ```
 
 </>
@@ -131,7 +277,7 @@ catch (TapException e)
 匹配房间时使用的[配置参数](#房间配置)和创建房间一致，当没有满足条件的房间存在时，会自动创建一个新房间，
 匹配成功后返回对应的[房间信息](#房间信息)。
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -162,7 +308,7 @@ try
 {
     RoomInfo data = await TapTapOnlineBattle.MatchRoom(config);
     LogMessage(" 匹配房间成功 " + JsonConvert.SerializeObject(data));
-    // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知 
+    // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知
 }
 catch (TapException e)
 {
@@ -173,7 +319,153 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.MatchRoomListener;
+import com.taptap.sdk.battle.model.MatchRoomConfig;
+import com.taptap.sdk.battle.model.RoomConfig;
+import com.taptap.sdk.battle.model.PlayerConfig;
+import com.taptap.sdk.battle.model.RoomInfo;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 定义匹配参数
+Map<String, String> matchParams = null;
+// 定义房间配置
+RoomConfig roomConfig = new RoomConfig();
+roomConfig.setMaxPlayerCount(roomMaxPlayerCount); // 房间最大支持人数，取值范围为[1, 20]，必填
+roomConfig.setType(roomType); // 房间类型，最大32字节，必填
+roomConfig.setCustomProperties(roomProperty); // 自定义房间属性，最大2048字节，选填
+roomConfig.setMatchParams(matchParams); // 房间匹配参数，选填
+
+// 定义玩家配置
+PlayerConfig playerConfig = new PlayerConfig();
+playerConfig.setCustomStatus(playerCustomStatus); // 自定义玩家状态，整型，选填
+playerConfig.setCustomProperties(playerProperty); // 自定义玩家属性，选填
+
+// 匹配房间配置
+MatchRoomConfig config = new MatchRoomConfig(roomConfig, playerConfig);
+
+TapTapBattle.matchRoom(config, new MatchRoomListener() {
+    @Override
+    public void onSuccess(RoomInfo roomInfo) {
+        Log.d("Battle", "匹配房间成功 " + roomInfo.toString());
+        // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "匹配房间 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.MatchRoomListener
+import com.taptap.sdk.battle.model.MatchRoomConfig
+import com.taptap.sdk.battle.model.RoomConfig
+import com.taptap.sdk.battle.model.PlayerConfig
+import com.taptap.sdk.battle.model.RoomInfo
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 定义匹配参数
+val matchParams: Map<String, String>? = null
+// 定义房间配置
+val roomConfig = RoomConfig().apply {
+    maxPlayerCount = roomMaxPlayerCount // 房间最大支持人数，取值范围为[1, 20]，必填
+    type = roomType // 房间类型，最大32字节，必填
+    customProperties = roomProperty // 自定义房间属性，最大2048字节，选填
+    this.matchParams = matchParams // 房间匹配参数，选填
+}
+
+// 定义玩家配置
+val playerConfig = PlayerConfig().apply {
+    customStatus = playerCustomStatus // 自定义玩家状态，整型，选填
+    customProperties = playerProperty // 自定义玩家属性，选填
+}
+
+// 匹配房间配置
+val config = MatchRoomConfig(roomConfig, playerConfig)
+
+TapTapBattle.matchRoom(config, object : MatchRoomListener {
+    override fun onSuccess(roomInfo: RoomInfo) {
+        Log.d("Battle", "匹配房间成功 $roomInfo")
+        // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "匹配房间 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// 定义匹配参数
+let matchParams: [String: String]? = nil
+// 定义房间配置
+let roomConfig = RoomConfig()
+roomConfig.maxPlayerCount = roomMaxPlayerCount // 房间最大支持人数，取值范围为[1, 20]，必填
+roomConfig.type = roomType // 房间类型，最大32字节，必填
+roomConfig.customProperties = roomProperty // 自定义房间属性，最大2048字节，选填
+roomConfig.matchParams = matchParams // 房间匹配参数，选填
+
+// 定义玩家配置
+let playerConfig = PlayerConfig()
+playerConfig.customStatus = playerCustomStatus // 自定义玩家状态，整型，选填
+playerConfig.customProperties = playerProperty // 自定义玩家属性，选填
+
+// 匹配房间请求
+let request = MatchRoomRequest(roomCfg: roomConfig, playerCfg: playerConfig)
+
+TapTapBattle.matchRoom(request: request) { roomInfo, error in
+    if let error = error {
+        print("匹配房间 error \(error.code) \(error.message)")
+    } else if let roomInfo = roomInfo {
+        print("匹配房间成功 \(roomInfo)")
+        // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// 定义匹配参数
+NSDictionary<NSString *, NSString *> *matchParams = nil;
+// 定义房间配置
+RoomConfig *roomConfig = [[RoomConfig alloc] init];
+roomConfig.maxPlayerCount = roomMaxPlayerCount; // 房间最大支持人数，取值范围为[1, 20]，必填
+roomConfig.type = roomType; // 房间类型，最大32字节，必填
+roomConfig.customProperties = roomProperty; // 自定义房间属性，最大2048字节，选填
+roomConfig.matchParams = matchParams; // 房间匹配参数，选填
+
+// 定义玩家配置
+PlayerConfig *playerConfig = [[PlayerConfig alloc] init];
+playerConfig.customStatus = playerCustomStatus; // 自定义玩家状态，整型，选填
+playerConfig.customProperties = playerProperty; // 自定义玩家属性，选填
+
+// 匹配房间请求
+MatchRoomRequest *request = [[MatchRoomRequest alloc] initWithRoomCfg:roomConfig playerCfg:playerConfig];
+
+[TapTapBattle matchRoomWithRequest:request callback:^(RoomInfo *roomInfo, NSError *error) {
+    if (error) {
+        NSLog(@"匹配房间 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"匹配房间成功 %@", roomInfo);
+        // 如果此时是加入已存在的房间，房间内其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -182,7 +474,7 @@ catch (TapException e)
 
 如果此时是加入已存在的房间，房间内其他玩家会通过 SDK 的 `OnPlayerEntered` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -203,7 +495,41 @@ catch (TapException e)
 <>
 
 ```java
+// 玩家进入房间
+@Override
+public void onPlayerEntered(String roomId, PlayerInfo playerInfo) {
+    Log.d("Battle", "receive OnPlayerEntered " + roomId + ":" + playerInfo.toString());
+}
+```
 
+</>
+<>
+
+```kotlin
+// 玩家进入房间
+override fun onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+    Log.d("Battle", "receive OnPlayerEntered $roomId:$playerInfo")
+}
+```
+
+</>
+<>
+
+```swift
+// 玩家进入房间
+func onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+    print("receive OnPlayerEntered \(roomId):\(playerInfo)")
+}
+```
+
+</>
+<>
+
+```objc
+// 玩家进入房间
+- (void)onPlayerEntered:(NSString *)roomId playerInfo:(PlayerInfo *)playerInfo {
+    NSLog(@"receive OnPlayerEntered %@:%@", roomId, playerInfo);
+}
 ```
 
 </>
@@ -214,7 +540,7 @@ catch (TapException e)
 
 开发者可通过具体房间类型获取对应房间列表数据，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -224,8 +550,8 @@ using TapSDK.OnlineBattle;
 try
 {
     RoomListData data = await TapTapOnlineBattle.GetRoomList(
-        roomType, // 房间类型 
-        offset, // 请求偏移量，默认为 0 
+        roomType, // 房间类型
+        offset, // 请求偏移量，默认为 0
         limit // 请求获取的房间数量，默认为 20
     );
     LogMessage(" 查询房间列表成功 " + JsonConvert.SerializeObject(data));
@@ -239,7 +565,96 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.GetRoomListListener;
+import com.taptap.sdk.battle.model.GetRoomListRequest;
+import com.taptap.sdk.battle.model.RoomListData;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+GetRoomListRequest request = new GetRoomListRequest();
+request.setType(roomType); // 房间类型
+request.setOffset(offset); // 请求偏移量，默认为 0
+request.setLimit(limit); // 请求获取的房间数量，默认为 20
+
+TapTapBattle.getRoomList(request, new GetRoomListListener() {
+    @Override
+    public void onSuccess(RoomListData data) {
+        Log.d("Battle", "查询房间列表成功 " + data.toString());
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "查询房间列表 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.GetRoomListListener
+import com.taptap.sdk.battle.model.GetRoomListRequest
+import com.taptap.sdk.battle.model.RoomListData
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+val request = GetRoomListRequest().apply {
+    type = roomType // 房间类型
+    offset = this@YourClass.offset // 请求偏移量，默认为 0
+    limit = this@YourClass.limit // 请求获取的房间数量，默认为 20
+}
+
+TapTapBattle.getRoomList(request, object : GetRoomListListener {
+    override fun onSuccess(data: RoomListData) {
+        Log.d("Battle", "查询房间列表成功 $data")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "查询房间列表 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+let request = GetRoomListRequest()
+request.type = roomType // 房间类型
+request.offset = offset // 请求偏移量，默认为 0
+request.limit = limit // 请求获取的房间数量，默认为 20
+
+TapTapBattle.getRoomList(request) { data, error in
+    if let error = error {
+        print("查询房间列表 error \(error.code) \(error.message)")
+    } else if let data = data {
+        print("查询房间列表成功 \(data)")
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+GetRoomListRequest *request = [[GetRoomListRequest alloc] init];
+request.type = roomType; // 房间类型
+request.offset = offset; // 请求偏移量，默认为 0
+request.limit = limit; // 请求获取的房间数量，默认为 20
+
+[TapTapBattle getRoomList:request callback:^(RoomListData *data, NSError *error) {
+    if (error) {
+        NSLog(@"查询房间列表 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"查询房间列表成功 %@", data);
+    }
+}];
 ```
 
 </>
@@ -268,7 +683,7 @@ catch (TapException e)
 
 使用目标房间的房间 ID 可加入对应房间，成功后，会返回包含所有玩家的具体[房间信息](#房间信息)。示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -284,7 +699,7 @@ var playerConfig = new PlayerConfig()
 try
 {
     RoomInfo data = await TapTapOnlineBattle.JoinRoom(
-        joinRoomId, // 房间ID 
+        joinRoomId, // 房间ID
         playerConfig //  玩家配置，选填
     );
     LogMessage(" 加入房间成功 " + JsonConvert.SerializeObject(data));
@@ -299,7 +714,119 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.JoinRoomListener;
+import com.taptap.sdk.battle.model.JoinRoomRequest;
+import com.taptap.sdk.battle.model.PlayerConfig;
+import com.taptap.sdk.battle.model.RoomInfo;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 玩家配置
+PlayerConfig playerConfig = new PlayerConfig();
+playerConfig.setCustomStatus(joinPlayerStatus); // 自定义玩家状态，整形，选填
+playerConfig.setCustomProperties(joinPlayerProperty); // 自定义玩家属性，选填
+
+JoinRoomRequest request = new JoinRoomRequest();
+request.setRoomId(joinRoomId); // 房间ID
+request.setPlayerConfig(playerConfig); // 玩家配置，选填
+
+TapTapBattle.joinRoom(request, new JoinRoomListener() {
+    @Override
+    public void onSuccess(RoomInfo data) {
+        Log.d("Battle", "加入房间成功 " + data.toString());
+        // 其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "加入房间 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.JoinRoomListener
+import com.taptap.sdk.battle.model.JoinRoomRequest
+import com.taptap.sdk.battle.model.PlayerConfig
+import com.taptap.sdk.battle.model.RoomInfo
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 玩家配置
+val playerConfig = PlayerConfig().apply {
+    customStatus = joinPlayerStatus // 自定义玩家状态，整形，选填
+    customProperties = joinPlayerProperty // 自定义玩家属性，选填
+}
+
+val request = JoinRoomRequest().apply {
+    roomId = joinRoomId // 房间ID
+    this.playerConfig = playerConfig // 玩家配置，选填
+}
+
+TapTapBattle.joinRoom(request, object : JoinRoomListener {
+    override fun onSuccess(data: RoomInfo) {
+        Log.d("Battle", "加入房间成功 $data")
+        // 其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "加入房间 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// 玩家配置
+let playerConfig = PlayerConfig()
+playerConfig.customStatus = joinPlayerStatus // 自定义玩家状态，整形，选填
+playerConfig.customProperties = joinPlayerProperty // 自定义玩家属性，选填
+
+let request = JoinRoomRequest()
+request.roomId = joinRoomId // 房间ID
+request.playerConfig = playerConfig // 玩家配置，选填
+
+TapTapBattle.joinRoom(request) { data, error in
+    if let error = error {
+        print("加入房间 error \(error.code) \(error.message)")
+    } else if let data = data {
+        print("加入房间成功 \(data)")
+        // 其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// 玩家配置
+PlayerConfig *playerConfig = [[PlayerConfig alloc] init];
+playerConfig.customStatus = joinPlayerStatus; // 自定义玩家状态，整形，选填
+playerConfig.customProperties = joinPlayerProperty; // 自定义玩家属性，选填
+
+JoinRoomRequest *request = [[JoinRoomRequest alloc] init];
+request.roomId = joinRoomId; // 房间ID
+request.playerConfig = playerConfig; // 玩家配置，选填
+
+[TapTapBattle joinRoom:request callback:^(RoomInfo *data, NSError *error) {
+    if (error) {
+        NSLog(@"加入房间 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"加入房间成功 %@", data);
+        // 其他玩家会通过 OnPlayerEntered 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -308,7 +835,7 @@ catch (TapException e)
 
 加入成功后其他玩家也会通过 `OnPlayerEntered` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -329,7 +856,41 @@ catch (TapException e)
 <>
 
 ```java
+// 玩家进入房间
+@Override
+public void onPlayerEntered(String roomId, PlayerInfo playerInfo) {
+    Log.d("Battle", "receive OnPlayerEntered " + roomId + ":" + playerInfo.toString());
+}
+```
 
+</>
+<>
+
+```kotlin
+// 玩家进入房间
+override fun onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+    Log.d("Battle", "receive OnPlayerEntered $roomId:$playerInfo")
+}
+```
+
+</>
+<>
+
+```swift
+// 玩家进入房间
+func onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+    print("receive OnPlayerEntered \(roomId):\(playerInfo)")
+}
+```
+
+</>
+<>
+
+```objc
+// 玩家进入房间
+- (void)onPlayerEntered:(NSString *)roomId playerInfo:(PlayerInfo *)playerInfo {
+    NSLog(@"receive OnPlayerEntered %@:%@", roomId, playerInfo);
+}
 ```
 
 </>
@@ -342,7 +903,7 @@ catch (TapException e)
 
 只有房主可更新当前房间信息，包含名称和自定义属性等，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -367,7 +928,94 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.UpdateRoomPropertiesListener;
+import com.taptap.sdk.battle.model.UpdateRoomPropertiesRequest;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+UpdateRoomPropertiesRequest request = new UpdateRoomPropertiesRequest();
+request.setName(updateRoomName); // 房间名称
+request.setCustomProperties(updateRoomProperty); // 房间自定义属性，最大支持 2048 字节
+
+TapTapBattle.updateRoomProperties(request, new UpdateRoomPropertiesListener() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d("Battle", "更新房间属性 成功");
+        // 所有玩家会通过 OnRoomPropertiesChanged 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "更新房间属性 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.UpdateRoomPropertiesListener
+import com.taptap.sdk.battle.model.UpdateRoomPropertiesRequest
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+val request = UpdateRoomPropertiesRequest().apply {
+    name = updateRoomName // 房间名称
+    customProperties = updateRoomProperty // 房间自定义属性，最大支持 2048 字节
+}
+
+TapTapBattle.updateRoomProperties(request, object : UpdateRoomPropertiesListener {
+    override fun onSuccess(result: Void?) {
+        Log.d("Battle", "更新房间属性 成功")
+        // 所有玩家会通过 OnRoomPropertiesChanged 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "更新房间属性 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+let request = UpdateRoomPropertiesRequest()
+request.name = updateRoomName // 房间名称
+request.customProperties = updateRoomProperty // 房间自定义属性，最大支持 2048 字节
+
+TapTapBattle.updateRoomProperties(request) { error in
+    if let error = error {
+        print("更新房间属性 error \(error.code) \(error.message)")
+    } else {
+        print("更新房间属性 成功")
+        // 所有玩家会通过 OnRoomPropertiesChanged 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+UpdateRoomPropertiesRequest *request = [[UpdateRoomPropertiesRequest alloc] init];
+request.name = updateRoomName; // 房间名称
+request.customProperties = updateRoomProperty; // 房间自定义属性，最大支持 2048 字节
+
+[TapTapBattle updateRoomProperties:request callback:^(NSError *error) {
+    if (error) {
+        NSLog(@"更新房间属性 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"更新房间属性 成功");
+        // 所有玩家会通过 OnRoomPropertiesChanged 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -376,7 +1024,7 @@ catch (TapException e)
 
 更新成功后所有玩家会通过 SDK 的 `OnRoomPropertiesChanged` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -396,7 +1044,41 @@ catch (TapException e)
 <>
 
 ```java
+// 房间属性变更
+@Override
+public void onRoomPropertiesChanged(String id, String name, String customProperties) {
+    Log.d("Battle", "receive OnRoomPropertiesChanged " + id + ":" + name + ":" + customProperties);
+}
+```
 
+</>
+<>
+
+```kotlin
+// 房间属性变更
+override fun onRoomPropertiesChanged(id: String, name: String, customProperties: String) {
+    Log.d("Battle", "receive OnRoomPropertiesChanged $id:$name:$customProperties")
+}
+```
+
+</>
+<>
+
+```swift
+// 房间属性变更
+func onRoomPropertiesChanged(id: String, name: String, customProperties: String) {
+    print("receive OnRoomPropertiesChanged \(id):\(name):\(customProperties)")
+}
+```
+
+</>
+<>
+
+```objc
+// 房间属性变更
+- (void)onRoomPropertiesChanged:(NSString *)id name:(NSString *)name customProperties:(NSString *)customProperties {
+    NSLog(@"receive OnRoomPropertiesChanged %@:%@:%@", id, name, customProperties);
+}
 ```
 
 </>
@@ -407,7 +1089,7 @@ catch (TapException e)
 
 每个玩家均可更新自身的当前自定义状态，用于标识玩家在房间或对战过程中的关键状态，例如未就绪、已就绪等，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -431,7 +1113,79 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.UpdatePlayerCustomStatusListener;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// updatePlayerStatus 玩家自定义状态，例如 0 未就绪 1 已就绪
+TapTapBattle.updatePlayerCustomStatus(updatePlayerStatus, new UpdatePlayerCustomStatusListener() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d("Battle", "更新玩家状态 成功");
+        // 房间内玩家会通过 OnPlayerCustomStatusChanged 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "更新玩家状态 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.UpdatePlayerCustomStatusListener
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// updatePlayerStatus 玩家自定义状态，例如 0 未就绪 1 已就绪
+TapTapBattle.updatePlayerCustomStatus(updatePlayerStatus, object : UpdatePlayerCustomStatusListener {
+    override fun onSuccess(result: Void?) {
+        Log.d("Battle", "更新玩家状态 成功")
+        // 房间内玩家会通过 OnPlayerCustomStatusChanged 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "更新玩家状态 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// updatePlayerStatus 玩家自定义状态，例如 0 未就绪 1 已就绪
+TapTapBattle.updatePlayerCustomStatus(updatePlayerStatus) { error in
+    if let error = error {
+        print("更新玩家状态 error \(error.code) \(error.message)")
+    } else {
+        print("更新玩家状态 成功")
+        // 房间内玩家会通过 OnPlayerCustomStatusChanged 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// updatePlayerStatus 玩家自定义状态，例如 0 未就绪 1 已就绪
+[TapTapBattle updatePlayerCustomStatus:updatePlayerStatus callback:^(NSError *error) {
+    if (error) {
+        NSLog(@"更新玩家状态 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"更新玩家状态 成功");
+        // 房间内玩家会通过 OnPlayerCustomStatusChanged 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -440,7 +1194,7 @@ catch (TapException e)
 
 更新成功后，房间内玩家会通过 SDK 的 `OnPlayerCustomStatusChanged` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -459,7 +1213,41 @@ catch (TapException e)
 <>
 
 ```java
+// 玩家更新自定义状态
+@Override
+public void onPlayerCustomStatusChanged(String playerId, int status) {
+    Log.d("Battle", "receive OnPlayerCustomStatusChanged " + playerId + ":" + status);
+}
+```
 
+</>
+<>
+
+```kotlin
+// 玩家更新自定义状态
+override fun onPlayerCustomStatusChanged(playerId: String, status: Int) {
+    Log.d("Battle", "receive OnPlayerCustomStatusChanged $playerId:$status")
+}
+```
+
+</>
+<>
+
+```swift
+// 玩家更新自定义状态
+func onPlayerCustomStatusChanged(playerId: String, status: Int) {
+    print("receive OnPlayerCustomStatusChanged \(playerId):\(status)")
+}
+```
+
+</>
+<>
+
+```objc
+// 玩家更新自定义状态
+- (void)onPlayerCustomStatusChanged:(NSString *)playerId status:(int)status {
+    NSLog(@"receive OnPlayerCustomStatusChanged %@:%d", playerId, status);
+}
 ```
 
 </>
@@ -470,7 +1258,7 @@ catch (TapException e)
 
 每个玩家均可更新自身的自定义属性数据，可用于设置玩家的基础用户信息、游戏等级等数据，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -494,7 +1282,75 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.UpdatePlayerCustomPropertiesListener;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+TapTapBattle.updatePlayerCustomProperties(updatePlayerProperty, new UpdatePlayerCustomPropertiesListener() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d("Battle", "更新玩家属性 成功");
+        // 房间内玩家会通过 OnPlayerCustomPropertiesChanged 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "更新玩家属性 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.UpdatePlayerCustomPropertiesListener
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+TapTapBattle.updatePlayerCustomProperties(updatePlayerProperty, object : UpdatePlayerCustomPropertiesListener {
+    override fun onSuccess(result: Void?) {
+        Log.d("Battle", "更新玩家属性 成功")
+        // 房间内玩家会通过 OnPlayerCustomPropertiesChanged 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "更新玩家属性 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+TapTapBattle.updatePlayerCustomProperties(updatePlayerProperty) { error in
+    if let error = error {
+        print("更新玩家属性 error \(error.code) \(error.message)")
+    } else {
+        print("更新玩家属性 成功")
+        // 房间内玩家会通过 OnPlayerCustomPropertiesChanged 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+[TapTapBattle updatePlayerCustomProperties:updatePlayerProperty callback:^(NSError *error) {
+    if (error) {
+        NSLog(@"更新玩家属性 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"更新玩家属性 成功");
+        // 房间内玩家会通过 OnPlayerCustomPropertiesChanged 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -503,7 +1359,7 @@ catch (TapException e)
 
 更新成功后，房间内玩家会通过 SDK 的 `OnPlayerCustomPropertiesChanged` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -522,7 +1378,41 @@ catch (TapException e)
 <>
 
 ```java
+// 玩家更新自定义属性
+@Override
+public void onPlayerCustomPropertiesChanged(String playerId, String properties) {
+    Log.d("Battle", "receive OnPlayerCustomPropertiesChanged " + playerId + ":" + properties);
+}
+```
 
+</>
+<>
+
+```kotlin
+// 玩家更新自定义属性
+override fun onPlayerCustomPropertiesChanged(playerId: String, properties: String) {
+    Log.d("Battle", "receive OnPlayerCustomPropertiesChanged $playerId:$properties")
+}
+```
+
+</>
+<>
+
+```swift
+// 玩家更新自定义属性
+func onPlayerCustomPropertiesChanged(playerId: String, properties: String) {
+    print("receive OnPlayerCustomPropertiesChanged \(playerId):\(properties)")
+}
+```
+
+</>
+<>
+
+```objc
+// 玩家更新自定义属性
+- (void)onPlayerCustomPropertiesChanged:(NSString *)playerId properties:(NSString *)properties {
+    NSLog(@"receive OnPlayerCustomPropertiesChanged %@:%@", playerId, properties);
+}
 ```
 
 </>
@@ -533,7 +1423,7 @@ catch (TapException e)
 
 当房间内玩家需要离开当前房间时，可调用如下接口：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -556,7 +1446,75 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.LeaveRoomListener;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+TapTapBattle.leaveRoom(new LeaveRoomListener() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d("Battle", "离开房间成功");
+        // 房间内其他玩家通过 OnPlayerLeft 收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "离开房间 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.LeaveRoomListener
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+TapTapBattle.leaveRoom(object : LeaveRoomListener {
+    override fun onSuccess(result: Void?) {
+        Log.d("Battle", "离开房间成功")
+        // 房间内其他玩家通过 OnPlayerLeft 收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "离开房间 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+TapTapBattle.leaveRoom { error in
+    if let error = error {
+        print("离开房间 error \(error.code) \(error.message)")
+    } else {
+        print("离开房间成功")
+        // 房间内其他玩家通过 OnPlayerLeft 收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+[TapTapBattle leaveRoom:^(NSError *error) {
+    if (error) {
+        NSLog(@"离开房间 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"离开房间成功");
+        // 房间内其他玩家通过 OnPlayerLeft 收到通知
+    }
+}];
 ```
 
 </>
@@ -565,7 +1523,7 @@ catch (TapException e)
 
 调用成功后，房间内其他玩家通过 SDK 的 `OnPlayerLeft` 收到通知，如果离开的玩家是房主，则会重新指定房间内其他玩家为房主。
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -585,7 +1543,41 @@ catch (TapException e)
 <>
 
 ```java
+// 玩家离开房间
+@Override
+public void onPlayerLeft(String roomId, String roomOwnerId, String playerId) {
+    Log.d("Battle", "receive OnPlayerLeft " + roomId + ":" + roomOwnerId + ":" + playerId);
+}
+```
 
+</>
+<>
+
+```kotlin
+// 玩家离开房间
+override fun onPlayerLeft(roomId: String, roomOwnerId: String, playerId: String) {
+    Log.d("Battle", "receive OnPlayerLeft $roomId:$roomOwnerId:$playerId")
+}
+```
+
+</>
+<>
+
+```swift
+// 玩家离开房间
+func onPlayerLeft(roomId: String, roomOwnerId: String, playerId: String) {
+    print("receive OnPlayerLeft \(roomId):\(roomOwnerId):\(playerId)")
+}
+```
+
+</>
+<>
+
+```objc
+// 玩家离开房间
+- (void)onPlayerLeft:(NSString *)roomId roomOwnerId:(NSString *)roomOwnerId playerId:(NSString *)playerId {
+    NSLog(@"receive OnPlayerLeft %@:%@:%@", roomId, roomOwnerId, playerId);
+}
 ```
 
 </>
@@ -596,7 +1588,7 @@ catch (TapException e)
 
 当房主需要将玩家踢出房间时，可调用如下接口：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -618,7 +1610,75 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.KickRoomPlayerListener;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// kickPlayerId 玩家 ID
+TapTapBattle.kickRoomPlayer(kickPlayerId, new KickRoomPlayerListener() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d("Battle", "踢出玩家 成功");
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "踢出玩家 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.KickRoomPlayerListener
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// kickPlayerId 玩家 ID
+TapTapBattle.kickRoomPlayer(kickPlayerId, object : KickRoomPlayerListener {
+    override fun onSuccess(result: Void?) {
+        Log.d("Battle", "踢出玩家 成功")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "踢出玩家 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// kickPlayerId 玩家 ID
+TapTapBattle.kickRoomPlayer(kickPlayerId) { error in
+    if let error = error {
+        print("踢出玩家 error \(error.code) \(error.message)")
+    } else {
+        print("踢出玩家 成功")
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// kickPlayerId 玩家 ID
+[TapTapBattle kickRoomPlayer:kickPlayerId callback:^(NSError *error) {
+    if (error) {
+        NSLog(@"踢出玩家 error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"踢出玩家 成功");
+    }
+}];
 ```
 
 </>
@@ -627,7 +1687,7 @@ catch (TapException e)
 
 调用成功后，对应玩家会通过 SDK 的 `OnPlayerKicked` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -646,7 +1706,41 @@ catch (TapException e)
 <>
 
 ```java
+// 玩家被踢出
+@Override
+public void onPlayerKicked(String roomId, String playerId) {
+    Log.d("Battle", "receive OnPlayerKicked " + roomId + ":" + playerId);
+}
+```
 
+</>
+<>
+
+```kotlin
+// 玩家被踢出
+override fun onPlayerKicked(roomId: String, playerId: String) {
+    Log.d("Battle", "receive OnPlayerKicked $roomId:$playerId")
+}
+```
+
+</>
+<>
+
+```swift
+// 玩家被踢出
+func onPlayerKicked(roomId: String, playerId: String) {
+    print("receive OnPlayerKicked \(roomId):\(playerId)")
+}
+```
+
+</>
+<>
+
+```objc
+// 玩家被踢出
+- (void)onPlayerKicked:(NSString *)roomId playerId:(NSString *)playerId {
+    NSLog(@"receive OnPlayerKicked %@:%@", roomId, playerId);
+}
 ```
 
 </>

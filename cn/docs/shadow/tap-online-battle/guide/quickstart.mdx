@@ -35,7 +35,7 @@ import MultiLang from "/src/docComponents/MultiLang";
 
 在游戏启动页面，调用 SDK 初始化接口，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -49,6 +49,8 @@ TapTapSdkOptions coreOptions = new TapTapSdkOptions
    clientId = clientId,
    // 客户端令牌，开发者后台获取
    clientToken = clientToken,
+   // 地区，CN 为国内，Overseas 为海外
+   region = TapTapRegionType.CN
 };
 // TapSDK 初始化
 TapTapSDK.Init(coreOptions);
@@ -59,7 +61,71 @@ TapTapSDK.Init(coreOptions);
 <>
 
 ```java
+import com.taptap.sdk.core.TapTapRegion;
+import com.taptap.sdk.core.TapTapSdk;
+import com.taptap.sdk.core.TapTapSdkOptions;
 
+// 开发者中心对应 Client ID
+String clientId = "";
+// 开发者中心对应 Client Token
+String clientToken = "";
+
+TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+    clientId, // 游戏 Client ID
+    clientToken, // 游戏 Client Token
+    TapTapRegion.CN // 游戏可玩区域
+);
+// 初始化 TapSDK
+TapTapSdk.init(context, tapSdkOptions);
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.core.TapTapSdk
+import com.taptap.sdk.core.TapTapSdkOptions
+import com.taptap.sdk.core.TapTapRegion
+
+TapTapSdk.init(
+    context = context,
+    sdkOptions = TapTapSdkOptions(
+        clientId = clientId, // 客户端 ID
+        clientToken = clientToken, // 客户端令牌
+        region = TapTapRegion.CN
+    )
+)
+```
+
+</>
+
+<>
+
+```swift
+import TapTapSDK
+
+let options = TapTapSdkOptions()
+options.clientId = "your_client_id" // 客户端 ID
+options.clientToken = "your_client_token" // 客户端令牌
+options.region = .CN
+
+TapTapSDK.initWith(options)
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapSDK/TapTapSDK.h>
+
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+options.clientId = @"your_client_id"; // 客户端 ID
+options.clientToken = @"your_client_token"; // 客户端令牌
+options.region = TapTapRegionCN;
+
+[TapTapSDK initWithOptions:options];
 ```
 
 </>
@@ -69,7 +135,7 @@ TapTapSDK.Init(coreOptions);
 
 在游戏登录页面，当玩家点击登录按钮后，调用 SDK 登录接口，获取用户信息：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -101,7 +167,105 @@ catch (Exception exception)
 <>
 
 ```java
+import com.taptap.sdk.login.TapTapLogin;
+import com.taptap.sdk.login.callback.TapTapLoginCallback;
+import com.taptap.sdk.login.model.TapUserInfo;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 定义授权范围
+String[] scopes = new String[]{TapTapLogin.SCOPE_PUBLIC_PROFILE};
+
+// 发起 Tap 登录
+TapTapLogin.loginWithScopes(activity, scopes, new TapTapLoginCallback() {
+    @Override
+    public void onSuccess(TapUserInfo userInfo) {
+        Log.d("Login", "登录成功，当前用户 ID：" + userInfo.unionId);
+        // TODO: 进入游戏大厅页面
+    }
+
+    @Override
+    public void onCancel() {
+        Log.d("Login", "用户取消登录");
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Login", "登录失败，出现异常：" + error.message);
+    }
+});
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.login.TapTapLogin
+import com.taptap.sdk.login.callback.TapTapLoginCallback
+import com.taptap.sdk.login.model.TapUserInfo
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 定义授权范围
+val scopes = arrayOf(TapTapLogin.SCOPE_PUBLIC_PROFILE)
+
+// 发起 Tap 登录
+TapTapLogin.loginWithScopes(activity, scopes, object : TapTapLoginCallback {
+    override fun onSuccess(userInfo: TapUserInfo) {
+        Log.d("Login", "登录成功，当前用户 ID：${userInfo.unionId}")
+        // TODO: 进入游戏大厅页面
+    }
+
+    override fun onCancel() {
+        Log.d("Login", "用户取消登录")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Login", "登录失败，出现异常：${error.message}")
+    }
+})
+```
+
+</>
+
+<>
+
+```swift
+import TapTapSDK
+
+// 定义授权范围
+let scopes = [TapTapLogin.scopePublicProfile]
+
+// 发起 Tap 登录
+TapTapLogin.login(with: scopes) { userInfo, error in
+    if let error = error {
+        print("登录失败，出现异常：\(error.localizedDescription)")
+    } else if let userInfo = userInfo {
+        print("登录成功，当前用户 ID：\(userInfo.unionId)")
+        // TODO: 进入游戏大厅页面
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapSDK/TapTapSDK.h>
+
+// 定义授权范围
+NSArray *scopes = @[TapTapLogin.scopePublicProfile];
+
+// 发起 Tap 登录
+[TapTapLogin loginWithScopes:scopes callback:^(TapUserInfo *userInfo, NSError *error) {
+    if (error) {
+        NSLog(@"登录失败，出现异常：%@", error.localizedDescription);
+    } else {
+        NSLog(@"登录成功，当前用户 ID：%@", userInfo.unionId);
+        // TODO: 进入游戏大厅页面
+    }
+}];
 ```
 
 </>
@@ -113,7 +277,7 @@ catch (Exception exception)
 
 进入大厅后，先注册全局 SDK 回调，然后调用建立连接接口，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -175,7 +339,219 @@ public class LobbyPanel : MonoBehaviour , ITapOnlineBattleCallback
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.battle.model.PlayerInfo;
+import com.taptap.sdk.battle.model.FrameData;
+import com.taptap.sdk.battle.model.FrameSyncInfo;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 大厅页面，实现 SDK 回调接口
+public class LobbyActivity extends AppCompatActivity implements TapOnlineBattleCallback {
+
+    // 注册回调
+    public void registerCallback() {
+        TapTapBattle.registerOnlineBattleCallback(this);
+    }
+
+    // 建立连接
+    public void connect() {
+        TapTapBattle.connect(new TapBattleCallback<String>() {
+            @Override
+            public void onSuccess(String playerId) {
+                Log.d("Battle", "Connect success " + playerId);
+            }
+
+            @Override
+            public void onError(TapError error) {
+                Log.e("Battle", "Connect error " + error.code + " " + error.message);
+            }
+        });
+    }
+
+    @Override
+    public void onPlayerEntered(String roomId, PlayerInfo playerInfo) {
+        // 有玩家进入房间，根据 playerInfo 渲染房间内玩家 UI
+    }
+
+    @Override
+    public void onPlayerLeft(String roomId, String roomOwnerId, String playerId) {
+        // 有玩家离开房间，根据 playerID 移除房间内玩家 UI
+    }
+
+    @Override
+    public void onRoomPropertiesChanged(String id, String name, String customProperties) {
+        // 房主修改了房间属性，根据数据修改房间内页面 UI
+    }
+
+    @Override
+    public void onCustomMessageReceived(String playerId, String msg) {
+        // 收到玩家操作，根据 msg 中玩家操作数据渲染对战页面棋盘 UI
+    }
+
+    @Override
+    public void onPlayerCustomStatusChanged(String playerId, int status) {
+        // 玩家更改了对战就绪状态，更新房间内 UI
+    }
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.battle.model.PlayerInfo
+import com.taptap.sdk.battle.model.FrameData
+import com.taptap.sdk.battle.model.FrameSyncInfo
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 大厅页面，实现 SDK 回调接口
+class LobbyActivity : AppCompatActivity(), TapOnlineBattleCallback {
+
+    // 注册回调
+    fun registerCallback() {
+        TapTapBattle.registerOnlineBattleCallback(this)
+    }
+
+    // 建立连接
+    fun connect() {
+        TapTapBattle.connect(object : TapBattleCallback<String> {
+            override fun onSuccess(playerId: String) {
+                Log.d("Battle", "Connect success $playerId")
+            }
+
+            override fun onError(error: TapError) {
+                Log.e("Battle", "Connect error ${error.code} ${error.message}")
+            }
+        })
+    }
+
+    override fun onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+        // 有玩家进入房间，根据 playerInfo 渲染房间内玩家 UI
+    }
+
+    override fun onPlayerLeft(roomId: String, roomOwnerId: String, playerId: String) {
+        // 有玩家离开房间，根据 playerID 移除房间内玩家 UI
+    }
+
+    override fun onRoomPropertiesChanged(id: String, name: String, customProperties: String) {
+        // 房主修改了房间属性，根据数据修改房间内页面 UI
+    }
+
+    override fun onCustomMessageReceived(playerId: String, msg: String) {
+        // 收到玩家操作，根据 msg 中玩家操作数据渲染对战页面棋盘 UI
+    }
+
+    override fun onPlayerCustomStatusChanged(playerId: String, status: Int) {
+        // 玩家更改了对战就绪状态，更新房间内 UI
+    }
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+// 大厅页面，实现 SDK 回调接口
+class LobbyViewController: UIViewController, TapOnlineBattleCallback {
+
+    // 注册回调
+    func registerCallback() {
+        TapTapBattle.registerOnlineBattleCallback(self)
+    }
+
+    // 建立连接
+    func connect() {
+        TapTapBattle.connect { playerId, error in
+            if let error = error {
+                print("Connect error \(error.code) \(error.localizedDescription)")
+            } else if let playerId = playerId {
+                print("Connect success \(playerId)")
+            }
+        }
+    }
+
+    func onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+        // 有玩家进入房间，根据 playerInfo 渲染房间内玩家 UI
+    }
+
+    func onPlayerLeft(roomId: String, roomOwnerId: String, playerId: String) {
+        // 有玩家离开房间，根据 playerID 移除房间内玩家 UI
+    }
+
+    func onRoomPropertiesChanged(id: String, name: String, customProperties: String) {
+        // 房主修改了房间属性，根据数据修改房间内页面 UI
+    }
+
+    func onCustomMessageReceived(playerId: String, msg: String) {
+        // 收到玩家操作，根据 msg 中玩家操作数据渲染对战页面棋盘 UI
+    }
+
+    func onPlayerCustomStatusChanged(playerId: String, status: Int) {
+        // 玩家更改了对战就绪状态，更新房间内 UI
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+// 大厅页面，实现 SDK 回调接口
+@interface LobbyViewController : UIViewController <TapOnlineBattleCallback>
+@end
+
+@implementation LobbyViewController
+
+// 注册回调
+- (void)registerCallback {
+    [TapTapBattle registerOnlineBattleCallback:self];
+}
+
+// 建立连接
+- (void)connect {
+    [TapTapBattle connect:^(NSString *playerId, NSError *error) {
+        if (error) {
+            NSLog(@"Connect error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"Connect success %@", playerId);
+        }
+    }];
+}
+
+- (void)onPlayerEntered:(NSString *)roomId playerInfo:(PlayerInfo *)playerInfo {
+    // 有玩家进入房间，根据 playerInfo 渲染房间内玩家 UI
+}
+
+- (void)onPlayerLeft:(NSString *)roomId roomOwnerId:(NSString *)roomOwnerId playerId:(NSString *)playerId {
+    // 有玩家离开房间，根据 playerID 移除房间内玩家 UI
+}
+
+- (void)onRoomPropertiesChanged:(NSString *)id name:(NSString *)name customProperties:(NSString *)customProperties {
+    // 房主修改了房间属性，根据数据修改房间内页面 UI
+}
+
+- (void)onCustomMessageReceived:(NSString *)playerId msg:(NSString *)msg {
+    // 收到玩家操作，根据 msg 中玩家操作数据渲染对战页面棋盘 UI
+}
+
+- (void)onPlayerCustomStatusChanged:(NSString *)playerId status:(int)status {
+    // 玩家更改了对战就绪状态，更新房间内 UI
+}
+
+@end
 ```
 
 </>
@@ -185,7 +561,7 @@ public class LobbyPanel : MonoBehaviour , ITapOnlineBattleCallback
 
 根据玩家选择，调用匹配房间或搜索房间列表来加入房间：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -269,7 +645,289 @@ public async void JoinRoom()
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.battle.model.MatchRoomConfig;
+import com.taptap.sdk.battle.model.RoomConfig;
+import com.taptap.sdk.battle.model.PlayerConfig;
+import com.taptap.sdk.battle.model.RoomInfo;
+import com.taptap.sdk.battle.model.RoomListData;
+import com.taptap.sdk.kit.internal.exception.TapError;
+import java.util.Map;
+import java.util.HashMap;
 
+// 匹配房间
+public void matchRoom() {
+    Map<String, String> matchParams = new HashMap<>(); // 匹配参数
+    // TODO: 设置具体匹配参数
+
+    RoomConfig roomConfig = new RoomConfig();
+    roomConfig.setMaxPlayerCount(roomMaxPlayerCount); // 最大玩家数量
+    roomConfig.setType(roomType); // 房间类型
+    roomConfig.setMatchParams(matchParams); // 匹配参数
+
+    PlayerConfig playerConfig = new PlayerConfig();
+    playerConfig.setCustomStatus(playerCustomStatus); // 玩家状态，自定义： 0 未就绪 1 已就绪
+    playerConfig.setCustomProperties(playerProperty); // 玩家属性，设置昵称、头像等
+
+    MatchRoomConfig config = new MatchRoomConfig(roomConfig, playerConfig);
+
+    TapTapBattle.matchRoom(config, new TapBattleCallback<RoomInfo>() {
+        @Override
+        public void onSuccess(RoomInfo data) {
+            Log.d("Battle", "匹配房间成功 " + data.toString());
+            // TODO: 跳转到房间内页面
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "匹配房间失败 error " + error.code + " " + error.message);
+        }
+    });
+}
+
+// 获取房间列表数据
+public void getRoomList() {
+    TapTapBattle.getRoomList(queryRoomType, new TapBattleCallback<RoomListData>() {
+        @Override
+        public void onSuccess(RoomListData data) {
+            Log.d("Battle", "查询房间列表成功 " + data.toString());
+            // TODO: 跳转到房间列表页面，展示可选房间数据
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "查询房间列表 error " + error.code + " " + error.message);
+        }
+    });
+}
+
+// 根据房间 ID 加入房间，当玩家在房间列表选择房间后，调用该方法加入房间
+public void joinRoom() {
+    // 当前玩家信息配置
+    PlayerConfig playerConfig = new PlayerConfig();
+    playerConfig.setCustomStatus(joinPlayerStatus); // 玩家状态，自定义： 0 未就绪 1 已就绪
+    playerConfig.setCustomProperties(joinPlayerProperty); // 玩家信息，例如头像、昵称等
+
+    TapTapBattle.joinRoom(joinRoomId, playerConfig, new TapBattleCallback<RoomInfo>() {
+        @Override
+        public void onSuccess(RoomInfo data) {
+            Log.d("Battle", "加入房间成功 " + data.toString());
+            // TODO: 跳转到房间内页面, 根据 RoomInfo 的 players 字段获取所有玩家信息
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "加入房间 error " + error.code + " " + error.message);
+        }
+    });
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.battle.model.MatchRoomConfig
+import com.taptap.sdk.battle.model.RoomConfig
+import com.taptap.sdk.battle.model.PlayerConfig
+import com.taptap.sdk.battle.model.RoomInfo
+import com.taptap.sdk.battle.model.RoomListData
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 匹配房间
+fun matchRoom() {
+    val matchParams: MutableMap<String, String> = mutableMapOf() // 匹配参数
+    // TODO: 设置具体匹配参数
+
+    val roomConfig = RoomConfig().apply {
+        maxPlayerCount = roomMaxPlayerCount // 最大玩家数量
+        type = roomType // 房间类型
+        this.matchParams = matchParams // 匹配参数
+    }
+
+    val playerConfig = PlayerConfig().apply {
+        customStatus = playerCustomStatus // 玩家状态，自定义： 0 未就绪 1 已就绪
+        customProperties = playerProperty // 玩家属性，设置昵称、头像等
+    }
+
+    val config = MatchRoomConfig(roomConfig, playerConfig)
+
+    TapTapBattle.matchRoom(config, object : TapBattleCallback<RoomInfo> {
+        override fun onSuccess(data: RoomInfo) {
+            Log.d("Battle", "匹配房间成功 $data")
+            // TODO: 跳转到房间内页面
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "匹配房间失败 error ${error.code} ${error.message}")
+        }
+    })
+}
+
+// 获取房间列表数据
+fun getRoomList() {
+    TapTapBattle.getRoomList(queryRoomType, object : TapBattleCallback<RoomListData> {
+        override fun onSuccess(data: RoomListData) {
+            Log.d("Battle", "查询房间列表成功 $data")
+            // TODO: 跳转到房间列表页面，展示可选房间数据
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "查询房间列表 error ${error.code} ${error.message}")
+        }
+    })
+}
+
+// 根据房间 ID 加入房间，当玩家在房间列表选择房间后，调用该方法加入房间
+fun joinRoom() {
+    // 当前玩家信息配置
+    val playerConfig = PlayerConfig().apply {
+        customStatus = joinPlayerStatus // 玩家状态，自定义： 0 未就绪 1 已就绪
+        customProperties = joinPlayerProperty // 玩家信息，例如头像、昵称等
+    }
+
+    TapTapBattle.joinRoom(joinRoomId, playerConfig, object : TapBattleCallback<RoomInfo> {
+        override fun onSuccess(data: RoomInfo) {
+            Log.d("Battle", "加入房间成功 $data")
+            // TODO: 跳转到房间内页面, 根据 RoomInfo 的 players 字段获取所有玩家信息
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "加入房间 error ${error.code} ${error.message}")
+        }
+    })
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+// 匹配房间
+func matchRoom() {
+    var matchParams: [String: String] = [:] // 匹配参数
+    // TODO: 设置具体匹配参数
+
+    let roomConfig = RoomConfig()
+    roomConfig.maxPlayerCount = roomMaxPlayerCount // 最大玩家数量
+    roomConfig.type = roomType // 房间类型
+    roomConfig.matchParams = matchParams // 匹配参数
+
+    let playerConfig = PlayerConfig()
+    playerConfig.customStatus = playerCustomStatus // 玩家状态，自定义： 0 未就绪 1 已就绪
+    playerConfig.customProperties = playerProperty // 玩家属性，设置昵称、头像等
+
+    let request = MatchRoomRequest(roomCfg: roomConfig, playerCfg: playerConfig)
+
+    TapTapBattle.matchRoom(request: request) { roomInfo, error in
+        if let error = error {
+            print("匹配房间失败 error \(error.code) \(error.localizedDescription)")
+        } else if let data = roomInfo {
+            print("匹配房间成功 \(data)")
+            // TODO: 跳转到房间内页面
+        }
+    }
+}
+
+// 获取房间列表数据
+func getRoomList() {
+    TapTapBattle.getRoomList(type: queryRoomType) { roomListData, error in
+        if let error = error {
+            print("查询房间列表 error \(error.code) \(error.localizedDescription)")
+        } else if let data = roomListData {
+            print("查询房间列表成功 \(data)")
+            // TODO: 跳转到房间列表页面，展示可选房间数据
+        }
+    }
+}
+
+// 根据房间 ID 加入房间，当玩家在房间列表选择房间后，调用该方法加入房间
+func joinRoom() {
+    // 当前玩家信息配置
+    let playerConfig = PlayerConfig()
+    playerConfig.customStatus = joinPlayerStatus // 玩家状态，自定义： 0 未就绪 1 已就绪
+    playerConfig.customProperties = joinPlayerProperty // 玩家信息，例如头像、昵称等
+
+    TapTapBattle.joinRoom(roomId: joinRoomId, playerConfig: playerConfig) { roomInfo, error in
+        if let error = error {
+            print("加入房间 error \(error.code) \(error.localizedDescription)")
+        } else if let data = roomInfo {
+            print("加入房间成功 \(data)")
+            // TODO: 跳转到房间内页面, 根据 RoomInfo 的 players 字段获取所有玩家信息
+        }
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+// 匹配房间
+- (void)matchRoom {
+    NSMutableDictionary *matchParams = [NSMutableDictionary dictionary]; // 匹配参数
+    // TODO: 设置具体匹配参数
+
+    RoomConfig *roomConfig = [[RoomConfig alloc] init];
+    roomConfig.maxPlayerCount = roomMaxPlayerCount; // 最大玩家数量
+    roomConfig.type = roomType; // 房间类型
+    roomConfig.matchParams = matchParams; // 匹配参数
+
+    PlayerConfig *playerConfig = [[PlayerConfig alloc] init];
+    playerConfig.customStatus = playerCustomStatus; // 玩家状态，自定义： 0 未就绪 1 已就绪
+    playerConfig.customProperties = playerProperty; // 玩家属性，设置昵称、头像等
+
+    MatchRoomRequest *request = [[MatchRoomRequest alloc] initWithRoomCfg:roomConfig playerCfg:playerConfig];
+
+    [TapTapBattle matchRoomWithRequest:request callback:^(RoomInfo *roomInfo, NSError *error) {
+        if (error) {
+            NSLog(@"匹配房间失败 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"匹配房间成功 %@", roomInfo);
+            // TODO: 跳转到房间内页面
+        }
+    }];
+}
+
+// 获取房间列表数据
+- (void)getRoomList {
+    [TapTapBattle getRoomListWithType:queryRoomType callback:^(RoomListData *roomListData, NSError *error) {
+        if (error) {
+            NSLog(@"查询房间列表 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"查询房间列表成功 %@", roomListData);
+            // TODO: 跳转到房间列表页面，展示可选房间数据
+        }
+    }];
+}
+
+// 根据房间 ID 加入房间，当玩家在房间列表选择房间后，调用该方法加入房间
+- (void)joinRoom {
+    // 当前玩家信息配置
+    PlayerConfig *playerConfig = [[PlayerConfig alloc] init];
+    playerConfig.customStatus = joinPlayerStatus; // 玩家状态，自定义： 0 未就绪 1 已就绪
+    playerConfig.customProperties = joinPlayerProperty; // 玩家信息，例如头像、昵称等
+
+    [TapTapBattle joinRoom:joinRoomId playerConfig:playerConfig callback:^(RoomInfo *roomInfo, NSError *error) {
+        if (error) {
+            NSLog(@"加入房间 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"加入房间成功 %@", roomInfo);
+            // TODO: 跳转到房间内页面, 根据 RoomInfo 的 players 字段获取所有玩家信息
+        }
+    }];
+}
 ```
 
 </>
@@ -281,7 +939,7 @@ public async void JoinRoom()
 
 当玩家进入房间后，通过点击 UI 更新状态为对战就绪，开发者调用以下接口：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -309,7 +967,94 @@ public async void UpdatePlayerStatus()
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+public void updatePlayerStatus() {
+    // 自定义玩家状态，0 对战未就绪  1 对战已就绪
+    TapTapBattle.updatePlayerCustomStatus(1, new TapBattleCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+            Log.d("Battle", "更新玩家状态 成功");
+            // 房间内其他玩家通过 onPlayerCustomStatusChanged 回调 收到该变更通知
+            // TODO: 更新玩家 UI 状态
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "更新玩家状态 error " + error.code + " " + error.message);
+        }
+    });
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+fun updatePlayerStatus() {
+    // 自定义玩家状态，0 对战未就绪  1 对战已就绪
+    TapTapBattle.updatePlayerCustomStatus(1, object : TapBattleCallback<Void> {
+        override fun onSuccess(result: Void?) {
+            Log.d("Battle", "更新玩家状态 成功")
+            // 房间内其他玩家通过 onPlayerCustomStatusChanged 回调 收到该变更通知
+            // TODO: 更新玩家 UI 状态
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "更新玩家状态 error ${error.code} ${error.message}")
+        }
+    })
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+func updatePlayerStatus() {
+    // 自定义玩家状态，0 对战未就绪  1 对战已就绪
+    TapTapBattle.updatePlayerCustomStatus(status: 1) { error in
+        if let error = error {
+            print("更新玩家状态 error \(error.code) \(error.localizedDescription)")
+        } else {
+            print("更新玩家状态 成功")
+            // 房间内其他玩家通过 onPlayerCustomStatusChanged 回调 收到该变更通知
+            // TODO: 更新玩家 UI 状态
+        }
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+- (void)updatePlayerStatus {
+    // 自定义玩家状态，0 对战未就绪  1 对战已就绪
+    [TapTapBattle updatePlayerCustomStatus:1 callback:^(NSError *error) {
+        if (error) {
+            NSLog(@"更新玩家状态 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"更新玩家状态 成功");
+            // 房间内其他玩家通过 onPlayerCustomStatusChanged 回调 收到该变更通知
+            // TODO: 更新玩家 UI 状态
+        }
+    }];
+}
 ```
 
 </>
@@ -323,7 +1068,7 @@ public async void UpdatePlayerStatus()
 
 当玩家 1 操作棋盘后，可通过发送自定义消息同步给其他玩家，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -364,7 +1109,165 @@ public async void SendPlayData(int x, int y, string data)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
+import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * 发送玩家数据
+ * @param x 棋子横坐标
+ * @param y 棋子纵坐标
+ * @param data 棋子数据
+ */
+public void sendPlayData(int x, int y, String data) {
+    try {
+        Map<String, Object> sendData = new HashMap<>();
+        sendData.put("x", x);
+        sendData.put("y", y);
+        sendData.put("data", data);
+
+        String playData = new JSONObject(sendData).toString();
+
+        TapTapBattle.sendCustomMessage(playData, 0, new TapBattleCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Log.d("Battle", "发送消息 成功");
+                // 其他玩家根据回调 onCustomMessageReceived 接收数据
+            }
+
+            @Override
+            public void onError(TapError error) {
+                Log.e("Battle", "发送自定义消息 error " + error.code + " " + error.message);
+            }
+        });
+    } catch (Exception e) {
+        Log.e("Battle", "发送自定义消息 error " + e.getMessage());
+    }
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+import org.json.JSONObject
+
+/**
+ * 发送玩家数据
+ * @param x 棋子横坐标
+ * @param y 棋子纵坐标
+ * @param data 棋子数据
+ */
+fun sendPlayData(x: Int, y: Int, data: String) {
+    try {
+        val sendData = mapOf(
+            "x" to x,
+            "y" to y,
+            "data" to data
+        )
+
+        val playData = JSONObject(sendData).toString()
+
+        TapTapBattle.sendCustomMessage(playData, 0, object : TapBattleCallback<Void> {
+            override fun onSuccess(result: Void?) {
+                Log.d("Battle", "发送消息 成功")
+                // 其他玩家根据回调 onCustomMessageReceived 接收数据
+            }
+
+            override fun onError(error: TapError) {
+                Log.e("Battle", "发送自定义消息 error ${error.code} ${error.message}")
+            }
+        })
+    } catch (e: Exception) {
+        Log.e("Battle", "发送自定义消息 error ${e.message}")
+    }
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+/**
+ * 发送玩家数据
+ * @param x 棋子横坐标
+ * @param y 棋子纵坐标
+ * @param data 棋子数据
+ */
+func sendPlayData(x: Int, y: Int, data: String) {
+    do {
+        let sendData: [String: Any] = [
+            "x": x,
+            "y": y,
+            "data": data
+        ]
+
+        let jsonData = try JSONSerialization.data(withJSONObject: sendData)
+        let playData = String(data: jsonData, encoding: .utf8) ?? ""
+
+        TapTapBattle.sendCustomMessage(message: playData, targetActorIds: 0) { error in
+            if let error = error {
+                print("发送自定义消息 error \(error.code) \(error.localizedDescription)")
+            } else {
+                print("发送消息 成功")
+                // 其他玩家根据回调 onCustomMessageReceived 接收数据
+            }
+        }
+    } catch {
+        print("发送自定义消息 error \(error.localizedDescription)")
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+/**
+ * 发送玩家数据
+ * @param x 棋子横坐标
+ * @param y 棋子纵坐标
+ * @param data 棋子数据
+ */
+- (void)sendPlayData:(int)x y:(int)y data:(NSString *)data {
+    NSError *error;
+    NSDictionary *sendData = @{
+        @"x": @(x),
+        @"y": @(y),
+        @"data": data
+    };
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:sendData options:0 error:&error];
+    if (error) {
+        NSLog(@"发送自定义消息 error %@", error.localizedDescription);
+        return;
+    }
+
+    NSString *playData = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
+    [TapTapBattle sendCustomMessage:playData targetActorIds:0 callback:^(NSError *error) {
+        if (error) {
+            NSLog(@"发送自定义消息 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"发送消息 成功");
+            // 其他玩家根据回调 onCustomMessageReceived 接收数据
+        }
+    }];
+}
 ```
 
 </>
@@ -374,7 +1277,7 @@ public async void SendPlayData(int x, int y, string data)
 
 当对战结束后，返回到房间内页面，玩家可选择继续或退出房间
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -399,7 +1302,86 @@ public async void LeaveRoom()
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+public void leaveRoom() {
+    TapTapBattle.leaveRoom(new TapBattleCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+            Log.d("Battle", "离开房间成功");
+            // TODO: 切换到大厅页面
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "离开房间 error " + error.code + " " + error.message);
+        }
+    });
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+fun leaveRoom() {
+    TapTapBattle.leaveRoom(object : TapBattleCallback<Void> {
+        override fun onSuccess(result: Void?) {
+            Log.d("Battle", "离开房间成功")
+            // TODO: 切换到大厅页面
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "离开房间 error ${error.code} ${error.message}")
+        }
+    })
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+func leaveRoom() {
+    TapTapBattle.leaveRoom { error in
+        if let error = error {
+            print("离开房间 error \(error.code) \(error.localizedDescription)")
+        } else {
+            print("离开房间成功")
+            // TODO: 切换到大厅页面
+        }
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+- (void)leaveRoom {
+    [TapTapBattle leaveRoom:^(NSError *error) {
+        if (error) {
+            NSLog(@"离开房间 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"离开房间成功");
+            // TODO: 切换到大厅页面
+        }
+    }];
+}
 ```
 
 </>
@@ -418,7 +1400,7 @@ public async void LeaveRoom()
 
 当所有玩家状态就绪后，只有 **房主** 可选择开始游戏，此时调用 SDK 开始帧同步接口：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -443,7 +1425,86 @@ public async void StartFrameSync()
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+public void startFrameSync() {
+    TapTapBattle.startFrameSync(new TapBattleCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+            Log.d("Battle", "开始帧同步 成功");
+            // 所有玩家都会收到 onFrameSyncStarted 的回调
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "开始帧同步 error " + error.code + " " + error.message);
+        }
+    });
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+fun startFrameSync() {
+    TapTapBattle.startFrameSync(object : TapBattleCallback<Void> {
+        override fun onSuccess(result: Void?) {
+            Log.d("Battle", "开始帧同步 成功")
+            // 所有玩家都会收到 onFrameSyncStarted 的回调
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "开始帧同步 error ${error.code} ${error.message}")
+        }
+    })
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+func startFrameSync() {
+    TapTapBattle.startFrameSync { error in
+        if let error = error {
+            print("开始帧同步 error \(error.code) \(error.localizedDescription)")
+        } else {
+            print("开始帧同步 成功")
+            // 所有玩家都会收到 onFrameSyncStarted 的回调
+        }
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+- (void)startFrameSync {
+    [TapTapBattle startFrameSync:^(NSError *error) {
+        if (error) {
+            NSLog(@"开始帧同步 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"开始帧同步 成功");
+            // 所有玩家都会收到 onFrameSyncStarted 的回调
+        }
+    }];
+}
 ```
 
 </>
@@ -454,7 +1515,7 @@ public async void StartFrameSync()
 
 当玩家操作时，例如连续移动角色位置，通过发送帧数据进行同步：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -492,7 +1553,165 @@ public async void SendPlayerData(int x, int y, string data)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
+import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * 发送玩家数据
+ * @param x 移动横坐标
+ * @param y 移动纵坐标
+ * @param data 角色其他数据
+ */
+public void sendPlayerData(int x, int y, String data) {
+    try {
+        Map<String, Object> sendData = new HashMap<>();
+        sendData.put("x", x);
+        sendData.put("y", y);
+        sendData.put("data", data);
+
+        String playData = new JSONObject(sendData).toString();
+
+        TapTapBattle.sendFrameInput(playData, new TapBattleCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Log.d("Battle", "发送玩家 Input 数据 成功");
+                // 所有玩家会通过 onFrameReceived 回调收到玩家数据
+            }
+
+            @Override
+            public void onError(TapError error) {
+                Log.e("Battle", "发送玩家 Input 数据 error " + error.code + " " + error.message);
+            }
+        });
+    } catch (Exception e) {
+        Log.e("Battle", "发送玩家 Input 数据 error " + e.getMessage());
+    }
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+import org.json.JSONObject
+
+/**
+ * 发送玩家数据
+ * @param x 移动横坐标
+ * @param y 移动纵坐标
+ * @param data 角色其他数据
+ */
+fun sendPlayerData(x: Int, y: Int, data: String) {
+    try {
+        val sendData = mapOf(
+            "x" to x,
+            "y" to y,
+            "data" to data
+        )
+
+        val playData = JSONObject(sendData).toString()
+
+        TapTapBattle.sendFrameInput(playData, object : TapBattleCallback<Void> {
+            override fun onSuccess(result: Void?) {
+                Log.d("Battle", "发送玩家 Input 数据 成功")
+                // 所有玩家会通过 onFrameReceived 回调收到玩家数据
+            }
+
+            override fun onError(error: TapError) {
+                Log.e("Battle", "发送玩家 Input 数据 error ${error.code} ${error.message}")
+            }
+        })
+    } catch (e: Exception) {
+        Log.e("Battle", "发送玩家 Input 数据 error ${e.message}")
+    }
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+/**
+ * 发送玩家数据
+ * @param x 移动横坐标
+ * @param y 移动纵坐标
+ * @param data 角色其他数据
+ */
+func sendPlayerData(x: Int, y: Int, data: String) {
+    do {
+        let sendData: [String: Any] = [
+            "x": x,
+            "y": y,
+            "data": data
+        ]
+
+        let jsonData = try JSONSerialization.data(withJSONObject: sendData)
+        let playData = String(data: jsonData, encoding: .utf8) ?? ""
+
+        TapTapBattle.sendFrameInput(input: playData) { error in
+            if let error = error {
+                print("发送玩家 Input 数据 error \(error.code) \(error.localizedDescription)")
+            } else {
+                print("发送玩家 Input 数据 成功")
+                // 所有玩家会通过 onFrameReceived 回调收到玩家数据
+            }
+        }
+    } catch {
+        print("发送玩家 Input 数据 error \(error.localizedDescription)")
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+/**
+ * 发送玩家数据
+ * @param x 移动横坐标
+ * @param y 移动纵坐标
+ * @param data 角色其他数据
+ */
+- (void)sendPlayerData:(int)x y:(int)y data:(NSString *)data {
+    NSError *error;
+    NSDictionary *sendData = @{
+        @"x": @(x),
+        @"y": @(y),
+        @"data": data
+    };
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:sendData options:0 error:&error];
+    if (error) {
+        NSLog(@"发送玩家 Input 数据 error %@", error.localizedDescription);
+        return;
+    }
+
+    NSString *playData = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
+    [TapTapBattle sendFrameInput:playData callback:^(NSError *error) {
+        if (error) {
+            NSLog(@"发送玩家 Input 数据 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"发送玩家 Input 数据 成功");
+            // 所有玩家会通过 onFrameReceived 回调收到玩家数据
+        }
+    }];
+}
 ```
 
 </>
@@ -502,7 +1721,7 @@ public async void SendPlayerData(int x, int y, string data)
 
 当对战结束后，需调用停止帧数据同步接口，结束玩家数据同步：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -529,7 +1748,86 @@ public async void StopFrameSync()
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+public void stopFrameSync() {
+    TapTapBattle.stopFrameSync(new TapBattleCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+            Log.d("Battle", "停止帧同步 成功");
+            // 所有玩家会通过 onFrameSyncStopped 收到回调
+        }
+
+        @Override
+        public void onError(TapError error) {
+            Log.e("Battle", "停止帧同步 error " + error.code + " " + error.message);
+        }
+    });
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+fun stopFrameSync() {
+    TapTapBattle.stopFrameSync(object : TapBattleCallback<Void> {
+        override fun onSuccess(result: Void?) {
+            Log.d("Battle", "停止帧同步 成功")
+            // 所有玩家会通过 onFrameSyncStopped 收到回调
+        }
+
+        override fun onError(error: TapError) {
+            Log.e("Battle", "停止帧同步 error ${error.code} ${error.message}")
+        }
+    })
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapBattleSDK
+
+func stopFrameSync() {
+    TapTapBattle.stopFrameSync { error in
+        if let error = error {
+            print("停止帧同步 error \(error.code) \(error.localizedDescription)")
+        } else {
+            print("停止帧同步 成功")
+            // 所有玩家会通过 onFrameSyncStopped 收到回调
+        }
+    }
+}
+```
+
+</>
+
+<>
+
+```objectivec
+#import <TapTapBattleSDK/TapTapBattleSDK.h>
+
+- (void)stopFrameSync {
+    [TapTapBattle stopFrameSync:^(NSError *error) {
+        if (error) {
+            NSLog(@"停止帧同步 error %ld %@", error.code, error.localizedDescription);
+        } else {
+            NSLog(@"停止帧同步 成功");
+            // 所有玩家会通过 onFrameSyncStopped 收到回调
+        }
+    }];
+}
 ```
 
 </>
