@@ -11,344 +11,137 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 本文介绍如何在游戏中加入好友系统。
 
-## 权限说明
-
-<MultiLang kind="unity_android_v4">
-
-<>
-
-该模块需要如下权限：
-
-| 权限 | 使用目的 | 权限申请时机 |
-| ---------------------- | ---------------------- | ---------------------- |
-| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
-| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
-| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
-| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
-| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
-| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
-| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
-| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
-
-该模块将在应用中添加如下权限：
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.VIBRATE" />
-```
-
-</>
-
-<>
-
-该模块需要如下权限：
-
-| 权限 | 使用目的 | 权限申请时机 |
-| ---------------------- | ---------------------- | ---------------------- |
-| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
-| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
-| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
-| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
-| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
-| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
-| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
-| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
-
-该模块将在应用中添加如下权限：
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.VIBRATE" />
-```
-
-</>
-
-</MultiLang>
-
 ## 集成前准备
 
-参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启好友服务。
-
-## SDK 获取
-
-由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapRelationLite` 、 `TapTapLogin` 模块：
-
-<MultiLang kind="unity_android_ios_v4">
-
-<>
-
-<UnitySDKInstallation
-npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.login",
-"com.taptap.sdk.relationlite",
-]}
-githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.login", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.relationlite", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/RelationLite#${v4SDKVersions.taptap.unity}`}
-]}
-unitypackageModules={[
-{name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
-{name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
-{name: "TapSDK_RelationLite.unitypackage", desc: "TapTapSDK 好友 Lite 模块，必选"},
-]}/>
-
-</>
-
-<>
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-```groovy
-allprojects { 
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-relation-lite:${v4SDKVersions.taptap.android}'
-}`
-}</CodeBlock>
-
-</>
-
-<>
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-```groovy
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-relation-lite:${v4SDKVersions.taptap.android}'
-}`
-}</CodeBlock>
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{` pod 'TapTapSDK/RelationLite', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-3. 将工程 Pods 目录下 `TapTapRelationLiteSDK/Frameworks/TapTapRelationLiteResource.bundle` 和 `TapTapProfileSDK/Frameworks/TapTapProfileResource.bundle`
-   等资源文件导入工程中
-
-**本地文件依赖**
-
-好友 Lite 模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `TapTapRelationLiteSDK ` 好友依赖库
-- `TapTapRelationLiteResource.bundle` 好友资源文件
-- `TapTapProfileSDK ` 用户名片依赖库
-- `TapTapProfileResource.bundle` 用户名片资源文件
-- `TapTapKingfisher ` 基础库
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{` pod 'TapTapSDK/RelationLite', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-3. 将工程 Pods 目录下 `TapTapRelationLiteSDK/Frameworks/TapTapRelationLiteResource.bundle` 和 `TapTapProfileSDK/Frameworks/TapTapProfileResource.bundle`
-   等资源文件导入工程中
-
-**本地文件依赖**
-
-好友 Lite 模块依赖于 Tap 登录模块，使用本地文件方式添加依赖时，需先参考 [入门指南](/sdk/access/quickstart)  和 [TapTap 登录](/sdk/taptap-login/guide) 添加对应本地文件依赖项。
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `TapTapRelationLiteSDK ` 好友依赖库
-- `TapTapRelationLiteResource.bundle` 好友资源文件
-- `TapTapProfileSDK ` 用户名片依赖库
-- `TapTapProfileResource.bundle` 用户名片资源文件
-- `TapTapKingfisher ` 基础库
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
-
-</>
-
-</MultiLang>
-
-## SDK 初始化
-
-详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
+1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入
+3. 好友 Lite 模块依赖于 [TapTap 登录模块](/sdk/taptap-login/features)，开发者接入前应先完成 TapTap 登录的接入
 
 :::info
 注意：【获取好友列表/获取关注列表/获取粉丝列表】需要双方都授予好友关系权限，在登录接口的 scopes 参数中添加 user_friends 权限。
 :::
 
-<MultiLang kind="unity_android_ios_v4">
+## 权限说明
+
+<MultiLang kind="android_alone">
 
 <>
 
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
+该模块需要如下权限：
 
-```cs
-using TapSDK.Core;
-using TapSDK.RelationLite;
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
+| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
+| 读取外部存储权限 | 用于读取设备上的文件和媒体内容 | 用户首次使用相关功能时会申请权限 |
+| 写入外部存储权限 | 用于保存文件到设备存储 | 用户首次使用文件保存功能时会申请权限 |
+| 管理外部存储权限 | 用于管理设备上的文件 | 用户首次使用文件管理功能时会申请权限 |
+| 前台服务权限 | 用于在应用处于后台时保持某些功能运行 | 应用需要在后台运行服务时 |
+| 相机权限 | 用于拍摄照片和视频通话 | 用户首次使用相机相关功能时会申请权限 |
+| 振动权限 | 用于消息通知时的振动提醒 | 应用需要使用振动提醒时 |
 
-// 核心配置 详细参数见 [TapTapSDK]
-TapTapSdkOptions coreOptions = new TapTapSdkOptions();
-// 设置屏幕方向：0-竖屏 1-横屏
-coreOptions.screenOrientation = 1;
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions, otherOptions);
+该模块将在应用中添加如下权限：
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.VIBRATE" />
 ```
 
 </>
 
 <>
 
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```java
-import com.taptap.sdk.core.TapTapRegion;
-import com.taptap.sdk.core.TapTapSdk;
-import com.taptap.sdk.core.TapTapSdkOptions;
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-String clientId = "";
-// 开发者中心对应 Client Token
-String clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-boolean enableLog = BuildConfig.DEBUG;
-// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-int screenOrientation = ScreenOrientation.LANDSCAPE;
-TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-        clientId, // 游戏 Client ID
-        clientToken, // 游戏 Client Token
-        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-);
-// 设置屏幕方向
-tapSdkOptions.setScreenOrientation(screenOrientation);
-tapSdkOptions.setEnableLog(enableLog);
-// 初始化 TapSDK
-TapTapSdk.init(context, tapSdkOptions);
-
-```
-
-</>
-
-<>
-
-```kotlin
-import com.taptap.sdk.core.TapTapSdk
-import com.taptap.sdk.core.TapTapSdkOptions
-import com.taptap.sdk.core.TapTapLanguage
-import com.taptap.sdk.core.TapTapRegion
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-val clientId = "";
-// 开发者中心对应 Client Token
-val clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-val enableLog = BuildConfig.DEBUG;
-// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-val screenOrientation = ScreenOrientation.LANDSCAPE
-
-TapTapSdk.init(
-    context = context,
-    sdkOptions = TapTapSdkOptions(
-        clientId = clientId,
-        clientToken = clientToken,
-        region = TapTapRegion.CN,
-        screenOrientation = screenOrientation,
-        preferredLanguage = TapTapLanguage.ZH_HANS,
-        enableLog = false
-    )
-)
-```
-</>
-
-<>
-
-```swift
-import TapTapCoreSDK
-
-// 核心配置项
-let options = TapTapSdkOptions()
-options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
-options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
-options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
-options.enableLog = enableLog.selectedSegmentIndex == 0 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-options.preferredLanguage = TapLanguageType.auto // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
-options.screenOrientation = .landscape // 应用屏幕方向，.landscape 横屏， .portrait 竖屏
-// 初始化 SDK
-TapTapSDK.initWith(options)
-
-```
-</>
-
-<>
-
-```objc
-#import "TapTapCoreSDK/TapTapSDK.h"
-
-// 核心配置项
-TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
-options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
-options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
-options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
-options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-options.preferredLanguage = TapLanguageType_Auto; // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
-options.screenOrientation = TapTapScreenOrientationLandscape; // 应用屏幕方向，TapTapScreenOrientationLandscape 横屏，TapTapScreenOrientationPortrait 竖屏
-// 初始化 SDK
-[TapTapSDK initWithOptions:options];
-```
 </>
 
 </MultiLang>
+
+## SDK 获取
+
+
+
+<MultiLang kind="default">
+
+<>
+
+#### 远程依赖
+
+**NPMJS 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.login":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.relationlite":"${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+**GitHub 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.login":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.relationlite":"https://github.com/taptap/tapsdk-unity-dist.git?path=/RelationLite#${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+#### 本地文件导入
+
+在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
+- `TapSDK_Core.unitypackage` (TapTapSDK 核心模块，必选)
+- `TapSDK_Login.unitypackage`（TapTapSDK 登录模块，必选）
+- `TapSDK_RelationLite.unitypackage` (TapTapSDK 好友 Lite 模块，必选)
+
+</>
+
+<>
+
+在 app module 的 `build.gradle` 中添加对应依赖：
+
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-relation-lite:${v4SDKVersions.taptap.android}'
+}`
+}</CodeBlock>
+
+</>
+
+<>
+
+#### 远程依赖
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapSDK/RelationLite', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+
+#### 本地文件依赖
+
+好友 Lite 依赖于初始化和 TapTap 登录模块，使用本地文件方式添加依赖时，需先参考[集成指南](/sdk/integration-guides/ios/#sdk-获取) 和 [TapTap 登录](/sdk/taptap-login/guide/#sdk-获取)添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapRelationLiteSDK ` 好友依赖库
+- `TapTapRelationLiteResource.bundle` 好友资源文件
+- `TapTapProfileSDK ` 用户名片依赖库
+- `TapTapProfileResource.bundle` 用户名片资源文件
+- `TapTapKingfisher ` 基础库
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+
+</>
+
+</MultiLang>
+
 
 ## 注册/注销 统一状态码监听回调
 统一状态回调，不同 code 代表不同的状态。

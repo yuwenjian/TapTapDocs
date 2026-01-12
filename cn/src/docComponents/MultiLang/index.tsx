@@ -168,10 +168,33 @@ const CONFIGS: {
         { label: "Android Kotlin", value: "android_kotlin" },
         ]
   },
+  ios_v4: {
+        tds: [
+            { label: "Swift", value: "swift" },
+            { label: "Objective-C", value: "objc" },
+        ]
+  },
   pc_platform:{
     tds: [
         { label: "Unity", value: "unity" },
         { label: "UE4", value: "ue4" },
+        ]
+  },
+  android_alone:{
+    tds: [
+        { label: "Android", value: "android" },
+        ]
+  },
+  android_ios_platform:{
+    tds: [
+        { label: "Android", value: "android" },
+        { label: "iOS", value: "ios" },
+        ]
+  },
+  unity_ios_platform:{
+    tds: [
+        { label: "Unity", value: "unity" },
+        { label: "iOS", value: "ios" },
         ]
   }
 };
