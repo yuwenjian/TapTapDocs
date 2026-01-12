@@ -37,7 +37,7 @@ import MultiLang from "/src/docComponents/MultiLang";
 
 开始游戏后，开发者通过将玩家操作数据封装为自定义消息内容同步给其他玩家，每秒最多 15 次，调用示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -63,7 +63,78 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+TapTapBattle.sendCustomMessage(customMsg, customMsgType, playerIds, new TapBattleCallback<Void>() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d(TAG, "发送自定义消息 成功");
+        // 房间内对应玩家通过 onCustomMessageReceived 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e(TAG, "发送自定义消息 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+TapTapBattle.sendCustomMessage(customMsg, customMsgType, playerIds, object : TapBattleCallback<Void> {
+    override fun onSuccess(result: Void?) {
+        Log.d(TAG, "发送自定义消息 成功")
+        // 房间内对应玩家通过 onCustomMessageReceived 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e(TAG, "发送自定义消息 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+TapTapBattle.sendCustomMessage(customMsg: customMsg, customMsgType: customMsgType, playerIds: playerIds) { error in
+    if let error = error {
+        print("发送自定义消息 error \(error.code) \(error.message)")
+    } else {
+        print("发送自定义消息 成功")
+        // 房间内对应玩家通过 onCustomMessageReceived 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+[TapTapBattle sendCustomMessage:customMsg
+                   customMsgType:customMsgType
+                       playerIds:playerIds
+                      completion:^(NSError *error) {
+    if (error) {
+        NSLog(@"发送自定义消息 error %ld %@", (long)error.code, error.localizedDescription);
+    } else {
+        NSLog(@"发送自定义消息 成功");
+        // 房间内对应玩家通过 onCustomMessageReceived 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -72,7 +143,7 @@ catch (TapException e)
 
 发送成功后，房间内对应玩家会通过 SDK 的 `OnCustomMessageReceived` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -91,7 +162,47 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback;
 
+@Override
+public void onCustomMessageReceived(String playerId, String msg) {
+    // TODO: 解析 msg，渲染对战状态或其他信息
+}
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback
+
+override fun onCustomMessageReceived(playerId: String, msg: String) {
+    // TODO: 解析 msg，渲染对战状态或其他信息
+}
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+extension YourClass: TapOnlineBattleCallback {
+    func onCustomMessageReceived(playerId: String, msg: String) {
+        // TODO: 解析 msg，渲染对战状态或其他信息
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+- (void)onCustomMessageReceived:(NSString *)playerId msg:(NSString *)msg {
+    // TODO: 解析 msg，渲染对战状态或其他信息
+}
 ```
 
 </>
@@ -133,7 +244,7 @@ catch (TapException e)
 当房间内所有玩家状态就绪后，**房主**开启对战时，调用开始帧同步接口：
 
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -156,7 +267,79 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 开始帧同步，仅房主可调用
+TapTapBattle.startFrameSync(new TapBattleCallback<Void>() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d(TAG, "开始帧同步 成功");
+        // 房间内所有玩家会通过 onFrameSyncStarted 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e(TAG, "开始帧同步 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 开始帧同步，仅房主可调用
+TapTapBattle.startFrameSync(object : TapBattleCallback<Void> {
+    override fun onSuccess(result: Void?) {
+        Log.d(TAG, "开始帧同步 成功")
+        // 房间内所有玩家会通过 onFrameSyncStarted 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e(TAG, "开始帧同步 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// 开始帧同步，仅房主可调用
+TapTapBattle.startFrameSync { error in
+    if let error = error {
+        print("开始帧同步 error \(error.code) \(error.message)")
+    } else {
+        print("开始帧同步 成功")
+        // 房间内所有玩家会通过 onFrameSyncStarted 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// 开始帧同步，仅房主可调用
+[TapTapBattle startFrameSync:^(NSError *error) {
+    if (error) {
+        NSLog(@"开始帧同步 error %ld %@", (long)error.code, error.localizedDescription);
+    } else {
+        NSLog(@"开始帧同步 成功");
+        // 房间内所有玩家会通过 onFrameSyncStarted 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -165,7 +348,7 @@ catch (TapException e)
 
 此时房间内所有玩家会通过 SDK 的 `OnFrameSyncStarted` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -183,7 +366,51 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback;
+import com.taptap.sdk.battle.model.FrameSyncInfo;
+import com.google.gson.Gson;
 
+@Override
+public void onFrameSyncStarted(FrameSyncInfo frameSyncInfo) {
+    Log.d(TAG, "receive OnFrameSyncStarted " + new Gson().toJson(frameSyncInfo));
+}
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback
+import com.taptap.sdk.battle.model.FrameSyncInfo
+import com.google.gson.Gson
+
+override fun onFrameSyncStarted(frameSyncInfo: FrameSyncInfo) {
+    Log.d(TAG, "receive OnFrameSyncStarted ${Gson().toJson(frameSyncInfo)}")
+}
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+extension YourClass: TapOnlineBattleCallback {
+    func onFrameSyncStarted(frameSyncInfo: FrameSyncInfo) {
+        print("receive OnFrameSyncStarted \(frameSyncInfo)")
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+- (void)onFrameSyncStarted:(FrameSyncInfo *)frameSyncInfo {
+    NSLog(@"receive OnFrameSyncStarted %@", frameSyncInfo);
+}
 ```
 
 </>
@@ -197,7 +424,7 @@ catch (TapException e)
 对战过程中，玩家的操作数据可通过调用如下接口进行同步：
 
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -220,7 +447,81 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// playData 玩家操作数据，utf8字符串格式，最大1024字节
+TapTapBattle.sendFrameInput(playData, new TapBattleCallback<Void>() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d(TAG, "发送玩家 Input 数据 成功");
+        // 房间内其他玩家通过 onFrameReceived 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e(TAG, "发送玩家 Input 数据 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// playData 玩家操作数据，utf8字符串格式，最大1024字节
+TapTapBattle.sendFrameInput(playData, object : TapBattleCallback<Void> {
+    override fun onSuccess(result: Void?) {
+        Log.d(TAG, "发送玩家 Input 数据 成功")
+        // 房间内其他玩家通过 onFrameReceived 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e(TAG, "发送玩家 Input 数据 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// playData 玩家操作数据，utf8字符串格式，最大1024字节
+let request = SendFrameInputRequest(data: playData)
+TapTapBattle.sendFrameInput(request: request) { error in
+    if let error = error {
+        print("发送玩家 Input 数据 error \(error.code) \(error.message)")
+    } else {
+        print("发送玩家 Input 数据 成功")
+        // 房间内其他玩家通过 onFrameReceived 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// playData 玩家操作数据，utf8字符串格式，最大1024字节
+SendFrameInputRequest *request = [[SendFrameInputRequest alloc] initWithData:playData];
+[TapTapBattle sendFrameInputWithRequest:request completion:^(NSError *error) {
+    if (error) {
+        NSLog(@"发送玩家 Input 数据 error %ld %@", (long)error.code, error.localizedDescription);
+    } else {
+        NSLog(@"发送玩家 Input 数据 成功");
+        // 房间内其他玩家通过 onFrameReceived 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -229,7 +530,7 @@ catch (TapException e)
 
 房间内其他玩家会通过 SDK 的 `OnFrameReceived` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -250,7 +551,59 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback;
+import com.taptap.sdk.battle.model.FrameData;
+import com.google.gson.Gson;
 
+@Override
+public void onFrameReceived(FrameData frameData) {
+    if (frameData != null && frameData.getInputs() != null && frameData.getInputs().size() > 0) {
+        Log.d(TAG, "receive OnFrameReceived " + new Gson().toJson(frameData));
+    }
+}
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback
+import com.taptap.sdk.battle.model.FrameData
+import com.google.gson.Gson
+
+override fun onFrameReceived(frameData: FrameData) {
+    if (frameData != null && frameData.inputs != null && frameData.inputs.size > 0) {
+        Log.d(TAG, "receive OnFrameReceived ${Gson().toJson(frameData)}")
+    }
+}
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+extension YourClass: TapOnlineBattleCallback {
+    func onFrameReceived(frameData: FrameData) {
+        if frameData.inputs?.isEmpty == false {
+            print("receive OnFrameReceived \(frameData)")
+        }
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+- (void)onFrameReceived:(FrameData *)frameData {
+    if (frameData != nil && frameData.inputs != nil && frameData.inputs.count > 0) {
+        NSLog(@"receive OnFrameReceived %@", frameData);
+    }
+}
 ```
 
 </>
@@ -263,7 +616,7 @@ catch (TapException e)
 
 当房主结束对战时，开发者通过调用停止帧同步接口结束同步玩家数据：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -286,7 +639,79 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 停止帧同步，仅房主可调用
+TapTapBattle.stopFrameSync(new TapBattleCallback<Void>() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d(TAG, "停止帧同步 成功");
+        // 房间内其他玩家通过 onFrameSyncStopped 回调收到通知
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e(TAG, "停止帧同步 error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+// 停止帧同步，仅房主可调用
+TapTapBattle.stopFrameSync(object : TapBattleCallback<Void> {
+    override fun onSuccess(result: Void?) {
+        Log.d(TAG, "停止帧同步 成功")
+        // 房间内其他玩家通过 onFrameSyncStopped 回调收到通知
+    }
+
+    override fun onError(error: TapError) {
+        Log.e(TAG, "停止帧同步 error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// 停止帧同步，仅房主可调用
+TapTapBattle.stopFrameSync { error in
+    if let error = error {
+        print("停止帧同步 error \(error.code) \(error.message)")
+    } else {
+        print("停止帧同步 成功")
+        // 房间内其他玩家通过 onFrameSyncStopped 回调收到通知
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// 停止帧同步，仅房主可调用
+[TapTapBattle stopFrameSync:^(NSError *error) {
+    if (error) {
+        NSLog(@"停止帧同步 error %ld %@", (long)error.code, error.localizedDescription);
+    } else {
+        NSLog(@"停止帧同步 成功");
+        // 房间内其他玩家通过 onFrameSyncStopped 回调收到通知
+    }
+}];
 ```
 
 </>
@@ -295,7 +720,7 @@ catch (TapException e)
 
 其他玩家会通过 `OnFrameSyncStopped` 回调收到通知：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -315,7 +740,47 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback;
 
+@Override
+public void onFrameSyncStopped(String roomId, int frameSyncId, int reason) {
+    Log.d(TAG, "receive OnFrameSyncStopped " + roomId + ":" + frameSyncId + ":" + reason);
+}
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback
+
+override fun onFrameSyncStopped(roomId: String, frameSyncId: Int, reason: Int) {
+    Log.d(TAG, "receive OnFrameSyncStopped $roomId:$frameSyncId:$reason")
+}
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+extension YourClass: TapOnlineBattleCallback {
+    func onFrameSyncStopped(roomId: String, frameSyncId: Int, reason: Int) {
+        print("receive OnFrameSyncStopped \(roomId):\(frameSyncId):\(reason)")
+    }
+}
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+- (void)onFrameSyncStopped:(NSString *)roomId frameSyncId:(NSInteger)frameSyncId reason:(NSInteger)reason {
+    NSLog(@"receive OnFrameSyncStopped %@:%ld:%ld", roomId, (long)frameSyncId, (long)reason);
+}
 ```
 
 </>
@@ -327,7 +792,7 @@ catch (TapException e)
 为保证玩家对战过程中，对于随机掉落物品或其他奖励的概率保持一致，不同玩家可使用该生成器生成相同序列的随机数。
 建议在收到开始帧同步（ `OnFrameSyncStarted`） 的回调中，使用返回的帧同步基础信息 `FrameSyncInfo` 参数的 `seed` 字段来初始化随机数生成器。
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -357,7 +822,97 @@ randomNumberGenerator.Free();
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.util.RandomNumberGenerator;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+// 使用帧同步回调返回的随机种子
+int seed = frameSyncInfo.getSeed();
+// 创建生成器
+RandomNumberGenerator randomNumberGenerator = TapTapBattle.newRandomNumberGenerator(seed);
+
+// 生成随机数
+try {
+    int value = randomNumberGenerator.randomInt();
+    Log.d(TAG, "生成随机数 成功 " + value);
+} catch (TapError e) {
+    Log.e(TAG, "生成随机数 error " + e.code + " " + e.message);
+}
+
+// 当对战结束后或已确定不需要生成器时，可调用如下接口销毁随机数生成器
+randomNumberGenerator.free();
+```
+
+</>
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.util.RandomNumberGenerator
+import com.taptap.sdk.kit.internal.exception.TapError
+
+// 使用帧同步回调返回的随机种子
+val seed = frameSyncInfo.seed
+// 创建生成器
+val randomNumberGenerator = TapTapBattle.newRandomNumberGenerator(seed)
+
+// 生成随机数
+try {
+    val value = randomNumberGenerator.randomInt()
+    Log.d(TAG, "生成随机数 成功 $value")
+} catch (e: TapError) {
+    Log.e(TAG, "生成随机数 error ${e.code} ${e.message}")
+}
+
+// 当对战结束后或已确定不需要生成器时，可调用如下接口销毁随机数生成器
+randomNumberGenerator.free()
+```
+
+</>
+<>
+
+```swift
+import TapTapSDK
+
+// 使用帧同步回调返回的随机种子
+let seed = frameSyncInfo.seed
+// 创建生成器
+let randomNumberGenerator = TapTapBattle.newRandomNumberGenerator(seed: seed)
+
+// 生成随机数
+do {
+    let value = try randomNumberGenerator.randomInt()
+    print("生成随机数 成功 \(value)")
+} catch {
+    print("生成随机数 error \(error)")
+}
+
+// 当对战结束后或已确定不需要生成器时，可调用如下接口销毁随机数生成器
+randomNumberGenerator.free()
+```
+
+</>
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+// 使用帧同步回调返回的随机种子
+NSInteger seed = frameSyncInfo.seed;
+// 创建生成器
+TapRandomNumberGenerator *randomNumberGenerator = [TapTapBattle newRandomNumberGeneratorWithSeed:seed];
+
+// 生成随机数
+NSError *error = nil;
+NSInteger value = [randomNumberGenerator randomInt:&error];
+if (error) {
+    NSLog(@"生成随机数 error %ld %@", (long)error.code, error.localizedDescription);
+} else {
+    NSLog(@"生成随机数 成功 %ld", (long)value);
+}
+
+// 当对战结束后或已确定不需要生成器时，可调用如下接口销毁随机数生成器
+[randomNumberGenerator free];
 ```
 
 </>

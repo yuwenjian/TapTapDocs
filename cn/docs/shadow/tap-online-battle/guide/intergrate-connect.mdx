@@ -26,7 +26,7 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 
 ### SDK 获取
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="default">
 
 <>
 
@@ -36,6 +36,8 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 
 <CodeBlock language="json">
   {`"dependencies":{
+    "com.taptap.sdk.core":"${v4SDKVersions.taptap.shadow}",
+    "com.taptap.sdk.login":"${v4SDKVersions.taptap.shadow}",
     "com.taptap.sdk.onlinebattle":"${v4SDKVersions.taptap.shadow}"
   }`}
 </CodeBlock>
@@ -44,6 +46,8 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 
 <CodeBlock language="json">
   {`"dependencies":{
+    "com.taptap.sdk.core":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.shadow}",
+    "com.taptap.sdk.login":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.shadow}",
     "com.taptap.sdk.onlinebattle":"https://github.com/taptap/tapsdk-unity-dist.git?path=/OnlineBattle#${v4SDKVersions.taptap.shadow}"
   }`}
 </CodeBlock>
@@ -51,6 +55,8 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 #### 本地文件导入
 
 在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
+- `TapSDK_Core.unitypackage` (TapTapSDK 核心模块，必选)
+- `TapSDK_Login.unitypackage`（TapTapSDK 登录模块，必选）
 - `TapSDK_OnlineBattle.unitypackage`（TapTapSDK 多人联机模块，必选）
 
 </>
@@ -62,9 +68,21 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 <CodeBlock language="groovy">
 {
 `dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-battle:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.shadow}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.shadow}'
+    implementation 'com.taptap.sdk:tap-battle:${v4SDKVersions.taptap.shadow}'
 }`}
+</CodeBlock>
+
+</>
+
+<>
+
+在 Podfile 文件中添加：
+
+<CodeBlock language="ruby">
+{
+`pod 'TapTapSDK/Battle', '~> ${v4SDKVersions.taptap.shadow}'`}
 </CodeBlock>
 
 </>
@@ -75,7 +93,7 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 
 通过实现 SDK 回调 `ITapOnlineBattleCallback` 来接收玩家、房间信息及同步消息回调，渲染对应场景游戏页面，示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -234,7 +252,365 @@ public class OnlineBattlePanel : DemoBaseController, ITapOnlineBattleCallback
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback;
+import com.taptap.sdk.battle.model.FrameData;
+import com.taptap.sdk.battle.model.FrameSyncInfo;
+import com.taptap.sdk.battle.model.PlayerInfo;
 
+public class MainActivity extends AppCompatActivity implements TapOnlineBattleCallback {
+
+    // 注册回调
+    public void registerCallback() {
+        TapTapBattle.registerOnlineBattleCallback(this);
+    }
+
+    // SDK 回调实现
+
+    // 收到玩家自定义消息
+    @Override
+    public void onCustomMessageReceived(String playerId, String msg) {
+        // TODO: 解析 msg，渲染对战状态或其他信息
+    }
+
+    // 与服务端连接断开，建议当错误码为网络异常时进行重连
+    @Override
+    public void onDisconnected(int code, String msg) {
+        // 当错误码为网络异常时进行重连
+    }
+
+    // 玩家更新自定义属性
+    @Override
+    public void onPlayerCustomPropertiesChanged(String playerId, String properties) {
+        Log.d("Battle", "receive OnPlayerCustomPropertiesChanged " + playerId + ":" + properties);
+    }
+
+    // 玩家更新自定义状态
+    @Override
+    public void onPlayerCustomStatusChanged(String playerId, int status) {
+        Log.d("Battle", "receive OnPlayerCustomStatusChanged " + playerId + ":" + status);
+    }
+
+    // 玩家进入房间
+    @Override
+    public void onPlayerEntered(String roomId, PlayerInfo playerInfo) {
+        Log.d("Battle", "receive OnPlayerEntered " + roomId + ":" + playerInfo.toString());
+    }
+
+    // 玩家被踢出
+    @Override
+    public void onPlayerKicked(String roomId, String playerId) {
+        Log.d("Battle", "receive OnPlayerKicked " + roomId + ":" + playerId);
+    }
+
+    // 玩家离开房间
+    @Override
+    public void onPlayerLeft(String roomId, String roomOwnerId, String playerId) {
+        Log.d("Battle", "receive OnPlayerLeft " + roomId + ":" + roomOwnerId + ":" + playerId);
+    }
+
+    // 玩家离线
+    @Override
+    public void onPlayerOffline(String roomId, String roomOwnerId, String playerId) {
+        Log.d("Battle", "receive OnPlayerOffline " + roomId + ":" + roomOwnerId + ":" + playerId);
+    }
+
+    // 房间属性变更
+    @Override
+    public void onRoomPropertiesChanged(String id, String name, String customProperties) {
+        Log.d("Battle", "receive OnRoomPropertiesChanged " + id + ":" + name + ":" + customProperties);
+    }
+
+    // 开始帧同步
+    @Override
+    public void onFrameSyncStarted(FrameSyncInfo frameSyncInfo) {
+        Log.d("Battle", "receive OnFrameSyncStarted " + frameSyncInfo.toString());
+    }
+
+    // 收到帧同步数据回调
+    @Override
+    public void onFrameReceived(FrameData frameData) {
+        if (frameData != null && frameData.getInputs() != null && frameData.getInputs().size() > 0) {
+            Log.d("Battle", "receive OnFrameReceived " + frameData.toString());
+        }
+    }
+
+    // 停止帧同步
+    @Override
+    public void onFrameSyncStopped(String roomId, int frameSyncId, int reason) {
+        Log.d("Battle", "receive OnFrameSyncStopped " + roomId + ":" + frameSyncId + ":" + reason);
+    }
+
+    // 对战服务端异常，开发者需要退出对战、房间、队伍等状态，此时处于 connect 之后的状态
+    @Override
+    public void onBattleServiceError() {
+        Log.d("Battle", "receive OnBattleServiceError");
+    }
+}
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapOnlineBattleCallback
+import com.taptap.sdk.battle.model.FrameData
+import com.taptap.sdk.battle.model.FrameSyncInfo
+import com.taptap.sdk.battle.model.PlayerInfo
+import android.util.Log
+
+class MainActivity : AppCompatActivity(), TapOnlineBattleCallback {
+
+    // 注册回调
+    fun registerCallback() {
+        TapTapBattle.registerOnlineBattleCallback(this)
+    }
+
+    // SDK 回调实现
+
+    // 收到玩家自定义消息
+    override fun onCustomMessageReceived(playerId: String, msg: String) {
+        // TODO: 解析 msg，渲染对战状态或其他信息
+    }
+
+    // 与服务端连接断开，建议当错误码为网络异常时进行重连
+    override fun onDisconnected(code: Int, msg: String) {
+        // 当错误码为网络异常时进行重连
+    }
+
+    // 玩家更新自定义属性
+    override fun onPlayerCustomPropertiesChanged(playerId: String, properties: String) {
+        Log.d("Battle", "receive OnPlayerCustomPropertiesChanged $playerId:$properties")
+    }
+
+    // 玩家更新自定义状态
+    override fun onPlayerCustomStatusChanged(playerId: String, status: Int) {
+        Log.d("Battle", "receive OnPlayerCustomStatusChanged $playerId:$status")
+    }
+
+    // 玩家进入房间
+    override fun onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+        Log.d("Battle", "receive OnPlayerEntered $roomId:$playerInfo")
+    }
+
+    // 玩家被踢出
+    override fun onPlayerKicked(roomId: String, playerId: String) {
+        Log.d("Battle", "receive OnPlayerKicked $roomId:$playerId")
+    }
+
+    // 玩家离开房间
+    override fun onPlayerLeft(roomId: String, roomOwnerId: String, playerId: String) {
+        Log.d("Battle", "receive OnPlayerLeft $roomId:$roomOwnerId:$playerId")
+    }
+
+    // 玩家离线
+    override fun onPlayerOffline(roomId: String, roomOwnerId: String, playerId: String) {
+        Log.d("Battle", "receive OnPlayerOffline $roomId:$roomOwnerId:$playerId")
+    }
+
+    // 房间属性变更
+    override fun onRoomPropertiesChanged(id: String, name: String, customProperties: String) {
+        Log.d("Battle", "receive OnRoomPropertiesChanged $id:$name:$customProperties")
+    }
+
+    // 开始帧同步
+    override fun onFrameSyncStarted(frameSyncInfo: FrameSyncInfo) {
+        Log.d("Battle", "receive OnFrameSyncStarted $frameSyncInfo")
+    }
+
+    // 收到帧同步数据回调
+    override fun onFrameReceived(frameData: FrameData) {
+        if (frameData.inputs?.isNotEmpty() == true) {
+            Log.d("Battle", "receive OnFrameReceived $frameData")
+        }
+    }
+
+    // 停止帧同步
+    override fun onFrameSyncStopped(roomId: String, frameSyncId: Int, reason: Int) {
+        Log.d("Battle", "receive OnFrameSyncStopped $roomId:$frameSyncId:$reason")
+    }
+
+    // 对战服务端异常，开发者需要退出对战、房间、队伍等状态，此时处于 connect 之后的状态
+    override fun onBattleServiceError() {
+        Log.d("Battle", "receive OnBattleServiceError")
+    }
+}
+```
+
+</>
+
+<>
+
+```swift
+import TapTapSDK
+
+class BattleManager: NSObject, TapOnlineBattleCallback {
+
+    // 注册回调
+    func registerCallback() {
+        TapTapBattle.registerOnlineBattleCallback(self)
+    }
+
+    // SDK 回调实现
+
+    // 收到玩家自定义消息
+    func onCustomMessageReceived(playerId: String, msg: String) {
+        // TODO: 解析 msg，渲染对战状态或其他信息
+    }
+
+    // 与服务端连接断开，建议当错误码为网络异常时进行重连
+    func onDisconnected(code: Int, msg: String) {
+        // 当错误码为网络异常时进行重连
+    }
+
+    // 玩家更新自定义属性
+    func onPlayerCustomPropertiesChanged(playerId: String, properties: String) {
+        print("receive OnPlayerCustomPropertiesChanged \(playerId):\(properties)")
+    }
+
+    // 玩家更新自定义状态
+    func onPlayerCustomStatusChanged(playerId: String, status: Int) {
+        print("receive OnPlayerCustomStatusChanged \(playerId):\(status)")
+    }
+
+    // 玩家进入房间
+    func onPlayerEntered(roomId: String, playerInfo: PlayerInfo) {
+        print("receive OnPlayerEntered \(roomId):\(playerInfo)")
+    }
+
+    // 玩家被踢出
+    func onPlayerKicked(roomId: String, playerId: String) {
+        print("receive OnPlayerKicked \(roomId):\(playerId)")
+    }
+
+    // 玩家离开房间
+    func onPlayerLeft(roomId: String, roomOwnerId: String, playerId: String) {
+        print("receive OnPlayerLeft \(roomId):\(roomOwnerId):\(playerId)")
+    }
+
+    // 玩家离线
+    func onPlayerOffline(roomId: String, roomOwnerId: String, playerId: String) {
+        print("receive OnPlayerOffline \(roomId):\(roomOwnerId):\(playerId)")
+    }
+
+    // 房间属性变更
+    func onRoomPropertiesChanged(id: String, name: String, customProperties: String) {
+        print("receive OnRoomPropertiesChanged \(id):\(name):\(customProperties)")
+    }
+
+    // 开始帧同步
+    func onFrameSyncStarted(frameSyncInfo: FrameSyncInfo) {
+        print("receive OnFrameSyncStarted \(frameSyncInfo)")
+    }
+
+    // 收到帧同步数据回调
+    func onFrameReceived(frameData: FrameData) {
+        if let inputs = frameData.inputs, !inputs.isEmpty {
+            print("receive OnFrameReceived \(frameData)")
+        }
+    }
+
+    // 停止帧同步
+    func onFrameSyncStopped(roomId: String, frameSyncId: Int, reason: Int) {
+        print("receive OnFrameSyncStopped \(roomId):\(frameSyncId):\(reason)")
+    }
+
+    // 对战服务端异常，开发者需要退出对战、房间、队伍等状态，此时处于 connect 之后的状态
+    func onBattleServiceError() {
+        print("receive OnBattleServiceError")
+    }
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+@interface BattleManager : NSObject <TapOnlineBattleCallback>
+@end
+
+@implementation BattleManager
+
+// 注册回调
+- (void)registerCallback {
+    [TapTapBattle registerOnlineBattleCallback:self];
+}
+
+// SDK 回调实现
+
+// 收到玩家自定义消息
+- (void)onCustomMessageReceived:(NSString *)playerId msg:(NSString *)msg {
+    // TODO: 解析 msg，渲染对战状态或其他信息
+}
+
+// 与服务端连接断开，建议当错误码为网络异常时进行重连
+- (void)onDisconnected:(int)code msg:(NSString *)msg {
+    // 当错误码为网络异常时进行重连
+}
+
+// 玩家更新自定义属性
+- (void)onPlayerCustomPropertiesChanged:(NSString *)playerId properties:(NSString *)properties {
+    NSLog(@"receive OnPlayerCustomPropertiesChanged %@:%@", playerId, properties);
+}
+
+// 玩家更新自定义状态
+- (void)onPlayerCustomStatusChanged:(NSString *)playerId status:(int)status {
+    NSLog(@"receive OnPlayerCustomStatusChanged %@:%d", playerId, status);
+}
+
+// 玩家进入房间
+- (void)onPlayerEntered:(NSString *)roomId playerInfo:(PlayerInfo *)playerInfo {
+    NSLog(@"receive OnPlayerEntered %@:%@", roomId, playerInfo);
+}
+
+// 玩家被踢出
+- (void)onPlayerKicked:(NSString *)roomId playerId:(NSString *)playerId {
+    NSLog(@"receive OnPlayerKicked %@:%@", roomId, playerId);
+}
+
+// 玩家离开房间
+- (void)onPlayerLeft:(NSString *)roomId roomOwnerId:(NSString *)roomOwnerId playerId:(NSString *)playerId {
+    NSLog(@"receive OnPlayerLeft %@:%@:%@", roomId, roomOwnerId, playerId);
+}
+
+// 玩家离线
+- (void)onPlayerOffline:(NSString *)roomId roomOwnerId:(NSString *)roomOwnerId playerId:(NSString *)playerId {
+    NSLog(@"receive OnPlayerOffline %@:%@:%@", roomId, roomOwnerId, playerId);
+}
+
+// 房间属性变更
+- (void)onRoomPropertiesChanged:(NSString *)id name:(NSString *)name customProperties:(NSString *)customProperties {
+    NSLog(@"receive OnRoomPropertiesChanged %@:%@:%@", id, name, customProperties);
+}
+
+// 开始帧同步
+- (void)onFrameSyncStarted:(FrameSyncInfo *)frameSyncInfo {
+    NSLog(@"receive OnFrameSyncStarted %@", frameSyncInfo);
+}
+
+// 收到帧同步数据回调
+- (void)onFrameReceived:(FrameData *)frameData {
+    if (frameData.inputs && frameData.inputs.count > 0) {
+        NSLog(@"receive OnFrameReceived %@", frameData);
+    }
+}
+
+// 停止帧同步
+- (void)onFrameSyncStopped:(NSString *)roomId frameSyncId:(int)frameSyncId reason:(int)reason {
+    NSLog(@"receive OnFrameSyncStopped %@:%d:%d", roomId, frameSyncId, reason);
+}
+
+// 对战服务端异常，开发者需要退出对战、房间、队伍等状态，此时处于 connect 之后的状态
+- (void)onBattleServiceError {
+    NSLog(@"receive OnBattleServiceError");
+}
+
+@end
 ```
 
 </>
@@ -245,7 +621,7 @@ public class OnlineBattlePanel : DemoBaseController, ITapOnlineBattleCallback
 
 当玩家登录成功后，需建立连接后才能调用其他主要 API 业务接口，连接成功时会返回用户 ID 。示例如下：
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -266,7 +642,74 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+TapTapBattle.connect(new TapBattleCallback<String>() {
+    @Override
+    public void onSuccess(String playerId) {
+        Log.d("Battle", "Connect success " + playerId);
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "Connect error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+TapTapBattle.connect(object : TapBattleCallback<String> {
+    override fun onSuccess(playerId: String) {
+        Log.d("Battle", "Connect success $playerId")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "Connect error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+
+<>
+
+```swift
+import TapTapSDK
+
+TapTapBattle.connect { playerId, error in
+    if let error = error {
+        print("Connect error \(error.code) \(error.message)")
+    } else if let playerId = playerId {
+        print("Connect success \(playerId)")
+    }
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+[TapTapBattle connect:^(NSString *playerId, NSError *error) {
+    if (error) {
+        NSLog(@"Connect error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"Connect success %@", playerId);
+    }
+}];
 ```
 
 </>
@@ -277,7 +720,7 @@ catch (TapException e)
 
 当用户不再需要使用对战服务时，可调用该接口断开连接。当用户登出、重新登录时， SDK 会自动调用该接口断开连接。
 
-<MultiLang kind="alone_unity">
+<MultiLang kind="unity_android_ios_v4">
 
 <>
 
@@ -298,7 +741,74 @@ catch (TapException e)
 <>
 
 ```java
+import com.taptap.sdk.battle.TapTapBattle;
+import com.taptap.sdk.battle.callback.TapBattleCallback;
+import com.taptap.sdk.kit.internal.exception.TapError;
 
+TapTapBattle.disconnect(new TapBattleCallback<Void>() {
+    @Override
+    public void onSuccess(Void result) {
+        Log.d("Battle", "Disconnect success");
+    }
+
+    @Override
+    public void onError(TapError error) {
+        Log.e("Battle", "Disconnect error " + error.code + " " + error.message);
+    }
+});
+```
+
+</>
+
+<>
+
+```kotlin
+import com.taptap.sdk.battle.TapTapBattle
+import com.taptap.sdk.battle.callback.TapBattleCallback
+import com.taptap.sdk.kit.internal.exception.TapError
+import android.util.Log
+
+TapTapBattle.disconnect(object : TapBattleCallback<Void> {
+    override fun onSuccess(result: Void?) {
+        Log.d("Battle", "Disconnect success")
+    }
+
+    override fun onError(error: TapError) {
+        Log.e("Battle", "Disconnect error ${error.code} ${error.message}")
+    }
+})
+```
+
+</>
+
+<>
+
+```swift
+import TapTapSDK
+
+TapTapBattle.disconnect { error in
+    if let error = error {
+        print("Disconnect error \(error.code) \(error.message)")
+    } else {
+        print("Disconnect success")
+    }
+}
+```
+
+</>
+
+<>
+
+```objc
+#import <TapTapSDK/TapTapSDK.h>
+
+[TapTapBattle disconnect:^(NSError *error) {
+    if (error) {
+        NSLog(@"Disconnect error %ld %@", error.code, error.localizedDescription);
+    } else {
+        NSLog(@"Disconnect success");
+    }
+}];
 ```
 
 </>
