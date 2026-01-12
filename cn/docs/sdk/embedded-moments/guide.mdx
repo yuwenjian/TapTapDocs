@@ -12,36 +12,17 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 本文介绍如何在游戏中接入 TapTap 内嵌动态功能，使用内嵌动态功能需依赖 [TapTap 登录](/sdk/taptap-login/features/)。
 
+## 集成前准备
+
+1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入
+3. 内嵌动态依赖于 [TapTap 登录模块](/sdk/taptap-login/features)，开发者接入前应先完成 TapTap 登录的接入
+
 ## 权限说明
 
-<MultiLang kind="unity_android_ios_v4">
+<MultiLang kind="android_ios_platform">
 
-<>
 
-</>
-
-<>
-
-该模块需要如下权限：
-
-| 权限 | 使用目的 | 权限申请时机 |
-| ---------------------- | ---------------------- | ---------------------- |
-| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
-| 获取网络状态 | 用于检测当前网络连接是否有效 | 用户首次使用该功能时会申请权限 |
-| 读写存储权限 | 用于发布或下载动态页面内图片、视频 | 下载或使用本地图片发布动态时申请 |
-
-该模块将在应用中添加如下权限：
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-  tools:ignore="ScopedStorage" />
-<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-<uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-```
-
-</>
 
 <>
 
@@ -67,74 +48,107 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 </>
 
 <>
-
-使用内嵌动态服务需要相册、相机权限，所以开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
-
-```xml
-<!--使用内嵌动态服务，需要相册、相机、麦克风权限-->
-<key>NSPhotoLibraryUsageDescription</key>
-<string>说明为何应用需要此项权限</string>
-<key>NSCameraUsageDescription</key>
-<string>说明为何应用需要此项权限</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>说明为何应用需要此项权限</string>
-```
-
-</>
-
-<>
-
-使用内嵌动态服务需要相册、相机权限，所以开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
-
-```xml
-<!--使用内嵌动态服务，需要相册、相机、麦克风权限-->
-<key>NSPhotoLibraryUsageDescription</key>
-<string>说明为何应用需要此项权限</string>
-<key>NSCameraUsageDescription</key>
-<string>说明为何应用需要此项权限</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>说明为何应用需要此项权限</string>
-```
+| 权限 | 使用目的 | 权限申请时机 |
+| ---------------------- | ---------------------- | ---------------------- |
+| 相册权限 | 获取相册中图片或保存网络图片到相册中 | 用户首次使用该功能时会申请权限 |
+| 相机权限 | 用于拍照或录视频 | 用户首次使用该功能时会申请权限 |
+| 麦克风权限 | 用于录视频时获取声音 | 用户首次使用该功能时会申请权限 |
 
 </>
 
 
 </MultiLang>
 
-
-
-## 集成前准备
-
-1. 参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启内嵌动态应用配置；
-2. 内嵌动态依赖于 [TapTap 登录模块](/sdk/taptap-login/features)，开发者接入前应先接入 TapTap 登录 相关依赖。
-
 ## SDK 获取
 
 
-完成 SDK 获取，然后在此基础上可以通过 [下载](/tap-download) 获得 TapSDK，添加 `TapMoment` 模块：  
 
-<MultiLang kind="unity_android_ios_v4">
+<MultiLang kind="default">
 
 <>
-<UnitySDKInstallation
-npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.login",
-"com.taptap.sdk.moment",
-]}
-githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.login", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.moment", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Moment#${v4SDKVersions.taptap.unity}`}
-]}
-unitypackageModules={[
-{name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
-{name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
-{name: "TapSDK_Moment.unitypackage", desc: "TapTapSDK 内嵌动态模块，必选"},
-]}/>
 
-#### iOS 配置
+#### 远程依赖
 
+**NPMJS 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.login":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.moment":"${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+**GitHub 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.login":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.moment":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Moment#${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+#### 本地文件导入
+
+在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
+- `TapSDK_Core.unitypackage` (TapTapSDK 核心模块，必选)
+- `TapSDK_Login.unitypackage`（TapTapSDK 登录模块，必选）
+- `TapSDK_Moment.unitypackage` (TapTapSDK 内嵌动态模块，必选)
+
+</>
+
+<>
+
+
+在 app module 的 `build.gradle` 中添加对应依赖：
+
+<CodeBlock language="groovy">
+{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-moment:${v4SDKVersions.taptap.android}'
+}`
+}
+
+</CodeBlock>
+
+</>
+
+<>
+
+
+
+#### 远程依赖
+
+1. 在工程 Podfile 文件中对应模块下添加依赖：
+
+<CodeBlock>{` pod 'TapTapSDK/Moment', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+
+#### 本地文件依赖
+内嵌动态依赖于初始化和 TapTap 登录模块，使用本地文件方式添加依赖时，需先参考[集成指南](/sdk/integration-guides/ios/#sdk-获取) 和 [TapTap 登录](/sdk/taptap-login/guide/#sdk-获取)添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapMomentSDK.xcframework` 动态依赖库
+- `TapTapMomentResource.bundle` 动态资源文件
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
+
+</>
+
+</MultiLang>
+
+## iOS 工程配置
+
+在 iOS 项目或通过 Unity 项目导出 Xcode 工程时，由于内嵌动态模块需要相册、相机权限，所以需添加对应权限说明，具体配置如下：
+
+<MultiLang kind="unity_ios_platform">
+
+<>
 在 `Assets/Plugins/iOS/Resource` 目录下创建 `TDS-Info.plist` 文件 (如果已创建，只需添加内容即可），配置相关权限并**替换授权文案**：
 
 ```xml
@@ -151,237 +165,19 @@ unitypackageModules={[
 </dict>
 </plist>
 ```
-
-
 </>
 
 <>
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-<CodeBlock language="groovy">
-{
-`allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}`
-}
-
-</CodeBlock>
-
-2. app module 的 build.gradle 添加对应依赖：
-
-内嵌动态模块依赖于 `TapLogin`， 需额外添加 `TapLogin` 模块依赖。
-
-<CodeBlock language="groovy">
-{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-moment:${v4SDKVersions.taptap.android}'
-    // 内嵌动态依赖登录模块
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-}`
-}
-
-</CodeBlock>
-
-</>
-
-<>
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-<CodeBlock language="groovy">
-{
-`allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}`
-}
-
-</CodeBlock>
-
-2. app module 的 build.gradle 添加对应依赖：
-
-内嵌动态模块依赖于 `TapLogin`， 需额外添加 `TapLogin` 模块依赖。
-
-<CodeBlock language="groovy">
-{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-moment:${v4SDKVersions.taptap.android}'
-}`
-}
-
-</CodeBlock>
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{` pod 'TapTapSDK/Moment', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-3. 将工程 Pods 目录下 `TapTapMomentSDK/Frameworks/TapTapMomentResource.bundle` 和 `TapTapLoginSDK/Frameworks/TapTapLoginResource.bundle`
-   等资源文件导入工程中
-
-**本地文件依赖**
-
-动态模块依赖于初始化和 TapTap 登录模块，使用本地文件方式添加依赖时，需先参考 [TapSDK 集成](/sdk/access/quickstart#本地文件依赖)  和 [TapTap 登录](/sdk/taptap-login/guide#本地文件依赖) 添加对应本地文件依赖项。
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `TapTapMomentSDK.xcframework` 动态依赖库
-- `TapTapMomentResource.bundle` 动态资源文件
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{` pod 'TapTapSDK/Moment', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-3. 将工程 Pods 目录下 `TapTapMomentSDK/Frameworks/TapTapMomentResource.bundle` 和 `TapTapLoginSDK/Frameworks/TapTapLoginResource.bundle`
-   等资源文件导入工程中
-
-**本地文件依赖**
-
-动态模块依赖于初始化和 TapTap 登录模块，使用本地文件方式添加依赖时，需先参考 [TapSDK 集成](/sdk/access/quickstart#本地文件依赖)  和 [TapTap 登录](/sdk/taptap-login/guide#本地文件依赖) 添加对应本地文件依赖项。
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `TapTapMomentSDK.xcframework` 动态依赖库
-- `TapTapMomentResource.bundle` 动态资源文件
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**，导入 `bundle` 资源文件
-
-</>
-
-</MultiLang>
-
-## SDK 初始化
-
-<MultiLang kind="unity_android_ios_v4">
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```cs
-using TapSDK.Core;
-
-// 核心配置 详细参数见 [TapTapSDK]
-TapTapSdkOptions coreOptions = new TapTapSdkOptions();
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions);
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```java
-import com.taptap.sdk.core.TapTapRegion;
-import com.taptap.sdk.core.TapTapSdk;
-import com.taptap.sdk.core.TapTapSdkOptions;
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-String clientId = "";
-// 开发者中心对应 Client Token
-String clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-boolean enableLog = BuildConfig.DEBUG;
-
-TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-        clientId, // 游戏 Client ID
-        clientToken, // 游戏 Client Token
-        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-);
-tapSdkOptions.setEnableLog(enableLog);
-// 初始化 TapSDK
-TapTapSdk.init(context, tapSdkOptions);
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```kotlin
-import com.taptap.sdk.core.TapTapSdk
-import com.taptap.sdk.core.TapTapSdkOptions
-import com.taptap.sdk.core.TapTapRegion
-import com.taptap.sdk.core.TapTapLanguage
-
-TapTapSdk.init(
-  context = context,
-  sdkOptions = TapTapSdkOptions(
-      clientId = clientId,
-      clientToken = clientToken,
-      region = TapTapRegion.CN,
-      preferredLanguage = TapTapLanguage.ZH_HANS,
-      enableLog = false
-  )
-)
-```
-
-</>
-
-<>
-
-```swift
-import TapTapCoreSDK
-
-let options = TapTapSdkOptions()
-options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
-options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
-options.region = .CN // .CN：中国大陆，.overseas:其他国家或地区
-options.enableLog = enableLog.selectedSegmentIndex == 0 // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-options.preferredLanguage = TapLanguageType.auto // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
-
-// 初始化 SDK
-TapTapSDK.initWith(options)
-
-```
-
-</>
-
-<>
-
-```objc
-#import "TapTapCoreSDK/TapTapSDK.h"
-
-// 核心配置项
-TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
-options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
-options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
-options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
-options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-options.preferredLanguage = TapLanguageType_Auto; // 语言设置，默认跟随系统，当系统语言不支持时，国内为中文，海外为英文
-
-// 初始化 SDK
-[TapTapSDK initWithOptions:options];
+开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
+
+```xml
+<!--使用内嵌动态服务，需要相册、相机、麦克风权限-->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>说明为何应用需要此项权限</string>
+<key>NSCameraUsageDescription</key>
+<string>说明为何应用需要此项权限</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>说明为何应用需要此项权限</string>
 ```
 </>
 

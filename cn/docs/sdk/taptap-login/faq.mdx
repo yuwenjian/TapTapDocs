@@ -14,16 +14,13 @@ sidebar_position: 4
 检查 TapTap 开发者后台的应用是否配置了应用的 Bundle ID。
 
 ### TapTap 登录报 `signature not match` 异常
-接入了 TapTap 登录但没有在开发者中心后台配置签名或者配置错了都会提示该异常。有的开发者可能没有调试出异常信息，可以通过这种方式进行验证：如果将 TapTap 客户端卸载，测试登录功能时会弹出 WebView 授权，而测试设备安装了 TapTap 客户端则无法拉起客户端授权，这种情况基本上就是因为签名配置问题导致的，请参考[文档](/sdk/access/get-ready/#配置签名证书)完成配置。
+接入了 TapTap 登录但没有在开发者中心后台配置签名或者配置错了都会提示该异常。有的开发者可能没有调试出异常信息，可以通过这种方式进行验证：如果将 TapTap 客户端卸载，测试登录功能时会弹出 WebView 授权，而测试设备安装了 TapTap 客户端则无法拉起客户端授权，这种情况基本上就是因为签名配置问题导致的，请参考[文档]( /sdk/access/get-ready/#配置签名证书)完成配置。
 
 ### TapTap 登录提示 `暂无测试资格或不在测试期间，无法登录游戏` 异常提示。
 **TapTap 开发者中心 > 商店 > 版本发布 > 内部测试** 检查是否开启了内部测试功能，如果开启了检查是否没有将当前 TapTap ID 账号添加进测试用户中。
 
 ### TapTap 登录报 `state not equal` 异常
 检查当前设备系统时间是否已经开启联网同步、检查当前设备的 TapTap 客户端版本是否过低。
-
-### TapTap 登录报 `java.lang.NoSuchFieldException: CACHE_ELSE_NETWORK` 异常
-由于 Android 项目开启了混淆操作，TapSDK 已经做了混淆处理，需要跳过对 TapSDK 的混淆操作。具体请参考 [Android 代码混淆](/sdk/access/quickstart/#android-代码混淆)。针对 Android 原生目前暂不支持开启资源混淆操作，如果项目开启了资源混淆操作请关闭掉，`shrinkResources false`。
 
 ### TapTap 登录报 `Chain validation failed` 异常
 可以按照以下步骤排查：

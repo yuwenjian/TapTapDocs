@@ -12,13 +12,17 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 本文介绍如何在游戏中加入排行榜系统。
 
+## 集成前准备
+
+1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入
+3. 排行榜模块依赖于 [TapTap 登录模块](/sdk/taptap-login/features)，开发者接入前应先完成 TapTap 登录的接入
+
 ## 权限说明
 
-<MultiLang kind="unity_android_ios_v4">
+<MultiLang kind="android_ios_platform">
 
 <>
-
-该模块需要如下权限：
 
 | 权限 | 使用目的 | 权限申请时机 |
 | ---------------------- | ---------------------- | ---------------------- |
@@ -38,99 +42,105 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
 <>
 
-该模块需要如下权限：
-
 | 权限 | 使用目的 | 权限申请时机 |
 | ---------------------- | ---------------------- | ---------------------- |
-| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
-| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
-| 写入外部存储权限 | 用于保存排行榜分享图片到设备存储 | 用户首次使用分享功能时会申请权限 |
+| 相册权限 | 保存图片到相册 | 用户首次使用该功能时会申请权限 |
 
-该模块将在应用中添加如下权限：
+</>
 
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
+
+</MultiLang>
+
+## SDK 获取
+
+
+
+<MultiLang kind="default">
+
+<>
+
+#### 远程依赖
+
+**NPMJS 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.login":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.leaderboard":"${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+**GitHub 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+     "com.taptap.sdk.core":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.login":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.leaderboard":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Leaderboard#${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+#### 本地文件导入
+
+在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
+- `TapSDK_Core.unitypackage` (TapTapSDK 核心模块，必选)
+- `TapSDK_Login.unitypackage`（TapTapSDK 登录模块，必选）
+- `TapSDK_Leaderboard.unitypackage` (TapTapSDK 排行榜模块，必选)
 
 </>
 
 <>
 
-该模块需要如下权限：
+在 app module 的 `build.gradle` 中添加对应依赖：
 
-| 权限 | 使用目的 | 权限申请时机 |
-| ---------------------- | ---------------------- | ---------------------- |
-| 网络权限 | 用于访问网络数据 | 用户首次使用该功能时会申请权限 |
-| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
-| 写入外部存储权限 | 用于保存排行榜分享图片到设备存储 | 用户首次使用分享功能时会申请权限 |
-
-该模块将在应用中添加如下权限：
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
+<CodeBlock language="groovy">{
+`dependencies {
+    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
+    implementation 'com.taptap.sdk:tap-leaderboard-androidx:${v4SDKVersions.taptap.android}'
+}`
+}</CodeBlock>
 
 </>
 
 <>
 
-使用排行榜服务需要相册权限，所以开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
 
-```xml
-<key>NSPhotoLibraryUsageDescription</key>
-<string>需要访问相册以保存图片</string>
-```
+#### 远程依赖
 
-</>
+1. 在工程 Podfile 文件中对应模块下添加依赖：
 
-<>
+<CodeBlock>{
+`pod 'TapTapSDK/Leaderboard', '~> ${v4SDKVersions.taptap.ios}'`
+}</CodeBlock>
 
-使用排行榜服务需要相册权限，所以开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
+2. 执行 `Pod install` 下载对应依赖文件
 
-```xml
-<key>NSPhotoLibraryUsageDescription</key>
-<string>需要访问相册以保存图片</string>
-```
+#### 本地文件依赖
+排行榜依赖于初始化和 TapTap 登录模块，使用本地文件方式添加依赖时，需先参考[集成指南](/sdk/integration-guides/ios/#sdk-获取) 和 [TapTap 登录](/sdk/taptap-login/guide/#sdk-获取)添加对应本地文件依赖项。
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `TapTapLeaderboardSDK.xcframework` 排行榜模块
+- `TapTapProfileSDK ` 用户名片依赖库
+- `TapTapProfileResource.bundle` 用户名片资源文件
+
+
+2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
+
 
 </>
 
 </MultiLang>
 
-## 集成前准备
+## iOS 工程配置
 
-参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启排行榜服务。
+在 iOS 项目或通过 Unity 项目导出 Xcode 工程时，因排行榜业务需要访问相册保存图片，所以需添加对应权限的使用说明，具体如下：
 
-## SDK 获取
-
-由于 TapSDK V4 依赖于 TapTapCore 核心库 以及 TapTapLogin 登录，所以需要在 TapTapCore 的基础上，另外添加 `TapTapLeaderboard` 、 `TapTapLogin` 模块：
-
-<MultiLang kind="unity_android_ios_v4">
+<MultiLang kind="unity_ios_platform">
 
 <>
-
-<UnitySDKInstallation
-npmDeps={[
-"com.taptap.sdk.core",
-"com.taptap.sdk.login",
-"com.taptap.sdk.leaderboard",
-]}
-githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.login", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Login#${v4SDKVersions.taptap.unity}`},
-{package: "com.taptap.sdk.leaderboard", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Leaderboard#${v4SDKVersions.taptap.unity}`}
-]}
-unitypackageModules={[
-{name: "TapSDK_Core.unitypackage", desc: "TapTapSDK 核心模块，必选"},
-{name: "TapSDK_Login.unitypackage", desc: "TapTapSDK 登录模块，必选"},
-{name: "TapSDK_Leaderboard.unitypackage", desc: "TapTapSDK 排行榜模块，必选"},
-]}/>
-
-#### iOS 配置
-
 在 `Assets/Plugins/iOS/Resource` 目录下创建 `TDS-Info.plist` 文件 (如果已创建，只需添加内容即可），配置相关权限并**替换授权文案**：
 
 ```xml
@@ -146,284 +156,13 @@ unitypackageModules={[
 </>
 
 <>
-1. 项目根目录的 build.gradle 添加仓库地址：
 
-```groovy
-allprojects { 
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+开发者需在工程的 `info.plist` 配置相关权限并**替换授权文案**：
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>需要访问相册以保存图片</string>
 ```
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-leaderboard-androidx:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-}`
-}</CodeBlock>
-
-</>
-
-<>
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-```groovy
-allprojects { 
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-login:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-leaderboard-androidx:${v4SDKVersions.taptap.android}'
-}`
-}</CodeBlock>
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{
-`pod 'TapTapSDK/Core', '~> ${v4SDKVersions.taptap.ios}'
-pod 'TapTapSDK/Login', '~> ${v4SDKVersions.taptap.ios}'
-pod 'TapTapSDK/Leaderboard', '~> ${v4SDKVersions.taptap.ios}'`
-}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-
-**本地文件依赖**
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `tapsdkcorecpp.xcframework` 基础库
-- `TapTapBasicToolsSDK.xcframework` 基础库
-- `TapTapCoreSDK.xcframework` 核心库
-- `TapTapGidSDK.xcframework` 基础库
-- `TapTapNetworkSDK.xcframework` 基础库
-- `THEMISLite.xcframework` 基础库
-- `TapTapKingfisher ` 基础库
-- `TapTapSDKBridgeCore.xcframework` 基础库
-- `TapTapLoginSDK.xcframework` 登录模块
-- `TapTapLeaderboardSDK.xcframework` 排行榜模块
-- `TapTapProfileSDK ` 用户名片依赖库
-- `TapTapProfileResource.bundle` 用户名片资源文件
-
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
-3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
-
-**配置编译选项**
-
-- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 。
-
-- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
-
-- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{
-`pod 'TapTapSDK/Core', '~> ${v4SDKVersions.taptap.ios}'
-pod 'TapTapSDK/Login', '~> ${v4SDKVersions.taptap.ios}'
-pod 'TapTapSDK/Leaderboard', '~> ${v4SDKVersions.taptap.ios}'`
-}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-
-**本地文件依赖**
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `tapsdkcorecpp.xcframework` 基础库
-- `TapTapBasicToolsSDK.xcframework` 基础库
-- `TapTapCoreSDK.xcframework` 核心库
-- `TapTapGidSDK.xcframework` 基础库
-- `TapTapNetworkSDK.xcframework` 基础库
-- `TapTapLoginSDK.xcframework` 登录模块
-- `TapTapLeaderboardSDK.xcframework` 排行榜模块
-- `THEMISLite.xcframework` 基础库
-- `TapTapProfileSDK ` 用户名片依赖库
-- `TapTapProfileResource.bundle` 用户名片资源文件
-- `TapTapKingfisher ` 基础库
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
-3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
-
-**配置编译选项**
-
-- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 。
-
-- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
-
-- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
-
-**Objective-C 头文件导入**
-
-如果使用 Objective-C 开发，需要在相应的 `.m` 文件中导入以下头文件：
-
-```objc
-#import <TapTapCoreSDK/TapTapSDK.h>
-#import <TapTapLoginSDK/TapTapLoginSDK-Swift.h>
-#import <TapTapLeaderboardSDK/TapTapLeaderboardSDK-Swift.h>
-```
-
-</>
-
-</MultiLang>
-
-## SDK 初始化
-
-详见 [TapTapSDK 初始化文档](/sdk/access/quickstart#初始化)。
-
-<MultiLang kind="unity_android_ios_v4">
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```csharp
-using TapSDK.Core;
-using TapSDK.Leaderboard
-
-// 核心配置 详细参数见 [TapTapSDK]
-TapTapSdkOptions coreOptions = new TapTapSdkOptions();
-// 设置屏幕方向：0-竖屏 1-横屏
-coreOptions.screenOrientation = 1;
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions, otherOptions);
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```java
-import com.taptap.sdk.core.TapTapRegion;
-import com.taptap.sdk.core.TapTapSdk;
-import com.taptap.sdk.core.TapTapSdkOptions;
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-String clientId = "";
-// 开发者中心对应 Client Token
-String clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-boolean enableLog = BuildConfig.DEBUG;
-// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-int screenOrientation = ScreenOrientation.LANDSCAPE;
-TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-        clientId, // 游戏 Client ID
-        clientToken, // 游戏 Client Token
-        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-);
-// 设置屏幕方向
-tapSdkOptions.setScreenOrientation(screenOrientation);
-tapSdkOptions.setEnableLog(enableLog);
-// 初始化 TapSDK
-TapTapSdk.init(context, tapSdkOptions);
-```
-
-</>
-
-<>
-
-```kotlin
-import com.taptap.sdk.core.TapTapSdk
-import com.taptap.sdk.core.TapTapSdkOptions
-import com.taptap.sdk.core.TapTapLanguage
-import com.taptap.sdk.core.TapTapRegion
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-val clientId = "";
-// 开发者中心对应 Client Token
-val clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-val enableLog = BuildConfig.DEBUG;
-// 屏幕方向，横屏传ScreenOrientation.LANDSCAPE 竖屏传ScreenOrientation.PORTRAIT
-val screenOrientation = ScreenOrientation.LANDSCAPE
-
-TapTapSdk.init(
-    context = context,
-    sdkOptions = TapTapSdkOptions(
-        clientId = clientId,
-        clientToken = clientToken,
-        region = TapTapRegion.CN,
-        screenOrientation = screenOrientation,
-        preferredLanguage = TapTapLanguage.ZH_HANS,
-        enableLog = false
-    )
-)
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```swift
-import TapTapCoreSDK
-
-let options = TapTapSdkOptions()
-options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
-options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
-options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
-options.enableLog = true // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-options.preferredLanguage = TapLanguageType.auto // 语言设置，默认跟随系统
-
-// 初始化 TapSDK
-TapTapSDK.initWith(options)
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```objc
-#import <TapTapCoreSDK/TapTapSDK.h>
-
-TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
-options.clientId = @"your_client_id"; // 必须，开发者中心对应 Client ID
-options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
-options.region = TapTapRegionCN; // TapTapRegionCN：中国大陆，TapTapRegionOverseas：其他国家或地区
-options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-options.preferredLanguage = TapTapLanguageAuto; // 语言设置，默认跟随系统
-
-// 初始化 TapSDK
-[TapTapSDK initWith:options];
-```
-
 </>
 
 </MultiLang>

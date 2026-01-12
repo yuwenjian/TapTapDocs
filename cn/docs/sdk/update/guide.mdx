@@ -8,18 +8,18 @@ import MultiLang from "/src/docComponents/MultiLang";
 import CodeBlock from "@theme/CodeBlock";
 import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 
-:::info
-本文档只适用于国内版本，海外版本请参考 [文档](/tap-update-old-guide/)
-:::
-
 ## 集成前准备
 
-1. 参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启应用配置；
-2. 参考 [快速开始](/sdk/access/get-ready/#配置签名证书) 配置包名与签名证书；
+1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入
 
 ## 权限说明
 
 该模块依赖权限如下：
+
+<MultiLang kind="android_alone">
+
+<>
 
 | 权限 | 使用目的 | 权限申请时机 |
 | ---------------------- | ---------------------- | ---------------------- |
@@ -36,18 +36,22 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
     <package android:name="com.taptap.global" />
 </queries>
 ```
+</>
+
+<>
+</>
+
+</MultiLang>
 
 ## SDK 获取
+
+
 
 <MultiLang kind="android_unity">
 
 <>
 
-:::info Unity SDK 获取方式
-Unity SDK 支持通过 **Unity Package Manager**（NPMJS/GitHub）和**本地文件导入**两种方式集成，详细的集成步骤请参考 [Unity SDK 集成文档](/sdk/access/quickstart/#项目配置)。
-:::
-
-#### 远程依赖示例
+#### 远程依赖
 
 **NPMJS 方式**：在 `Packages/manifest.json` 中添加：
 
@@ -70,30 +74,15 @@ Unity SDK 支持通过 **Unity Package Manager**（NPMJS/GitHub）和**本地文
 #### 本地文件导入
 
 在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
-- `TapSDK_Core.unitypackage`（TapTapSDK 核心模块，必选）
+- `TapSDK_Core.unitypackage` (TapTapSDK 核心模块，必选)
 - `TapSDK_Update.unitypackage`（TapTapSDK 更新唤起模块，必选）
 
 </>
 
 <>
 
-:::info Android SDK 获取方式
-Android SDK 通过 Maven 远程依赖方式集成。
-:::
 
-1. 在项目根目录的 `build.gradle` 中添加仓库地址：
-
-<CodeBlock language="groovy">
-{
-`allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}`}
-</CodeBlock>
-
-2. 在 app module 的 `build.gradle` 中添加对应依赖：
+在 app module 的 `build.gradle` 中添加对应依赖：
 
 <CodeBlock language="groovy">
 {
@@ -103,76 +92,6 @@ Android SDK 通过 Maven 远程依赖方式集成。
 }`}
 </CodeBlock>
 
-</>
-
-</MultiLang>
-
-## 初始化
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-<MultiLang kind="unity_android_v4">
-
-<>
-
-```cs
-using TapSDK.Core;
-using TapSDK.Compliance;
-
-// 核心配置 详细参数见 [入门指南#快速开始]
-TapTapSdkOptions coreOptions = new TapTapSdkOptions();
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions);
-```
-
-</>
-
-<>
-
-```java
-import com.taptap.sdk.core.TapTapRegion;
-import com.taptap.sdk.core.TapTapSdk;
-import com.taptap.sdk.core.TapTapSdkOptions;
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-String clientId = "";
-// 开发者中心对应 Client Token
-String clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-boolean enableLog = BuildConfig.DEBUG;
-
-TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-    clientId, // 游戏 Client ID
-    clientToken, // 游戏 Client Token
-    TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-);
-tapSdkOptions.setEnableLog(enableLog);
-// 初始化 TapSDK
-TapTapSdk.init(context, tapSdkOptions);
-```
-
-</>
-
-<>
-
-```kotlin
-import com.taptap.sdk.core.TapTapSdk
-import com.taptap.sdk.core.TapTapSdkOptions
-import com.taptap.sdk.core.TapTapRegion
-import com.taptap.sdk.core.TapTapLanguage
-
-TapTapSdk.init(
-    context = context,
-    sdkOptions = TapTapSdkOptions(
-        clientId = clientId,
-        clientToken = clientToken,
-        region = TapTapRegion.CN,
-        preferredLanguage = TapTapLanguage.ZH_HANS,
-        enableLog = false
-    ),
-)
-```
 </>
 
 </MultiLang>
@@ -309,3 +228,7 @@ TapTapUpdate.updateGame(
 1. 确保已在游戏资料中配置 **APK 包名**。
 2. 构建相同包名的测试包。
 3. 游戏自行触发更新，确认是否唤起 TapTap 商店详情页。
+
+:::tip
+如果游戏需要接入海外版本或不通过集成 SDK 实现，请参考 [文档](/tap-update-old-guide/)
+:::

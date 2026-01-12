@@ -11,42 +11,17 @@ import v4SDKVersions from '/src/docComponents/v4SDKVersions';
 import AndroidFaq from "../_partials/android-package-visibility.mdx";
 import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
 
-:::tip
-从 TapSDK 4.7.1 版本开始支持使用 TapTap PC 端完成正版验证和使用 DLC 功能，**使用前需接入启动校验**，具体参考 [TapTap PC 端集成](/sdk/access/pc-quickstart/) 文档
-:::
 
-正版验证适用于在 TapTap 上架的**付费下载**游戏。
-游戏集成 TapSDK 的正版验证之后，当玩家启动游戏时（包含卸载后再次安装），SDK 会前往 TapTap 查询玩家是否已购买游戏：
+## 集成前准备
 
-- 如已购买，则可正常进入游戏。
-- 如查询到未购买，在 Android 端将出现「游戏未激活，请前往 TapTap 购买此游戏」弹窗，玩家必须选择「打开 TapTap」购买之后才能游玩；在 PC 端调用启动校验时会返回失败
+1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入，对于 Windows 平台，使用前还需接入[启动校验](/sdk/integration-guides/pc-engine-features/#启动校验)
+
 
 ## 权限说明
 
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="android_alone">
 
-<>
-
-</>
-
-<>
-
-该模块需要访问设备中已安装的 Tap 客户端信息，在 Android 11 且工程 targetVersion > 29 时需要
-开发者在应用 `AndroidManifest.xml` 中添加如下配置：
-
-```xml
- <queries>
-    <package android:name="com.taptap" />
-    <package android:name="com.taptap.pad" />
-    <package android:name="com.taptap.global" />
-</queries>
-```
-该模块将在应用中添加如下权限：
-
-```xml
-<uses-permission android:name="android.permission.REORDER_TASKS" />
-```
-</>
 
 <>
 
@@ -65,52 +40,50 @@ import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
 ```xml
 <uses-permission android:name="android.permission.REORDER_TASKS" />
 ```
+</>
+
+<>
+
 </>
 
 </MultiLang>
 
 ## SDK 获取
 
-可以在 [下载页](/tap-download) 获得 TapSDK，添加以下依赖：
-
-<MultiLang kind="unity_android_v4">
+<MultiLang kind="android_unity">
 
 <>
 
-<UnitySDKInstallation 
-npmDeps={[
-    "com.taptap.sdk.core",
-    "com.taptap.sdk.license",
-]} 
-githubDeps={[
-    {package: "com.taptap.sdk.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`},
-    {package: "com.taptap.sdk.license", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/License#${v4SDKVersions.taptap.unity}`},
-]}
-unitypackageModules={[
-    {name: "TapSDK_Core.unitypackage", desc: "TapSDK 基础库，必选"},
-    {name: "TapSDK_License.unitypackage", desc: "TapTap 正版验证库，必选"},
-]}
-NoNeedLC={true}/>
+#### 远程依赖
 
+**NPMJS 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.license":"${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+**GitHub 方式**：在 `Packages/manifest.json` 中添加：
+
+<CodeBlock language="json">
+  {`"dependencies":{
+    "com.taptap.sdk.core":"https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}",
+    "com.taptap.sdk.license":"https://github.com/taptap/tapsdk-unity-dist.git?path=/License#${v4SDKVersions.taptap.unity}"
+  }`}
+</CodeBlock>
+
+#### 本地文件导入
+
+在 [下载页](/tap-download) 下载并导入以下 unitypackage 文件：
+- `TapSDK_Core.unitypackage` (TapTapSDK 核心模块，必选)
+- `TapSDK_License.unitypackage`（TapTapSDK 正版验证模块，必选）
 </>
 
 <>
 
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-<CodeBlock language="groovy">
-{
-`allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}`
-}
-
-</CodeBlock>
-
-2. app module 的 build.gradle 添加对应依赖：
+在 app module 的 `build.gradle` 中添加对应依赖：
 
 <CodeBlock language="groovy">
 {
@@ -123,110 +96,9 @@ NoNeedLC={true}/>
 </CodeBlock>
 </>
 
-<>
-
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-<CodeBlock language="groovy">
-{
-`allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}`
-}
-
-</CodeBlock>
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">
-{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-    implementation 'com.taptap.sdk:tap-license:${v4SDKVersions.taptap.android}'
-}`
-}
-
-</CodeBlock>
-</>
 
 </MultiLang>
 
-## SDK 初始化
-
-<MultiLang kind="unity_android_v4">
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```cs
-using TapSDK.Core;
-
-// 核心配置 详细参数见 [TapTapSDK]
-TapTapSdkOptions coreOptions = new TapTapSdkOptions();
-// TapSDK 初始化
-TapTapSDK.Init(coreOptions);
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```java
-import com.taptap.sdk.core.TapTapRegion;
-import com.taptap.sdk.core.TapTapSdk;
-import com.taptap.sdk.core.TapTapSdkOptions;
-
-/* 必选配置 */
-// 开发者中心对应 Client ID
-String clientId = "";
-// 开发者中心对应 Client Token
-String clientToken = "";
-// 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
-boolean enableLog = BuildConfig.DEBUG;
-
-TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-        clientId, // 游戏 Client ID
-        clientToken, // 游戏 Client Token
-        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-);
-tapSdkOptions.setEnableLog(enableLog);
-// 初始化 TapSDK
-TapTapSdk.init(context, tapSdkOptions);
-```
-
-</>
-
-<>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
-```kotlin
-import com.taptap.sdk.core.TapTapSdk
-import com.taptap.sdk.core.TapTapSdkOptions
-import com.taptap.sdk.core.TapTapRegion
-import com.taptap.sdk.core.TapTapLanguage
-
-TapTapSdk.init(
-  context = context,
-  sdkOptions = TapTapSdkOptions(
-      clientId = clientId,
-      clientToken = clientToken,
-      region = TapTapRegion.CN,
-      preferredLanguage = TapTapLanguage.ZH_HANS,
-      enableLog = false
-  )
-)
-```
-
-</>
-
-</MultiLang>
 
 ## 正版验证
 

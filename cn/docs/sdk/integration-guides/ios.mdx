@@ -1,0 +1,152 @@
+---
+title: iOS 原生集成
+sidebar_label: iOS 原生集成
+sidebar_position: 3
+---
+
+import MultiLang from "/src/docComponents/MultiLang";
+import CodeBlock from "@theme/CodeBlock";
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
+import { Conditional } from '/src/docComponents/conditional';
+
+本文介绍如何在 iOS 项目中快速接入 TapSDK 。
+
+## 环境要求
+
+- iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
+
+## SDK 获取
+
+
+
+iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
+
+### 远程依赖
+
+1. 在工程 Podfile 文件中添加对应模块依赖：
+
+<CodeBlock>{` pod 'TapTapSDK/Core', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
+
+2. 执行 `Pod install` 下载对应依赖文件
+
+### 本地文件依赖
+
+1. 在[下载页](/tap-download)下载如下文件：
+
+- `tapsdkcorecpp.xcframework` 基础库
+- `TapTapBasicToolsSDK.xcframework` 基础库
+- `TapTapCoreSDK.xcframework` 核心库
+- `TapTapGidSDK.xcframework` 基础库
+- `TapTapNetworkSDK.xcframework` 基础库
+- `THEMISLite.xcframework` 基础库
+- `TapTapSDKBridgeCore.xcframework` 基础库
+
+
+2. 在工程中添加下载的依赖库，注意添加时选择 Embed 方式为 **Do Not Embed**
+3. 在工程中添加 `libz.1.tbd` 和 `libc++.tbd` 依赖
+
+4. 配置编译选项
+
+- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 。
+
+- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
+
+- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
+
+## 初始化
+
+<Conditional region='cn'>
+
+:::info
+游戏 [**适用地区**](/sdk/access/get-ready/#适用地区) 在开启应用配置时选定。
+
+* [TapTap 开发者中心](https://developer.taptap.cn/)适用地区为中国大陆。
+
+* 出海游戏请前往 [**TapTap.io 开发者中心**](https://developer.taptap.io/) 开启游戏服务，适用地区为其他国家或地区。
+
+:::
+
+</Conditional>
+
+新版 SDK 采用统一初始化机制，初始化时需设置 Client ID、clientToken、区域等应用配置信息，完成后即可直接使用所有业务模块（如登录、成就等），无需对各模块分别初始化。
+
+
+<MultiLang kind="ios_v4">
+
+<>
+
+```swift
+import TapTapCoreSDK
+
+let options = TapTapSdkOptions()
+options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
+options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
+options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
+options.screenOrientation = .landscape // .landscape 横屏，.portrait 竖屏
+options.enableLog = true // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+
+// 初始化 SDK
+TapTapSDK.initWith(options)
+
+
+// 当需要添加其他模块的初始化配置项，例如合规认证、成就等，可调用如下 API
+var otherOptions:[TapTapSdkBaseOptions] = []
+
+// 添加其他模块初始化配置项
+// otherOptions.append(moduleOptions) moduleOptions 为其他模块初始化配置项
+
+// 初始化 SDK
+TapTapSDK.initWith(options, otherOptions: otherOptions)
+
+```
+
+</>
+
+<>
+
+```objc
+#import "TapTapCoreSDK/TapTapSDK.h"
+
+// 核心配置项
+TapTapSdkOptions *options = [[TapTapSdkOptions alloc] init];
+options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
+options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
+options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
+options.screenOrientation = TapTapScreenOrientationLandscape; //  TapTapScreenOrientationLandscape 横屏，TapTapScreenOrientationPortrait 竖屏
+options.enableLog = YES; // 是否开启 log，建议 Debug 开启，Release 关闭，默认关闭 log
+
+// 初始化 SDK
+[TapTapSDK initWithOptions:options];
+
+// 当需要添加其他模块的初始化配置项，例如合规认证、成就等，可调用如下 API
+NSMutableArray *otherOptins = [[NSMutableArray alloc] init];
+
+// 添加其他模块初始化配置项
+[otherOptins addObject:moduleOptions]; // moduleOptions 为其他模块初始化配置项
+
+// 初始化 SDK
+[TapTapSDK initWithOptions:options otherOptions:otherOptins];
+```
+</>
+
+</MultiLang>
+
+初始化具体参数如下：
+
+| 参数名 |  是否必填 | 说明 |
+| ---------------------- | ---------------------- | ---------------------- | 
+| clientId | 是 |  客户端 ID，开发者后台获取 |
+| clientToken | 是 | 客户端令牌，开发者后台获取 | 
+| region | 否 | 地区，默认国内 |
+| screenOrientation | 否 | 屏幕方向：.portrait-竖屏 landscape-横屏，默认为横屏 |
+| enableLog | 否 | 是否开启日志，默认关闭，建议开发阶段开启，上线前关闭 |
+| preferredLanguage | 否 | 语言，默认自动获取系统语言 |
+| gameVersion | 否 | 应用版本号，默认读取应用的版本号 |
+
+
+## 常见问题
+
+### 运行时报错签名不匹配或 `signature not match`
+
+检查 TapTap 开发者后台配置的[BundleID](/sdk/access/get-ready/#配置签名证书) 是否和当前工程设置一致

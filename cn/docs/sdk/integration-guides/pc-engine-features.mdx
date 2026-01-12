@@ -1,0 +1,154 @@
+---
+title: PC 端接入指南
+sidebar_label: PC 端接入指南
+sidebar_position: 4
+---
+
+import MultiLang from "/src/docComponents/MultiLang";
+import CodeBlock from "@theme/CodeBlock";
+import v4SDKVersions from '/src/docComponents/v4SDKVersions';
+import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
+
+:::tip
+下文内容仅介绍 Unity SDK 在 Windows 平台的接入场景。  
+非 Unity 项目请参考 [C++ SDK 接入指南](/pc/cpp-sdk/overview/)。
+:::
+
+## 功能介绍
+
+Unity SDK 支持**多平台统一接入**。在 Windows 平台，除依赖 TapTap PC 端提供的生态能力外，还额外提供独立的 TapTap 登录与合规认证能力。
+
+| 模块名称 | 与 PC 客户端的关系 | 功能描述 |
+|-------| ------ | ----- |
+| TapTap 登录 | 体验升级 | 独立的 TapTap 账号登录服务，**配合客户端使用时，无需额外登录授权** |
+| 合规认证 | 体验升级 | 实现 TapTap 账号的快速实名认证，**配合客户端使用时，无需额外登录授权** |
+| 正版验证 | 强依赖 | 付费游戏的下载资格校验及 DLC 解锁验证 |
+| 成就系统 | 强依赖 | 成就数据的记录、管理与展示 |
+| 云存档   | 强依赖 | 游戏存档的上传、同步与管理 |
+
+> 注：标记为「强依赖」的模块需通过 TapTap PC 端启动游戏后方可使用
+
+## 启动校验
+
+建议在完成 SDK [初始化](/sdk/integration-guides/unity/#初始化)后，于游戏启动流程的最早阶段调用该异步接口（进入主界面或加载大量资源之前）。该接口在应用生命周期内只应调用一次。
+调用示例如下：
+
+<MultiLang kind="alone_unity">
+<>
+```cs
+using TapSDK.Core;
+
+bool IsSuccess = await TapTapSDK.IsLaunchedFromTapTapPC();
+if (IsSuccess)
+{
+    UnityEngine.Debug.Log(" TapTap PC 端校验通过");
+    // TODO: 允许继续后续游戏流程
+}
+else
+{
+    UnityEngine.Debug.Log(" TapTap PC 端校验未通过");
+    // 不应继续后续游戏流程
+}
+```
+</>
+
+<>
+</>
+
+</MultiLang>
+
+- 返回 `true` 表示通过 TapTap PC 端启动检测，允许继续游戏启动流程
+- 返回 `false` 表示未通过 TapTap PC 端启动检测，**不应继续后续游戏流程**
+
+:::tip
+当游戏未通过 TapTap PC 端启动时，会发生以下行为：
+- 若检测到已安装 TapTap PC 端，则拉起 TapTap PC 端并结束当前游戏进程，随后由 TapTap PC 端按正常流程再次启动该游戏；
+- 未检测到安装 TapTap PC 端，会显示阻断性弹窗，引导用户下载安装 TapTap PC 端并结束当前游戏进程。上述行为属于正常启动流程的一部分，不会对游戏造成不良影响。
+:::
+
+## 后续接入
+
+完成上述步骤后，即可根据业务需求，按照各功能模块的文档接入 TapSDK 提供的相关能力。
+
+## 联调与测试
+
+### 添加白名单
+
+前往 开发者中心 > 商店 > 版本发布 > 测试 > 内部测试 页面， 选择创建测试计划并添加测试用户白名单，示例视频如下：
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/NR8Tyrh7JhcvUVHxgNjvfJSv78xYuVEG/fasongceshizige.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+###  下载 TapTap PC 端
+
+下载 [TapTap PC 端](https://www.taptap.cn/mobile)，并登录已配置的白名单账号
+
+### 本地测试方案
+
+该方案适用于开发阶段自测，无需传包至 TapTap。开发者可前往 TapTap 开发者中心 >>游戏服务 >>启动校验 页面点击 `配置文件`，如图所示：
+
+![](/img/pc-quickstart/download_debug_file.png)
+
+浏览器会下载一个名称为 `taptap_client_id.txt` 的文本文件，开发者根据以下不同测试方式移动到对应目录：
+
+- 打包后测试：移动到游戏可执行文件（.exe）所在目录下
+
+- Unity Editor 测试：移动到当前 Unity 引擎的安装目录中，即与 Unity.exe 位于同一目录
+
+完成上述操作后，运行客户端，即可本地启动游戏，开始测试相关业务功能
+
+
+### 传包测试方案
+
+该方案适用于上架前自测，可传包至 TapTap 平台后下载游戏测试
+
+#### 1. 上传游戏包体
+
+前往开发者中心 >> 商店 >> PC 包体管理 >> 包体管理，点击「上传包体」，选择包体文件，并填写启动项配置。
+
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/Oj1a1o1guoJCPNw9Fd8Nw9KUrunGIO1M/upload_package.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+:::tip
+如果您的游戏有依赖库，请同时将依赖库的安装文件放置于游戏目录内一并上传，并在 PC 包体管理 >> 基础配置选择对应的库及库的启动项配置，TapTap 将在用户点击下载安装游戏时，帮助游戏完成依赖库的安装。
+:::
+
+#### 2. 完成包体自测
+
+测试用户在 Windows 电脑本地下载客户端并登录测试账号后，点击「立即自测」或复制自测链接至浏览器。
+<div align="center">
+  <video
+    src="https://capacity-files.lcfile.com/y82mWx7FtMailiOwOtKQ0o9IUEbnbvy3/dianjizice.mp4"
+    controls
+    muted
+    preload="auto"
+    width="80%"
+    height="10%"
+  >
+    Video not supported.
+  </video>
+</div>
+
+:::tip
+注意：当发布游戏时，请务必删除游戏目录中的 `taptap_client_id.txt` 调试文本文件
+:::

@@ -16,9 +16,14 @@ import UnitySDKInstallation from "../../_partials/unity-sdk-installation.mdx";
 TapSDK 提供了一套可供游戏开发者收集账号数据的 API。
 系统会收集账号数据并进行分析，最终形成数据报表，帮助游戏开发者分析账号行为并优化游戏。
 
+## 集成前准备
+
+1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入
+
 ## 环境要求
 
-<MultiLang kind="unity_android_ios_v4">
+<MultiLang kind="default">
 
 <>
 
@@ -36,18 +41,6 @@ Android 5.0（API level 21）或更高版本
 
 <>
 
-Android 5.0（API level 21）或更高版本
-
-</>
-
-<>
-
-iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
-
-</>
-
-<>
-
 iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
 
 </>
@@ -56,12 +49,7 @@ iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
 
 ## 权限说明
 
-<MultiLang kind="unity_android_ios_v4">
-
-<>
-
-
-</>
+<MultiLang kind="android_alone">
 
 <>
 
@@ -84,189 +72,24 @@ iOS 11 或更高版本，Xcode 版本 15.3 或更高版本
 </>
 
 <>
-
-该模块需要如下权限：
-
-| 权限 | 使用目的 | 权限申请时机 |
-| ---------------------- | ---------------------- | ---------------------- |
-| 获取网络状态 | 用于检测当前网络连接是否有效 | 用户首次使用该功能时会申请权限 |
-| 网络状态权限 | 用于检查网络连接状态（如 Wi-Fi 或移动数据是否可用） | 用户首次使用该功能时会申请权限 |
-
-对于可选权限，SDK 不会主动发起申请，只在用户已授权的情况下获取对应数据，需要由开发者决定是否申请。
-
-该模块将在应用中添加如下权限：
-
-```xml
- <uses-permission android:name="android.permission.INTERNET" />
- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
- ```
-
-</>
-
-<>
-
 
 </>
 
 </MultiLang>
 
-## 集成前准备
-
-1. 参考 [准备工作](/sdk/access/get-ready/) 创建应用、开启应用配置开通数据分析服务；
 
 ## SDK 集成
 
-请先[下载](/tap-download) TapSDK，并添加相关依赖。
-
-<MultiLang kind="unity_android_ios_v4">
-
-<>
-
-如果只需要单独使用 TapEvent，可以导入依赖 `com.taptap.sdk.core`。
-
-<UnitySDKInstallation
-npmDeps={[
-"com.taptap.sdk.core"
-]}
-githubDeps={[
-{package: "com.taptap.sdk.core", url: `https://github.com/taptap/tapsdk-unity-dist.git?path=/Core#${v4SDKVersions.taptap.unity}`}
-]}
-unitypackageModules={[
-{name: "TapSDK_Core.unitypackage", desc: "TapSDK 基础库，必选"},
-]}/>
-
-</>
-
-<>
-
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-```groovy
-allprojects { 
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-}`
-}</CodeBlock>
-
-</>
-
-<>
-
-1. 项目根目录的 build.gradle 添加仓库地址：
-
-```groovy
-allprojects { 
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-2. app module 的 build.gradle 添加对应依赖：
-
-<CodeBlock language="groovy">{
-`dependencies {
-    implementation 'com.taptap.sdk:tap-core:${v4SDKVersions.taptap.android}'
-}`
-}</CodeBlock>
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{` pod 'TapTapSDK/Core', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-
-**本地文件依赖**
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `tapsdkcorecpp.xcframework` 基础库
-- `TapTapBasicToolsSDK.xcframework` 基础库
-- `TapTapCoreSDK.xcframework` 核心库
-- `TapTapGidSDK.xcframework` 基础库
-- `TapTapNetworkSDK.xcframework` 基础库
-- `THEMISLite.xcframework` 基础库
-
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
-3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
-
-**配置编译选项**
-
-- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 。
-
-- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
-
-- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
-
-</>
-
-<>
-
-iOS 提供通过添加 cocoaPods 远程依赖和使用本地文件导入两种集成方式，推荐使用远程依赖方式。
-
-**远程依赖**
-
-1. 在工程 Podfile 文件中对应模块下添加依赖：
-
-<CodeBlock>{` pod 'TapTapSDK/Core', '~> ${v4SDKVersions.taptap.ios }'`}</CodeBlock>
-
-2. 执行 `Pod install` 下载对应依赖文件
-
-**本地文件依赖**
-
-1. 在[下载页](/tap-download)下载如下文件：
-
-- `tapsdkcorecpp.xcframework` 基础库
-- `TapTapBasicToolsSDK.xcframework` 基础库
-- `TapTapCoreSDK.xcframework` 核心库
-- `TapTapGidSDK.xcframework` 基础库
-- `TapTapNetworkSDK.xcframework` 基础库
-- `THEMISLite.xcframework` 基础库
-
-
-2. 在工程中添加 `framework` 静态库，注意添加时选择 Embed 方式为 **Do Not Embed**
-3. SDK 内部使用了 [`Protobuf` 依赖库](https://cocoapods.org/pods/Protobuf)，开发者应提前通过远程或文件导入方式添加对应依赖。
-
-**配置编译选项**
-
-- 在 Build Setting 中的 Other Link Flag 中添加 `-ObjC` 。
-
-- 在 Build Setting 中的 Always Embed Swift Standard Libraries 设置为 YES，即始终引入 Swift 标准库，避免 App 启动时报错「无法找到 Swift 标准库之类」。如果项目中找不到，可以建立一个空 Swift 文件，Xcode 会自动建立桥接关系。
-
-- 在 Build Setting 中的 Swift Compiler - Language/Swift Language Version 选择 Swift 5。
-
-</>
-
-</MultiLang>
+请参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台的 SDK 基础依赖配置
 
 :::info
 如果你曾使用 `<3.6.3` 的 TapSDK 的数据分析功能，且初始化时区域选择为国际（`IO`），那么升级 SDK 至 `>=3.6.3` 的 TapSDK 前需要先迁移数据。
 请提交工单联系我们迁移数据后再升级。
 :::
 
-## 初始化 SDK
+## 初始化额外配置
 
-在 [TapSDK 初始化](/sdk/access/quickstart#初始化) 时可以配置上报事件所携带的游戏包属性及当前设备的信息，具体使用方式如下：
+在调用业务接口前，开发者需先调用初始化接口完成应用信息的配置，同时可以配置上报事件所携带的游戏包属性及当前设备的信息，具体使用方式如下：
 
 <MultiLang kind="unity_android_ios_v4">
 
@@ -279,25 +102,20 @@ using TapSDK.Core;
 TapTapSdkOptions coreOptions = new TapTapSdkOptions
 {
     // 客户端 ID，开发者后台获取
-    clientId = clientId,
+    clientId = "clientId",
     // 客户端令牌，开发者后台获取
-    clientToken = clientToken,
+    clientToken = "clientToken",
     // 地区，CN 为国内，Overseas 为海外
     region = TapTapRegionType.CN,
-    // 语言，默认为 Auto，默认情况下，国内为 zh_Hans，海外为 en
-    preferredLanguage = TapTapLanguageType.zh_Hans,
-    // 游戏版本号，如果不传则默认读取应用的版本号
-    gameVersion = "1.1.0",
     // CAID，仅国内 iOS
     caid = "000-000-0000-00000",
     // 是否开启广告商 ID 收集，默认为 false
     enableAdvertiserIDCollection = true,
     // OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效
-    oaidCert = null,
-    // 是否开启日志，Release 版本请设置为 false
-    enableLog = true,
+    oaidCert = "",
     // 是否禁用 OAID 反射，默认为 true
     disableReflectionOAID = true
+
 };
 
 //数据分析相关配置
@@ -311,7 +129,7 @@ TapTapEventOptions eventOptions =  new TapTapEventOptions
     overrideBuiltInParameters = false,
     // 是否开启自动上报 IAP 事件
     enableAutoIAPEvent = true,
-    // 是否禁用自动上报设备登录事件，默认为 false
+    // 是否禁用自动上报设备登录事件，默认为 false, 仅 Android 端生效
     disableAutoLogDeviceLogin = false
 };
 
@@ -319,36 +137,13 @@ TapTapEventOptions eventOptions =  new TapTapEventOptions
 TapTapSdkBaseOptions[] otherOptions = new TapTapSdkBaseOptions[]
 {
     eventOptions,
-    // ... 其他模块配置项
 };
 TapTapSDK.Init(coreOptions, otherOptions);
-
 ```
-
-| 字段                           | 可为空 | 说明                                                 |
-|------------------------------|-----|----------------------------------------------------|
-| clientId                     | 否   | 客户端 ID，开发者后台获取                                     |
-| clientToken                  | 否   | 客户端令牌，开发者后台获取                                      |
-| region                       | 否   | 地区，CN 为国内，Overseas 为海外                             |
-| preferredLanguage            | 是   | 默认为 TapTapLanguageType.Auto, 语言                    |
-| enableLog                    | 是   | 默认为 false, 是否开启日志，Release 版本请设置为 false             |
-| channel                      | 是   | 渠道，如 AppStore、GooglePlay                           |
-| gameVersion                  | 是   | 游戏版本号，如果不传则默认读取应用的版本号                              |
-| propertiesJson               | 是   | 初始化时传入的自定义参数，会在初始化时上报到 device_login 事件             |
-| caid                         | 是   | CAID，仅国内 iOS                                       |
-| overrideBuiltInParameters    | 是   | 是否能够覆盖内置参数，默认为 false                               |
-| enableAdvertiserIDCollection | 是   | 是否开启广告商 ID 收集，仅 iOS ，默认为 false，开启时需添加[工程配置](#idfaios)                            |
-| enableAutoIAPEvent           | 是   | 是否开启自动上报 IAP 事件                                    |
-| oaidCert                     | 是   | OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效 |
-| disableReflectionOAID        | 是   | 是否禁用 OAID 反射，默认为 true                              |
-| disableAutoLogDeviceLogin    | 是   | 是否禁用自动上报设备登录事件，默认为 false                           |
-
 
 </>
 
 <>
-
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
 
 ```java
 import com.taptap.sdk.core.TapTapRegion;
@@ -361,20 +156,22 @@ String clientId = "";
 // 开发者中心对应 Client Token
 String clientToken = "";
 
-TapTapEventOptions eventOptions = TapTapEventOptions.builder()
-    .channel("channel")
-    .autoIAPEventEnabled(false)
-    .overrideBuiltInParameters(false)
-    .properties(new JSONObject())
-    .disableAutoLogDeviceLogin(false)
+ TapTapEventOptions eventOptions = TapTapEventOptions.builder()
+    .channel("channel") // 分包渠道名称
+    .autoIAPEventEnabled(false) // 是否开启自动上报 IAP 事件
+    .overrideBuiltInParameters(false) // 是否能够覆盖内置参数，默认为 false
+    .properties(new JSONObject()) // 上报到 device_login 事件的自定义参数
+    .disableAutoLogDeviceLogin(false) // 是否禁用自动上报设备登录事件
     .build();
 
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-        clientId, // 游戏 Client ID
-        clientToken, // 游戏 Client Token
-        TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+    "clientId", // 游戏 Client ID
+    "clientToken", // 游戏 Client Token
+    TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
 );
 
+// OAID 证书
+tapSdkOptions.setOaidCert("oaidCert");
 // 是否禁用 OAID 反射, 默认 true
 tapSdkOptions.setDisableReflectionOAID(true);
 
@@ -386,8 +183,6 @@ TapTapSdk.init(context, tapSdkOptions, eventOptions);
 
 <>
 
-`TapTapSdkOptions` 详细参数见 [入门指南#快速开始](/sdk/access/quickstart/#初始化)
-
 ```kotlin
 import com.taptap.sdk.core.TapTapSdk
 import com.taptap.sdk.core.TapTapSdkOptions
@@ -395,28 +190,26 @@ import com.taptap.sdk.core.TapTapRegion
 import com.taptap.sdk.core.TapTapLanguage
 
 val eventOptions = TapTapEventOptions.builder()
-    .channel("channel")
-    .autoIAPEventEnabled(false)
-    .overrideBuiltInParameters(false)
-    .properties(new JSONObject())
-    .disableAutoLogDeviceLogin(false)
+    .channel("channel") // 分包渠道名称
+    .autoIAPEventEnabled(false) // 是否开启自动上报 IAP 事件
+    .overrideBuiltInParameters(false) // 是否能够覆盖内置参数，默认为 false
+    .properties(JSONObject()) // 上报到 device_login 事件的自定义参数
+    .disableAutoLogDeviceLogin(false) // 是否禁用自动上报设备登录事件
     .build()
 
 TapTapSdk.init(
    context = context,
    sdkOptions = TapTapSdkOptions(
-         clientId = clientId,
-         clientToken = clientToken,
-         region = TapTapRegion.CN,
-         preferredLanguage = TapTapLanguage.ZH_HANS,
-         enableLog = false,
-         // 是否禁用 OAID 反射, 默认 true
-         disableReflectionOAID = true
+         clientId = "clientId", // 游戏 Client ID
+         clientToken = "clientToken", // 游戏 Client Token
+         region = TapTapRegion.CN, // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外 
+         oaidCert = "oaidCert", // OAID 证书
+         disableReflectionOAID = true // 是否禁用 OAID 反射, 默认 true
+
    ),
    eventOptions
 )
 ```
-
 </>
 
 <>
@@ -430,7 +223,9 @@ let options = TapTapSdkOptions()
 options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
 options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
 options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
-// ... 其他全局配置
+options.caid = "caid" // 国内 CAID 值
+options.enableAdvertiserIDCollection = false // 是否开启广告商 ID (IDFA) 收集，默认为 false
+
 
 // 数据分析相关属性配置
 let eventOptions = TapTapEventOptions()
@@ -446,7 +241,6 @@ let otherOptions = [eventOptions]
 TapTapSDK.initWith(options, otherOptions: otherOptions)
 
 ```
-**注意**：启用 IDFA 时需添加[工程配置](#idfaios)
 
 </>
 
@@ -459,7 +253,9 @@ TapTapSdkOptions *options = [TapTapSdkOptions new];
 options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
 options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
 options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
-// ... 其他全局配置
+options.caid = @"caid"; // 国内 CAID 值
+options.enableAdvertiserIDCollection = NO; // 是否开启广告商 ID (IDFA) 收集，默认为 NO
+
 
 // 数据分析相关属性配置
 TapTapEventOptions *eventOptions = [TapTapEventOptions new];
@@ -480,6 +276,21 @@ NSArray *otherOptions = @[eventOptions];
 </>
 
 </MultiLang>
+
+相关参数说明如下：
+
+| 字段                           | 可为空 | 说明                                                 |
+|------------------------------|-----|----------------------------------------------------| 
+| channel                      | 是   | 渠道，如 AppStore、GooglePlay                           |
+| propertiesJson               | 是   | 上报到 device_login 事件的自定义参数             |
+| overrideBuiltInParameters    | 是   | 是否能够覆盖内置参数，默认为 false                               |
+| enableAutoIAPEvent           | 是   | 是否开启自动上报 IAP 事件，默认为 true                                    |
+| disableAutoLogDeviceLogin    | 是   | 是否禁用自动上报设备登录事件，仅 Android，默认为 false，  |
+| caid                         | 是   | CAID，仅国内 iOS                                       |   
+| oaidCert                     | 是   | OAID 证书， 仅 Android，用于上报 OAID 仅国内生效 |
+| disableReflectionOAID        | 是   | 是否禁用 OAID 反射，仅 Android，默认为 true                              |
+| enableAdvertiserIDCollection | 是   | 是否开启广告商 ID （IDFA）收集，仅 iOS ，默认为 false，开启时需添加[工程配置](#idfaios)  |
+
 
 ## 设置账号
 
