@@ -106,15 +106,7 @@ TapTapSdkOptions coreOptions = new TapTapSdkOptions
     // 客户端令牌，开发者后台获取
     clientToken = "clientToken",
     // 地区，CN 为国内，Overseas 为海外
-    region = TapTapRegionType.CN,
-    // CAID，仅国内 iOS
-    caid = "000-000-0000-00000",
-    // 是否开启广告商 ID 收集，默认为 false
-    enableAdvertiserIDCollection = true,
-    // OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效
-    oaidCert = "",
-    // 是否禁用 OAID 反射，默认为 true
-    disableReflectionOAID = true
+    region = TapTapRegionType.CN
 
 };
 
@@ -130,7 +122,15 @@ TapTapEventOptions eventOptions =  new TapTapEventOptions
     // 是否开启自动上报 IAP 事件
     enableAutoIAPEvent = true,
     // 是否禁用自动上报设备登录事件，默认为 false, 仅 Android 端生效
-    disableAutoLogDeviceLogin = false
+    disableAutoLogDeviceLogin = false,
+    // CAID，仅国内 iOS
+    caid = "000-000-0000-00000",
+    // 是否开启广告商 ID 收集，默认为 false
+    enableAdvertiserIDCollection = true,
+    // OAID证书, 仅 Android，用于上报 OAID 仅 [TapTapRegion.CN] 生效
+    oaidCert = "",
+    // 是否禁用 OAID 反射，默认为 true
+    disableReflectionOAID = true
 };
 
 
@@ -162,6 +162,8 @@ String clientToken = "";
     .overrideBuiltInParameters(false) // 是否能够覆盖内置参数，默认为 false
     .properties(new JSONObject()) // 上报到 device_login 事件的自定义参数
     .disableAutoLogDeviceLogin(false) // 是否禁用自动上报设备登录事件
+    .disableReflectionOAID(true) // 是否禁用 OAID 反射, 默认 true
+    .setOaidCert("cert") // OAID 证书
     .build();
 
 TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
@@ -169,11 +171,6 @@ TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
     "clientToken", // 游戏 Client Token
     TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
 );
-
-// OAID 证书
-tapSdkOptions.setOaidCert("oaidCert");
-// 是否禁用 OAID 反射, 默认 true
-tapSdkOptions.setDisableReflectionOAID(true);
 
 // 初始化 TapSDK
 TapTapSdk.init(context, tapSdkOptions, eventOptions);
@@ -195,6 +192,8 @@ val eventOptions = TapTapEventOptions.builder()
     .overrideBuiltInParameters(false) // 是否能够覆盖内置参数，默认为 false
     .properties(JSONObject()) // 上报到 device_login 事件的自定义参数
     .disableAutoLogDeviceLogin(false) // 是否禁用自动上报设备登录事件
+    .disableReflectionOAID(true) // 是否禁用 OAID 反射, 默认 true
+    .setOaidCert("cert") // OAID 证书
     .build()
 
 TapTapSdk.init(
@@ -202,10 +201,7 @@ TapTapSdk.init(
    sdkOptions = TapTapSdkOptions(
          clientId = "clientId", // 游戏 Client ID
          clientToken = "clientToken", // 游戏 Client Token
-         region = TapTapRegion.CN, // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外 
-         oaidCert = "oaidCert", // OAID 证书
-         disableReflectionOAID = true // 是否禁用 OAID 反射, 默认 true
-
+         region = TapTapRegion.CN, // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
    ),
    eventOptions
 )
@@ -223,15 +219,14 @@ let options = TapTapSdkOptions()
 options.clientId = "your_client_id" // 必须，开发者中心对应 Client ID
 options.clientToken = "your_client_token" // 必须，开发者中心对应 Client Token
 options.region = .CN // .CN：中国大陆，.overseas：其他国家或地区
-options.caid = "caid" // 国内 CAID 值
-options.enableAdvertiserIDCollection = false // 是否开启广告商 ID (IDFA) 收集，默认为 false
-
 
 // 数据分析相关属性配置
 let eventOptions = TapTapEventOptions()
 eventOptions.channel = "channel name" // 分包渠道名称
 eventOptions.overrideBuiltInParameters = true //  自定义字段是否能覆盖内置字段,默认 false
 eventOptions.enableAutoIAPEvent = false // 是否自动上报苹果内购支付成功事件
+eventOptions.caid = "caid" // 国内 CAID 值
+eventOptions.enableAdvertiserIDCollection = false // 是否开启广告商 ID (IDFA) 收集，默认为 false
 
 let properties = ["custom_key": "value"] // 自定义属性配置
 eventOptions.properties = properties // 自定义属性，启动首个预置事件（device_login）会携带该属性
@@ -253,15 +248,14 @@ TapTapSdkOptions *options = [TapTapSdkOptions new];
 options.clientId = @"your_clientId"; // 必须，开发者中心对应 Client ID
 options.clientToken = @"your_client_token"; // 必须，开发者中心对应 Client Token
 options.region = TapTapRegionTypeCN; // CN：中国大陆，overseas：其他国家或地区
-options.caid = @"caid"; // 国内 CAID 值
-options.enableAdvertiserIDCollection = NO; // 是否开启广告商 ID (IDFA) 收集，默认为 NO
-
 
 // 数据分析相关属性配置
 TapTapEventOptions *eventOptions = [TapTapEventOptions new];
 eventOptions.channel = @"channel name"; // 分包渠道名称
 eventOptions.overrideBuiltInParameters = YES; //  自定义字段是否能覆盖内置字段,默认 NO
 eventOptions.enableAutoIAPEvent = NO; // 是否自动上报苹果内购支付成功事件
+eventOptions.caid = @"caid"; // 国内 CAID 值
+eventOptions.enableAdvertiserIDCollection = NO; // 是否开启广告商 ID (IDFA) 收集，默认为 NO
 
 NSDictionary *properties = @{@"custom_key": @"value"}; // 自定义属性配置
 eventOptions.properties = properties; // 自定义属性，启动首个预置事件（device_login）会携带该属性

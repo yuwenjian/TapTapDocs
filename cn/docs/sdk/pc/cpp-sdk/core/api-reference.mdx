@@ -12,6 +12,15 @@ slug: /pc/cpp-sdk/api-reference/
 未初始化或初始化失败时调用其他函数将返回错误或者非预期结果。
 :::
 
+:::warning 监听 TapTap 客户端系统状态变化
+- 建议初始化成功后，立刻注册系统状态变化回调，以便实时获知 TapTap 客户端状态变化。
+- 注册后，调用TapSDK_RunCallbacks()会触发回调函数得到当前的系统状态。
+- 此后，只有当系统状态发生变化时，才会再次触发回调函数，得到变化后的系统状态。
+```cpp
+TapSDK_RegisterCallback(TapEventID::SystemStateChanged, yourSystemStateNotificationHandler);
+```
+:::
+
 ## 数据类型定义
 
 ### 基础类型
@@ -20,6 +29,7 @@ slug: /pc/cpp-sdk/api-reference/
 typedef char ErrMsg[1024];       // 错误信息，最大长度 1023 字节 + '\0'
 typedef void (T_CALLTYPE *callback_t)(TapEventID, void *);  // 回调函数类型
 typedef int64_t TapSDK_ErrorCode; // 错误码，取值请参考枚举值 TapSDK_ErrorCode_*
+typedef uint32_t TapSystemState; // TapTap 客户端系统状态，取值请参考枚举值TapSystemState_*
 
 #pragma pack(push, 8)
 
@@ -28,6 +38,11 @@ typedef struct {
     TapSDK_ErrorCode code; // 错误码
     const char* message;   // 错误信息
 } TapSDK_Error;
+
+// TapTap 客户端系统状态通知
+typedef struct {
+    TapSystemState state; // TapTap 客户端当前系统状态
+} TapSystemStateNotification;
 
 #pragma pack(pop)
 ```
@@ -68,6 +83,11 @@ enum class TapUser_AsyncAuthorize_Result : uint32_t {
 ```cpp
 enum class TapEventID : uint32_t {
     Unknown = 0,
+
+    // TapTap客户端系统状态变化通知，SDK初始化成功后注册此事件的回调函数，以便及时获知TapTap客户端状态变化
+    // 使用 TapSystemStateNotification 结构体解析
+    SystemStateChanged = 1,
+
     AuthorizeFinished = 2002,           // 授权完成事件
     GamePlayableStatusChanged = 4001,   // 游戏可玩状态变更事件
     DLCPlayableStatusChanged = 4002,    // DLC 可玩状态变更事件
@@ -106,9 +126,30 @@ enum {
     TapSDK_ErrorCode_CloudSave_StorageSizeLimitPerClient = 400004,     // 用户在该应用下使用存储空间超限
     TapSDK_ErrorCode_CloudSave_TotalStorageSizeLimit = 400005,         // 用户总使用存储空间超限
     TapSDK_ErrorCode_CloudSave_Timeout = 400006,                       // 请求超时，通常是由于网络卡顿，创建/更新存档耗时过长导致
-    TapSDK_ErrorCode_CloudSave_ConcurrentCallDisallowed = 400007,      // 不允许并发调用的请求
+    TapSDK_ErrorCode_CloudSave_ConcurrentCallDisallowed = 400007,      // 上传云存档并发调用次数超过 10 个，或者并发更新同一个云存档
     TapSDK_ErrorCode_CloudSave_StorageServerError = 400008,            // 存储服务故障
     TapSDK_ErrorCode_CloudSave_InvalidName = 400009,                   // 存档名称不合法
+};
+```
+
+#### TapSystemState
+
+TapTap 客户端系统状态枚举：
+
+```cpp
+enum {
+    TapSystemState_Unknown = 0,
+
+    // TapTap客户端当前可以正常访问TapTap服务端。
+    // 开发者收到这个状态通知时，可以解除之前收到TapSystemState_PlatformOffline状态通知时对游戏做的限制。
+    TapSystemState_PlatformOnline = 1,
+    // TapTap客户端当前无法访问TapTap服务端：网络异常或者TapTap服务端故障。
+    // 当TapTap客户端处于这个状态时，无法实时获得游戏/DLC所有权变化通知，比如已退款。
+    // 开发者收到这个状态通知时，可以提醒玩家检查网络状态，或者做其他游戏限制。
+    TapSystemState_PlatformOffline = 2,
+    // TapTap客户端退出。
+    // 开发者收到这个状态通知时，应该立刻保存游戏存档，然后退出游戏。
+    TapSystemState_PlatformShutdown = 3,
 };
 ```
 
@@ -207,6 +248,10 @@ TapSDK_Init_Result result = TapSDK_Init(&errMsg, pubKey);
 switch (result) {
     case TapSDK_Init_Result::OK:
         std::cout << "初始化成功" << std::endl;
+        // 建议初始化成功后，立刻注册系统状态变化回调，以便实时获知 TapTap 客户端状态变化。
+        // 注册后，调用TapSDK_RunCallbacks()会触发回调函数得到当前的系统状态。
+        // 此后，只有当系统状态发生变化时，才会再次触发回调函数，得到变化后的系统状态。
+        TapSDK_RegisterCallback(TapEventID::SystemStateChanged, yourSystemStateNotificationHandler);
         break;
     case TapSDK_Init_Result::NoPlatform:
         std::cout << "未找到 TapTap 平台，请下载并安装 TapTap 启动器" << std::endl;

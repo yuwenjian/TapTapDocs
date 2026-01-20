@@ -17,11 +17,23 @@ Except for `TapSDK_RestartAppIfNecessary`, all other API functions must successf
 Calling other functions without initialization or after initialization failure will return errors or unexpected results.
 :::
 
+:::warning Monitor TapTap Client System State Changes
+- It is recommended to register the system state change callback immediately after successful initialization to get real-time notifications of TapTap client state changes.
+- After registration, calling `TapSDK_RunCallbacks()` will trigger the callback function to get the current system state.
+- After that, the callback function will only be triggered again when the system state changes, and you will get the changed system state.
+```cpp
+TapSDK_RegisterCallback(TapEventID::SystemStateChanged, yourSystemStateNotificationHandler);
+```
+:::
+
 ```cpp
 #include <iostream>
 #include <string>
 
 #include "taptap_api.h"
+
+// TapTap client system state change notification callback function
+void systemStateNotification(TapEventID eventID, void* data);
 
 int main() {
     const char* clientID = "your_client_id_here";
@@ -41,6 +53,10 @@ int main() {
     switch (result) {
         case TapSDK_Init_Result::OK:
             std::cout << "SDK initialization successful" << std::endl;
+            // It is recommended to register the system state change callback immediately after successful initialization to get real-time notifications of TapTap client state changes.
+            // After registration, calling TapSDK_RunCallbacks() will trigger the callback function to get the current system state.
+            // After that, the callback function will only be triggered again when the system state changes, and you will get the changed system state.
+            TapSDK_RegisterCallback(TapEventID::SystemStateChanged, systemStateNotification);
             break;
         case TapSDK_Init_Result::NoPlatform:
             std::cout << "TapTap platform not found, please download and install TapTap launcher" << std::endl;
@@ -74,6 +90,35 @@ int main() {
     // 4. Cleanup resources
     TapSDK_Shutdown();
     return 0;
+}
+
+// TapTap client system state change notification callback function
+void systemStateNotification(TapEventID eventID, void* data)
+{
+    // Use TapSystemStateNotification* to cast data type and get state change notification
+    // Note: data and other memory referenced inside will be released by the SDK after the callback function returns.
+    // If you need to use it for a long time, please make a copy yourself
+    auto noti = static_cast<TapSystemStateNotification*>(data);
+    switch (noti->state) {
+    case TapSystemState_PlatformOnline:
+        // TapTap client can currently access TapTap server normally.
+        // When developers receive this state notification,
+        // they can remove the restrictions imposed on the game when they received the TapSystemState_PlatformOffline state notification.
+        break;
+    case TapSystemState_PlatformOffline:
+        // TapTap client currently cannot access TapTap server: network down or TapTap server failure.
+        // When TapTap client is in this state, it cannot get real-time notifications of game/DLC ownership changes, such as refunds.
+        // When developers receive this state notification, they can remind players to check network status or impose other game restrictions.
+        break;
+    case TapSystemState_PlatformShutdown:
+        // TapTap client exits.
+        // When developers receive this state notification, they should immediately save the game state and then exit the game.
+        TapSDK_Shutdown();
+        exit(0);
+        break;
+    default:
+        break;
+    }
 }
 ```
 

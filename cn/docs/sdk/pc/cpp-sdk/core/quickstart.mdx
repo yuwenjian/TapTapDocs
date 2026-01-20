@@ -17,11 +17,23 @@ slug: /pc/cpp-sdk/quickstart/
 未初始化或初始化失败时调用其他函数将返回错误或者非预期结果。
 :::
 
+:::warning 监听 TapTap 客户端系统状态变化
+- 建议初始化成功后，立刻注册系统状态变化回调，以便实时获知 TapTap 客户端状态变化。
+- 注册后，调用TapSDK_RunCallbacks()会触发回调函数得到当前的系统状态。
+- 此后，只有当系统状态发生变化时，才会再次触发回调函数，得到变化后的系统状态。
+```cpp
+TapSDK_RegisterCallback(TapEventID::SystemStateChanged, yourSystemStateNotificationHandler);
+```
+:::
+
 ```cpp
 #include <iostream>
 #include <string>
 
 #include "taptap_api.h"
+
+// TapTap客户端系统状态变化通知回调函数
+void systemStateNotification(TapEventID eventID, void* data);
 
 int main() {
     const char* clientID = "your_client_id_here";
@@ -41,6 +53,10 @@ int main() {
     switch (result) {
         case TapSDK_Init_Result::OK:
             std::cout << "SDK 初始化成功" << std::endl;
+            // 建议初始化成功后，立刻注册系统状态变化回调，以便实时获知 TapTap 客户端状态变化。
+            // 注册后，调用TapSDK_RunCallbacks()会触发回调函数得到当前的系统状态。
+            // 此后，只有当系统状态发生变化时，才会再次触发回调函数，得到变化后的系统状态。
+            TapSDK_RegisterCallback(TapEventID::SystemStateChanged, systemStateNotification);
             break;
         case TapSDK_Init_Result::NoPlatform:
             std::cout << "未找到 TapTap 平台，请下载并安装 TapTap 启动器" << std::endl;
@@ -74,6 +90,33 @@ int main() {
     // 4. 清理资源
     TapSDK_Shutdown();
     return 0;
+}
+
+// TapTap客户端系统状态变化通知回调函数
+void systemStateNotification(TapEventID eventID, void* data)
+{
+    // 使用TapSystemStateNotification*强转data类型，获取状态变化通知
+    // 注意：data及其里面引用的其他内存，在回调函数返回后会被 SDK 释放。如需长期使用，请开发者自行复制一份
+    auto noti = static_cast<TapSystemStateNotification*>(data);
+    switch (noti->state) {
+    case TapSystemState_PlatformOnline:
+        // TapTap客户端当前可以正常访问TapTap服务端。
+        // 开发者收到这个状态通知时，可以解除之前收到TapSystemState_PlatformOffline状态通知时对游戏做的限制。
+        break;
+    case TapSystemState_PlatformOffline:
+        // TapTap客户端当前无法访问TapTap服务端：网络异常或者TapTap服务端故障。
+        // 当TapTap客户端处于这个状态时，无法实时获得游戏/DLC所有权变化通知，比如已退款。
+        // 开发者收到这个状态通知时，可以提醒玩家检查网络状态，或者做其他游戏限制。
+        break;
+    case TapSystemState_PlatformShutdown:
+        // TapTap客户端退出。
+        // 开发者收到这个状态通知时，应该立刻保存游戏存档，然后退出游戏。
+        TapSDK_Shutdown();
+        exit(0);
+        break;
+    default:
+        break;
+    }
 }
 ```
 
