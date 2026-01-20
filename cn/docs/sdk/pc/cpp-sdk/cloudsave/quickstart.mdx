@@ -14,8 +14,8 @@ slug: /pc/cpp-sdk/cloudsave/quickstart
 
 - 单个存档数据文件最大 10MB，单个封面文件最大 512KB。
 - 单个玩家在单个游戏下，最多 100 个云存档，总容量 100MB。
-- 创建/更新云存档最小间隔 1 分钟，1 分钟内多次调用会导致报错。
-- 不允许并发创建/更新云存档，同时执行多个创建/更新请求会导致报错。
+- 创建/更新云存档限制每分钟最多 60 次，超过限额会导致报错。
+- 创建/更新云存档最多允许 10 个并发调用。为避免时序问题，同一个云存档不允许并发更新。
 
 ## 集成步骤
 
@@ -86,8 +86,8 @@ int main()
     // 存档封面文件路径，创建云存档接口返回前不允许修改该文件，允许为 NULL，表示没有封面
     createRequest.cover_file_path = "/path/to/coverfile";
     // 3. 发起创建云存档的异步请求
-    // 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用1次的限制，
-    //      且不可并发调用，否则会在回调函数中返回错误
+    // 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用60次的限制，
+    //      且最多仅允许10个并发调用，超限会在回调函数中返回错误
     auto ret = TapCloudSave_AsyncCreate(
                   TapCloudSave(), // 云存档模块单例对象
                   ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求
@@ -179,8 +179,8 @@ int main()
     // 存档封面文件路径，创建云存档接口返回前不允许修改该文件，允许为 NULL，表示没有封面
     updateRequest.cover_file_path = "/path/to/coverfile";
     // 3. 发起更新云存档的异步请求
-    // 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用1次的限制，
-    //      且不可并发调用，否则会在回调函数中返回错误
+    // 注意：TapCloudSave_AsyncCreate()和TapCloudSave_AsyncUpdate()共享每分钟仅允许调用60次的限制，
+    //      最多仅允许10个并发调用，且同一个云存档不允许并发更新，超限会在回调函数中返回错误
     auto ret = TapCloudSave_AsyncUpdate(
                   TapCloudSave(), // 云存档模块单例对象
                   ++gRequestID,   // 请求 ID，由开发者生成，用于在回调函数中对应到原始请求

@@ -12,6 +12,15 @@ Except for `TapSDK_RestartAppIfNecessary`, all other API functions must successf
 Calling other functions without initialization or after initialization failure will return errors or unexpected results.
 :::
 
+:::warning Monitor TapTap Client System State Changes
+- It is recommended to register the system state change callback immediately after successful initialization to get real-time notifications of TapTap client state changes.
+- After registration, calling `TapSDK_RunCallbacks()` will trigger the callback function to get the current system state.
+- After that, the callback function will only be triggered again when the system state changes, and you will get the changed system state.
+```cpp
+TapSDK_RegisterCallback(TapEventID::SystemStateChanged, yourSystemStateNotificationHandler);
+```
+:::
+
 ## Data Type Definitions
 
 ### Basic Types
@@ -20,6 +29,7 @@ Calling other functions without initialization or after initialization failure w
 typedef char ErrMsg[1024];       // Error message, maximum length 1023 bytes + '\0'
 typedef void (T_CALLTYPE *callback_t)(TapEventID, void *);  // Callback function type
 typedef int64_t TapSDK_ErrorCode; // Error code, values refer to enum TapSDK_ErrorCode_*
+typedef uint32_t TapSystemState; // TapTap client system state, values refer to enum TapSystemState_*
 
 #pragma pack(push, 8)
 
@@ -28,6 +38,11 @@ typedef struct {
     TapSDK_ErrorCode code; // Error code
     const char* message;   // Error message
 } TapSDK_Error;
+
+// TapTap client system state notification
+typedef struct {
+    TapSystemState state; // TapTap client current system state
+} TapSystemStateNotification;
 
 #pragma pack(pop)
 ```
@@ -68,6 +83,12 @@ Event ID enumeration:
 ```cpp
 enum class TapEventID : uint32_t {
     Unknown = 0,
+
+    // TapTap client system state change notification.
+    // Register the callback function for this event after SDK initialization succeeds to get timely notifications of TapTap client state changes.
+    // Use TapSystemStateNotification structure to parse.
+    SystemStateChanged = 1,
+
     AuthorizeFinished = 2002,           // Authorization completion event
     GamePlayableStatusChanged = 4001,   // Game playable status change event
     DLCPlayableStatusChanged = 4002,    // DLC playable status change event
@@ -106,9 +127,31 @@ enum {
     TapSDK_ErrorCode_CloudSave_StorageSizeLimitPerClient = 400004,     // User's storage size limit exceeded for this app
     TapSDK_ErrorCode_CloudSave_TotalStorageSizeLimit = 400005,         // User's total storage size limit exceeded
     TapSDK_ErrorCode_CloudSave_Timeout = 400006,                       // Request timeout, usually due to network lag
-    TapSDK_ErrorCode_CloudSave_ConcurrentCallDisallowed = 400007,      // Concurrent call not allowed
+    TapSDK_ErrorCode_CloudSave_ConcurrentCallDisallowed = 400007,      // Cloud save upload concurrent calls exceed 10, or concurrently updating the same cloud save
     TapSDK_ErrorCode_CloudSave_StorageServerError = 400008,            // Storage server error
     TapSDK_ErrorCode_CloudSave_InvalidName = 400009,                   // Invalid save name
+};
+```
+
+#### TapSystemState
+
+TapTap client system state enumeration:
+
+```cpp
+enum {
+    TapSystemState_Unknown = 0,
+
+    // TapTap client can currently access TapTap server normally.
+    // When developers receive this state notification,
+    // they can remove the restrictions imposed on the game when they received the TapSystemState_PlatformOffline state notification.
+    TapSystemState_PlatformOnline = 1,
+    // TapTap client currently cannot access TapTap server: network down or TapTap server failure.
+    // When TapTap client is in this state, it cannot get real-time notifications of game/DLC ownership changes, such as refunds.
+    // When developers receive this state notification, they can remind players to check network status or impose other game restrictions.
+    TapSystemState_PlatformOffline = 2,
+    // TapTap client exits.
+    // When developers receive this state notification, they should immediately save the game state and then exit the game.
+    TapSystemState_PlatformShutdown = 3,
 };
 ```
 
@@ -207,6 +250,10 @@ TapSDK_Init_Result result = TapSDK_Init(&errMsg, pubKey);
 switch (result) {
     case TapSDK_Init_Result::OK:
         std::cout << "Initialization successful" << std::endl;
+        // It is recommended to register the system state change callback immediately after successful initialization to get real-time notifications of TapTap client state changes.
+        // After registration, calling TapSDK_RunCallbacks() will trigger the callback function to get the current system state.
+        // After that, the callback function will only be triggered again when the system state changes, and you will get the changed system state.
+        TapSDK_RegisterCallback(TapEventID::SystemStateChanged, yourSystemStateNotificationHandler);
         break;
     case TapSDK_Init_Result::NoPlatform:
         std::cout << "TapTap platform not found, please download and install TapTap launcher" << std::endl;
@@ -274,6 +321,11 @@ if (TapSDK_GetClientID(clientID)) {
 ```
 
 ## Callback Related Functions
+
+:::warning Memory Management
+- The memory pointed to by the data pointer `data` in the callback function is managed by the SDK, callers do not need to release it
+- After the callback function returns, the SDK will automatically release this memory. If you need to use it for a long time, please make a copy yourself
+:::
 
 ### TapSDK_RegisterCallback
 
