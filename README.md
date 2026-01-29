@@ -3,7 +3,7 @@
 ## 环境搭建
 
 ```sh
-brew install node@18 yarn # 安装软件
+brew install node@20 yarn # 安装软件（需要 Node.js 20 或更高版本）
 yarn                      # 安装依赖
 ```
 
