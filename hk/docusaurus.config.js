@@ -9,12 +9,14 @@ const config = {
   baseUrl:
     PREVIEW === "true" ? "/" : (process.env.APP_ROUTER_BASE_URL || "/docs/"),
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "throw",
   onBrokenAnchors: "ignore",
   favicon: "img/logoh.png",
   trailingSlash: true,
   markdown: {
-    format: 'mdx'
+    format: 'mdx',
+    hooks: {
+      onBrokenMarkdownLinks: "throw",
+    },
   },
   customFields: {
     searchUrl: "https://tds-doc-search-api.avosapps.us/search",
@@ -63,9 +65,6 @@ const config = {
         },
         theme: {
           customCss: require.resolve("./src/styles/index.scss"),
-        },
-        googleAnalytics: {
-          trackingID: "UA-73963350-1",
         },
       }),
     ],

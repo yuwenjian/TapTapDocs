@@ -5,17 +5,21 @@ const PREVIEW = process.env.PREVIEW ?? "false";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+    organizationName: "taptap",
+    projectName: "tapsdk-doc",
     title: "TapTap 开发者文档",
     url: process.env.APP_PUBLIC_PATH || "https://developer.taptap.cn",
     baseUrl:
         PREVIEW === "true" ? "/" : (process.env.APP_ROUTER_BASE_URL || "/docs/"),
     onBrokenLinks: "throw",
-    onBrokenMarkdownLinks: "throw",
     onBrokenAnchors: "ignore",
     favicon: "img/logoh.png",
     trailingSlash: true,
     markdown: {
-        format: 'mdx'
+        format: 'mdx',
+        hooks: {
+            onBrokenMarkdownLinks: "throw",
+        },
     },
     customFields: {
         searchUrl: "https://tds-doc-search-api.leanapp.cn/search",
@@ -69,9 +73,6 @@ const config = {
                 },
                 theme: {
                     customCss: require.resolve("./src/styles/index.scss"),
-                },
-                googleAnalytics: {
-                    trackingID: "UA-73963350-1",
                 },
             }),
         ],

@@ -14,7 +14,7 @@ stages:
 # 准备 node 环境，build 和 notification 阶段会用到
 .setup_node_env:
   interruptible: true
-  image: registry.tapsvc.com/public/node18-buster:pnpm7.27.0-1.0.0
+  image: registry.tapsvc.com/public/node24-bookworm:pnpm10.25.0-1.0.0
   tags:
     - node
   before_script:
