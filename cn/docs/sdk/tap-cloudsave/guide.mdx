@@ -252,9 +252,9 @@ TapTapCloudSave.unregisterCloudSaveCallback(callback)
 :::info
 存档名称仅支持【英文/数字/下划线/中划线】，不支持中文
 
-存档摘要 (summary) 以及额外信息 (extra) 无此限制
+存档摘要 (summary) 以及额外信息 (extra) 无此限制，但 summary 不能为空字符串
 
-一分钟内仅可调用一次（与更新存档共享冷却时间）
+一分钟内最多可调用 60 次（与更新存档共享冷却时间）
 :::
 
 <MultiLang kind="unity_android_ios_v4">
@@ -677,9 +677,9 @@ id<TapTapCloudSaveRequestCallback> callback = // 实现回调协议
 :::info
 存档名称仅支持【英文/数字/下划线/中划线】，不支持中文
 
-存档摘要 (summary) 以及额外信息 (extra) 无此限制
+存档摘要 (summary) 以及额外信息 (extra) 无此限制，但 summary 不能为空字符串
 
-一分钟内仅可调用一次（与创建存档共享冷却时间）
+一分钟内最多可调用 60 次（与创建存档共享冷却时间）
 :::
 
 <MultiLang kind="unity_android_ios_v4">
