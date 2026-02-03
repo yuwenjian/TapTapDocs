@@ -167,6 +167,9 @@ build_rnd_cn:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
       changes: !reference [.changes, cn]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: !reference [.changes, cn]
+      when: manual
 
 upload_rnd_cn:
   stage: upload
@@ -174,6 +177,8 @@ upload_rnd_cn:
     - .build-and-push-image
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
+      changes: !reference [.changes, cn]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: !reference [.changes, cn]
   variables:
     DOCKER_REGISTRY_NAMESPACE: web-frontend
@@ -189,6 +194,8 @@ deploy_rnd_cn:
     - .deploy-kubefiles-staging
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
+      changes: !reference [.changes, cn]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: !reference [.changes, cn]
   environment:
     name: cn/staging
