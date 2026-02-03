@@ -66,6 +66,50 @@ else
 - 未检测到安装 TapTap PC 端，会显示阻断性弹窗，引导用户下载安装 TapTap PC 端并结束当前游戏进程。上述行为属于正常启动流程的一部分，不会对游戏造成不良影响。
 :::
 
+## 状态监听
+
+在启动校验成功后，如游戏需在 TapTap PC 端在线状态发生变化（包括因网络或其他原因导致的客户端离线或后续恢复）或即将退出时执行额外处理逻辑，可通过该接口注册对应的状态监听。示例如下：
+
+<MultiLang kind="alone_unity">
+<>
+```cs
+using TapSDK.Core;
+
+// 注册 TapTap PC 端状态监听
+TapTapSDK.RegisterTapTapPCStateChangeListener(OnTapPCStateChanged);
+
+// 移除 TapTap PC 端状态监听
+TapTapSDK.UnRegisterTapTapPCStateChangeListener(OnTapPCStateChanged);
+
+/// <summary>
+/// TapTap PC 端状态变更回调
+/// </summary>
+/// <param name="state"> 当前状态 </param>
+public static void OnTapPCStateChanged(int state)
+{
+    switch (state)
+    {
+        case TapTapPCState.ONLINE:
+            Debug.Log("Tap 客户端状态变更 : 上线");
+            break;
+        case TapTapPCState.OFFLINE:
+            Debug.Log("Tap 客户端状态变更 ：离线");
+            break;
+        case TapTapPCState.SHUTDOWN:
+            Debug.Log("Tap 客户端状态变更 ：退出");
+            break;
+    }
+}
+```
+</>
+
+<>
+</>
+
+</MultiLang>
+
+对于在应用整个生命周期内依赖 TapTap PC 端动态通知或查询数据的业务模块（如正版验证），建议开发者在接入模块前通过该接口注册状态监听，并根据状态变化进行相应处理。
+
 ## 后续接入
 
 完成上述步骤后，即可根据业务需求，按照各功能模块的文档接入 TapSDK 提供的相关能力。
