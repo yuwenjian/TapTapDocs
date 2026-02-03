@@ -1,5 +1,6 @@
 // @ts-check
 
+const path = require("path");
 const PREVIEW = process.env.PREVIEW ?? "false";
 
 /** @type {import('@docusaurus/types').Config} */
@@ -19,16 +20,23 @@ const config = {
     },
   },
   customFields: {
-    searchUrl: "https://tds-doc-search-api.avosapps.us/search",
-    upItemListIndexUrl: "https://tds-doc-search-check-log.avosapps.us/api/check-log-up",
-    aiSearchUrl :"https://tds-doc-search-ai-api.ap-sg.tdsapps.com/api/ai-search?type=TDSGlobal",
-    aiSearchEnUrl :"https://tds-doc-search-ai-api.ap-sg.tdsapps.com/api/ai-search?type=TDSGlobalen",
-    searchProviderName: "LeanDB Elasticsearch",
-    searchProviderWebsite:
-      "https://developer.taptap.io/docs/sdk/engine/database/es/",
     mainDomainHost: "https://www.taptap.io",
     dcDomainHost: "https://developer.taptap.io?from=tds-docs",
   },
+
+  // 本地搜索插件
+  themes: [
+    [
+      "@easyops-cn/docusaurus-search-local",
+      {
+        hashed: "filename", 
+        language: ["en", "zh"],
+        docsRouteBasePath: "/",
+        highlightSearchTermsOnTargetPage: true,
+        searchBarPosition: "right",
+      },
+    ],
+  ],
 
   i18n: {
     localeConfigs: {
@@ -134,7 +142,9 @@ const config = {
       },
     }),
 
-  plugins: ["docusaurus-plugin-sass"],
+  plugins: [
+    "docusaurus-plugin-sass",
+  ],
 };
 
 module.exports = config;

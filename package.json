@@ -6,10 +6,10 @@
     "docusaurus": "docusaurus",
     "start-cn": "docusaurus start cn --port 3888 --host 0.0.0.0",
     "start-hk": "docusaurus start hk --port 3999 --host 0.0.0.0",
-    "build-cn": "docusaurus build cn",
+    "build-cn": "docusaurus build cn && node scripts/inject-search-preload.js cn/build",
     "build-cn:preview": "turbo run build-cn --token=VLFPeaTD --team=team_tds --api=https://tds-turbo-cache.xdrnd.cn",
     "build-hk:preview": "turbo run build-hk --token=VLFPeaTD --team=team_tds --api=https://tds-turbo-cache.xdrnd.cn",
-    "build-hk": "docusaurus build hk",
+    "build-hk": "docusaurus build hk && node scripts/inject-search-preload.js hk/build",
     "swizzle-cn": "docusaurus swizzle cn",
     "swizzle-hk": "docusaurus swizzle hk",
     "deploy-cn": "docusaurus deploy cn",
@@ -29,6 +29,7 @@
   "dependencies": {
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
+    "@easyops-cn/docusaurus-search-local": "^0.46.1",
     "@mdx-js/react": "^3.0.0",
     "axios": "^0.27.2",
     "clsx": "^1.2.1",
@@ -41,7 +42,6 @@
     "react-dom": "^18.2.0",
     "react-markdown": "8.0.7",
     "sass": "^1.54.9",
-    "segmentit": "^2.0.3",
     "turbo": "^1.10.15",
     "uuid": "^9.0.0"
   },

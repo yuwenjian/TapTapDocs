@@ -22,17 +22,23 @@ const config = {
         },
     },
     customFields: {
-        searchUrl: "https://tds-doc-search-api.leanapp.cn/search",
-        upItemListIndexUrl: "https://tds-doc-search-check-log.leanapp.cn/api/check-log-up",
-        aiSearchUrl: "https://tds-doc-search-ai-api.ap-sg.tdsapps.com/api/ai-search?type=TDS",
-        aiSearchEnUrl: "https://tds-doc-search-ai-api.ap-sg.tdsapps.com/api/ai-search?type=TDSen",
-        searchProviderName: "LeanDB Elasticsearch",
-        searchProviderWebsite:
-            "https://developer.taptap.cn/docs/sdk/engine/database/es/",
         mainDomainHost: "https://developer.taptap.cn/",
         dcDomainHost: "https://developer.taptap.cn?from=tds-docs",
     },
 
+    // 本地搜索插件
+    themes: [
+        [
+            "@easyops-cn/docusaurus-search-local",
+            {
+                hashed: "filename",  
+                language: ["en", "zh"],
+                docsRouteBasePath: "/",
+                highlightSearchTermsOnTargetPage: true,
+                searchBarPosition: "right",
+            },
+        ],
+    ],
     i18n: {
         localeConfigs: {
             "zh-Hans": {
