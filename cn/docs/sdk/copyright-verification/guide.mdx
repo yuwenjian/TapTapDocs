@@ -15,9 +15,11 @@ import UnitySDKInstallation from "../_partials/unity-sdk-installation.mdx";
 ## 集成前准备
 
 1. 参考 [开发者中心配置](/sdk/access/get-ready/) 创建应用、配置包名与签名证书
-2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)、[iOS](/sdk/integration-guides/ios)）完成对应平台或引擎的基础接入，对于 Windows 平台，使用前还需接入[启动校验](/sdk/integration-guides/pc-engine-features/#启动校验)
+2. 参考集成指南（[Unity](/sdk/integration-guides/unity)、[Android](/sdk/integration-guides/android)）完成对应平台或引擎的基础接入
 
-
+:::tip
+在 Windows 平台，开发者还需接入[启动校验](/sdk/integration-guides/pc-engine-features/#启动校验)。同时，由于游戏购买状态和 DLC 功能依赖 TapTap PC 端处理，建议在启动校验成功后添加[TapTap PC 端状态监听](/sdk/integration-guides/pc-engine-features/#状态监听)，并在状态异常时引导玩家检查网络或重新通过 TapTap PC 端启动游戏
+:::
 ## 权限说明
 
 <MultiLang kind="android_alone">
