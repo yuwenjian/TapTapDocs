@@ -2,7 +2,10 @@ const taptapUnity = "4.9.5"
 const taptapIos = "4.9.5"
 const taptapAndroid = "4.9.5"
 const taptapUnreal = "3.29.2"
-const taptapShadow = "4.10.0-beta.3"
+const taptapShadowUnity = "4.10.0-beta.4"
+const taptapShadowIos = "4.10.0-beta.3"
+const taptapShadowAndroid = "4.10.0-beta.3"
+const taptapShadowUnreal = "3.29.2"
 
 const v4SDKVersions = {
     taptap: {
@@ -10,7 +13,10 @@ const v4SDKVersions = {
         android: taptapAndroid,
         ios: taptapIos,
         unreal: taptapUnreal,
-        shadow: taptapShadow,
+        shadowUnity: taptapShadowUnity,
+        shadowAndroid: taptapShadowAndroid,
+        shadowIos: taptapShadowIos,
+        shadowUnreal: taptapShadowUnreal,
         rtc: "1.1.0",
         adr: "1.2.1"
     },
