@@ -97,6 +97,8 @@ upload_cn_mr:
   variables:
     ALIYUN_OSS_BUCKET: tds-abd-sh
     ALIYUN_OSS_ENDPOINT: oss-cn-shanghai-internal.aliyuncs.com
+    ALIYUN_OSS_KEY_ID: $PREVIEW_ALIYUN_OSS_KEY_ID
+    ALIYUN_OSS_SECRET: $PREVIEW_ALIYUN_OSS_SECRET
     SRC_PATH: cn/build
     DEST_PATH: preview/tapsdk-doc-cn-$CI_MERGE_REQUEST_ID
     GIT_STRATEGY: none
@@ -223,6 +225,8 @@ upload_hk_mr:
     GIT_STRATEGY: none
     ALIYUN_OSS_BUCKET: tds-abd-sh
     ALIYUN_OSS_ENDPOINT: oss-cn-shanghai-internal.aliyuncs.com
+    ALIYUN_OSS_KEY_ID: $PREVIEW_ALIYUN_OSS_KEY_ID
+    ALIYUN_OSS_SECRET: $PREVIEW_ALIYUN_OSS_SECRET
     SRC_PATH: hk/build
     DEST_PATH: preview/tapsdk-doc-intl-$CI_MERGE_REQUEST_ID
   needs:
