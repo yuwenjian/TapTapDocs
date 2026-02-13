@@ -443,6 +443,10 @@ TapTapEvent.clearUser()
 
 ## 上报充值记录
 
+:::tip
+接入 TapPayments 后无需手动上报 TapPayments 的充值数据，防止重复统计；
+:::
+
 在用户进行充值后，可调用该接口上报充值信息，调用后将上报 `charge` 事件，并将传入的参数作为事件的属性。
 
 <MultiLang kind="unity_android_ios_v4">
